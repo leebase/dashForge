@@ -9,6 +9,18 @@
 
 ---
 
+## 2026-03-31 — Transitional Repo Layout for Phase 1
+
+**Decision:** The first React/Vite/TypeScript implementation lives in `/frontend` alongside the legacy Python bootstrap files.
+
+**Rationale:** This keeps Sprint 1 focused on proving the canonical runtime architecture instead of spending the first implementation slice on destructive repo reshaping. It also preserves the scaffold history while the new product path becomes real.
+
+**Alternatives rejected:** Replacing the repo root immediately would create more churn than value in the first slice. Keeping implementation in the Python scaffold would conflict with the canon architecture.
+
+**Consequences:** The repository has a temporary dual structure. Once the frontend runtime is established enough to carry the project, the Python scaffold can be retired or isolated more aggressively.
+
+---
+
 ## 1. Architecture Principles
 
 These principles are ordered by priority. When they conflict, higher-ranked principles win.

@@ -13,7 +13,7 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 1 — Core Foundation |
-| **Overall Status** | 🟡 Canon defined, implementation still bootstrap-only |
+| **Overall Status** | 🟡 First frontend runtime slice is working |
 | **Last Updated** | 2026-03-31 |
 
 ---
@@ -26,8 +26,8 @@
 
 | Criterion | Status | Notes |
 |-----------|--------|-------|
-| Industry mock data engine | ⬜ Not started | Canon defined, no implementation yet |
-| Dashboard spec + primitive runtime | ⬜ Not started | Sprint 1 will establish the first slice |
+| Industry mock data engine | ⬜ Not started | Adapter seam exists, but data is still inline sample data |
+| Dashboard spec + primitive runtime | 🟡 Started | Static spec, validation, `DashboardBox`, and KPI slice are running |
 | Presenter mode | ⬜ Not started | Deferred until foundation and runtime exist |
 | Planning and canon docs | ✅ Done | Product and architecture are now aligned with project memory |
 
@@ -36,8 +36,9 @@
 | Goal | Status | Notes |
 |------|--------|-------|
 | Establish implementation-ready planning docs | ✅ Done | Planning/state docs now match canon |
-| Decide repo layout for frontend foundation | ⬜ Not started | Main immediate decision |
-| Deliver first working frontend slice | ⬜ Not started | Target of Sprint 1 |
+| Decide repo layout for frontend foundation | ✅ Done | Canonical frontend lives in `frontend/` during transition |
+| Deliver first working frontend slice | ✅ Done | Static spec-driven KPI slice is running and verified |
+| Expand runtime beyond the first slice | ⬜ Not started | Next focus within Sprint 1 |
 
 ---
 
@@ -53,8 +54,8 @@
 
 | Risk/Blocker | Impact | Status |
 |-------------|--------|--------|
-| Repo still reflects bootstrap Python scaffold | Current implementation shape conflicts with canon architecture | 🟡 Action needed |
-| No frontend foundation exists yet | Blocks all meaningful MVP implementation | 🟡 Action needed |
+| Repo still reflects bootstrap Python scaffold | Temporary dual structure could confuse future contributors | 🟡 Action needed |
+| Frontend foundation is still only one widget deep | Value is proven, but breadth is not | 🟡 Action needed |
 | Mock data realism remains unproven | High product risk once implementation starts | 🟡 Watch |
 
 ---
@@ -68,6 +69,7 @@ Decisions that affect product direction:
 | `product-definition.md` is the product canon | Prevents product drift during early implementation | 2026-03-31 |
 | `architecture.md` is the technical canon | Establishes the React/Vite/TypeScript + DashboardSpec target | 2026-03-31 |
 | Workshop-ready MVP is the success bar | Keeps the scope focused on consulting value rather than platform breadth | 2026-03-31 |
+| Transitional implementation lives in `frontend/` | Lets Sprint 1 prove the architecture without destructive repo churn | 2026-03-31 |
 
 ---
 

@@ -28,43 +28,54 @@ This sprint does not need to solve the full MVP. It needs to make the target arc
 
 ## Exit Criteria
 
-- [ ] The repository contains the target frontend scaffold, not just the bootstrap Python CLI
-- [ ] A static DashboardSpec can render without widget-specific hard-coded layout logic
-- [ ] `DashboardBox` exists with at least basic title and state handling
-- [ ] One initial widget primitive renders from spec-driven data
-- [ ] Baseline tests/build checks exist for the new foundation
-- [ ] Project memory docs reflect what was actually built
+- [x] The repository contains the target frontend scaffold, not just the bootstrap Python CLI
+- [x] A static DashboardSpec can render without widget-specific hard-coded layout logic
+- [x] `DashboardBox` exists with at least basic title and state handling
+- [x] One initial widget primitive renders from spec-driven data
+- [x] Baseline tests/build checks exist for the new foundation
+- [x] Project memory docs reflect what was actually built
 
 ## Completed This Sprint
 
 - [x] Reconciled planning and state docs with `product-definition.md` and `architecture.md`
 - [x] Created this sprint plan and established the first implementation target
+- [x] Chose a transition-friendly repo layout with the canonical frontend in `frontend/`
+- [x] Scaffolded a React/Vite/TypeScript app shell
+- [x] Added a validated DashboardSpec subset with Ajv
+- [x] Added a static adapter, `DashboardBox`, and a KPI widget rendered from sample spec data
+- [x] Verified the slice with unit tests, production build, and preview startup
 
 ## Ordered Work Queue
 
 ### 1. Repo Foundation
 
-- [ ] Decide the repository layout for the canonical frontend implementation
-- [ ] Scaffold React 19 + Vite + TypeScript in a way that leaves room for spec/runtime separation
-- [ ] Decide how to contain or retire the existing Python bootstrap artifacts
+- [x] Decide the repository layout for the canonical frontend implementation
+- [x] Scaffold React 19 + Vite + TypeScript in a way that leaves room for spec/runtime separation
+- [x] Decide how to contain the existing Python bootstrap artifacts for the transition
 
 ### 2. Spec Runtime
 
-- [ ] Define the initial DashboardSpec types from the architecture doc
-- [ ] Add schema validation and a place for versioning/migration concerns
-- [ ] Create a sample spec fixture that represents the smallest meaningful dashboard
+- [x] Define the initial DashboardSpec types from the architecture doc
+- [x] Add schema validation and a place for versioning/migration concerns
+- [x] Create a sample spec fixture that represents the smallest meaningful dashboard
 
 ### 3. UI Foundation
 
-- [ ] Establish app shell, theme tokens, and base layout structure
-- [ ] Implement `DashboardBox`
-- [ ] Render one primitive from the sample spec
+- [x] Establish app shell, theme tokens, and base layout structure
+- [x] Implement `DashboardBox`
+- [x] Render one primitive from the sample spec
 
 ### 4. Quality Gate
 
-- [ ] Add baseline test/build commands for the new implementation
-- [ ] Verify the first slice works end to end locally
-- [ ] Update docs and result review with actual implementation outcomes
+- [x] Add baseline test/build commands for the new implementation
+- [x] Verify the first slice works end to end locally
+- [x] Update docs and result review with actual implementation outcomes
+
+## Next Slice Queue
+
+- [ ] Add a second widget primitive and expand the schema beyond KPI-only rendering
+- [ ] Move from inline sample payloads to richer mock datasets behind the adapter seam
+- [ ] Evaluate adoption of `react-grid-layout` now that a spec-driven shell is running
 
 ## Decisions To Make During This Sprint
 

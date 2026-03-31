@@ -6,6 +6,30 @@
 
 ---
 
+## 2026-03-31 — Frontend Foundation Slice Running
+
+**What Was Built**
+
+A real frontend foundation now exists in `frontend/` using React, Vite, and TypeScript. The slice includes a validated DashboardSpec subset, an Ajv-backed validator, a `DashboardBox` container, a static data adapter, a sample healthcare dashboard spec, and a KPI widget rendered through the runtime shell.
+
+**Why It Matters**
+
+This is the first implementation that actually reflects the DashForge canon instead of the generic bootstrap scaffold. It proves the core architectural seams: spec-first rendering, adapter-based data access, and a frontend path that can now be expanded instead of restarted.
+
+**How to Verify**
+
+```bash
+cd frontend
+npm install
+npm test
+npm run build
+npm exec vite preview -- --host 127.0.0.1 --port 4173
+```
+
+Then open `http://127.0.0.1:4173` and confirm the DashForge foundation page renders a "Healthcare Executive Snapshot" view with the "Readmission Rate" KPI widget.
+
+---
+
 ## 2026-03-31 — Project Memory Aligned to Canon
 
 **Documentation and planning refresh** completed so the repository's working docs match the current product and architecture decisions.

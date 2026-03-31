@@ -16,7 +16,7 @@
 
 | Sprint | Status | Completion |
 |--------|--------|------------|
-| Sprint 1 — Foundation | 🟡 Active | 10% |
+| Sprint 1 — Foundation | 🟡 Active | 55% |
 
 ---
 
@@ -24,7 +24,7 @@
 
 ### Current Work Stream
 
-Project memory and planning docs have been aligned to the canon product and architecture so implementation can start from a reliable foundation.
+Extending the new frontend foundation in `frontend/` after proving the first spec-driven runtime slice.
 
 ### Recently Completed
 
@@ -34,11 +34,14 @@ Project memory and planning docs have been aligned to the canon product and arch
 - ✅ `architecture.md` established as technical canon
 - ✅ Planning and session docs refreshed to match canon
 - ✅ `sprint-plan.md` created
+- ✅ React/Vite/TypeScript foundation scaffolded in `frontend/`
+- ✅ Initial DashboardSpec subset implemented and validated with Ajv
+- ✅ First KPI widget rendered through `DashboardBox` and adapter seam
+- ✅ `npm test`, `npm run build`, and preview startup all pass in `frontend/`
 
 ### In Progress
 
-- ⏳ Sprint 1 foundation planning is complete
-- ⏳ Frontend implementation has not started yet
+- ⏳ Expanding the foundation from one KPI slice toward a broader runtime shell
 
 ---
 
@@ -50,6 +53,7 @@ Project memory and planning docs have been aligned to the canon product and arch
 | `product-definition.md` and `architecture.md` are canon | Prevent scaffold-era docs from driving implementation choices | 2026-03-31 |
 | DashForge targets React/Vite/TypeScript with DashboardSpec at the center | Matches the current architecture and MVP definition | 2026-03-31 |
 | The existing Python scaffold is bootstrap residue, not the intended product shape | Keeps repo history honest while the foundation is re-platformed | 2026-03-31 |
+| The canonical frontend lives in `frontend/` during Sprint 1 | Minimizes repo churn while the new runtime proves itself | 2026-03-31 |
 
 ---
 
@@ -85,8 +89,8 @@ Project memory and planning docs have been aligned to the canon product and arch
 ## Open Questions
 
 1. Should the React app replace the root scaffold immediately or be introduced alongside it for one sprint?
-2. What is the smallest DashboardSpec subset worth encoding first?
-3. Which first vertical slice is best for Sprint 1: static KPI card, static line chart, or both?
+2. Which next primitive gives the best leverage after the KPI slice: line chart, table, or donut?
+3. When should the Python scaffold be retired versus kept as historical bootstrap residue?
 
 ---
 
@@ -94,10 +98,10 @@ Project memory and planning docs have been aligned to the canon product and arch
 
 | Rank | Action | Owner | Done When |
 |------|--------|-------|----------|
-| 1 | Choose repo layout for the canonical frontend foundation | Human+AI | Directory strategy is explicit |
-| 2 | Scaffold React/Vite/TypeScript foundation | AI | App boots locally |
-| 3 | Define initial DashboardSpec types and validation | AI | Sample spec validates and renders |
-| 4 | Build first static dashboard vertical slice | AI | One widget renders through the runtime shell |
+| 1 | Add the second primitive and expand the DashboardSpec subset | AI | More than one widget type renders cleanly |
+| 2 | Introduce richer sample data while keeping the adapter seam intact | AI | Runtime no longer depends on a single inline KPI payload |
+| 3 | Evaluate when to switch from CSS grid shell to `react-grid-layout` | Human+AI | Decision recorded with rationale |
+| 4 | Decide retirement plan for the Python scaffold | Human+AI | Transition path is explicit |
 
 ---
 

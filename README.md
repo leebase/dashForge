@@ -18,9 +18,9 @@ DashForge is in the foundation stage.
 - Product direction is defined
 - Technical architecture is defined
 - Tactical planning is aligned
-- Product implementation has not started yet
+- A real frontend foundation now exists in `frontend/`
 
-The repository still contains a bootstrap Python scaffold from project initialization. That code is not the intended long-term product architecture. The canon implementation target is a React 19 + Vite + TypeScript application with DashboardSpec as the core artifact.
+The repository still contains a bootstrap Python scaffold from project initialization. That code is not the intended long-term product architecture. The active implementation target is a React 19 + Vite + TypeScript application with DashboardSpec as the core artifact, and the first foundation slice now lives in `frontend/`.
 
 ## MVP Summary
 
@@ -37,12 +37,30 @@ The workshop-ready MVP includes:
 
 ## Near-Term Build Target
 
-Sprint 1 is focused on the smallest real vertical slice:
+Sprint 1 is focused on extending the first real vertical slice:
 
-- establish the React/Vite/TypeScript application shell
-- define canonical DashboardSpec runtime types and validation
-- implement theme tokens and the first dashboard shell
-- render an initial primitive from a static spec
+- grow the DashboardSpec subset beyond a single KPI widget
+- add additional primitives and layout behavior
+- preserve the adapter seam while moving beyond inline sample data
+- decide when to retire the legacy Python scaffold
+
+## Frontend Commands
+
+The active product foundation is under `frontend/`.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Checks:
+
+```bash
+cd frontend
+npm test
+npm run build
+```
 
 ## Key Project Docs
 
@@ -55,7 +73,7 @@ Sprint 1 is focused on the smallest real vertical slice:
 
 ## Repository Note
 
-Until Sprint 1 implementation begins, there is no production DashForge app to run locally. Any existing Python CLI behavior is bootstrap residue, not a representation of the target product.
+The `frontend/` app is now the implementation path to build on. Any existing Python CLI behavior is bootstrap residue, not a representation of the target product.
 
 ---
 
