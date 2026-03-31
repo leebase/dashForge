@@ -16,7 +16,7 @@
 
 | Sprint | Status | Completion |
 |--------|--------|------------|
-| Sprint 1 — Foundation | 🟡 Active | 55% |
+| Sprint 1 — Foundation | 🟡 Active | 65% |
 
 ---
 
@@ -24,7 +24,7 @@
 
 ### Current Work Stream
 
-Extending the new frontend foundation in `frontend/` after proving the first spec-driven runtime slice.
+Extending the new frontend foundation in `frontend/` from a single KPI slice into a multi-widget runtime.
 
 ### Recently Completed
 
@@ -37,11 +37,12 @@ Extending the new frontend foundation in `frontend/` after proving the first spe
 - ✅ React/Vite/TypeScript foundation scaffolded in `frontend/`
 - ✅ Initial DashboardSpec subset implemented and validated with Ajv
 - ✅ First KPI widget rendered through `DashboardBox` and adapter seam
+- ✅ Line-chart primitive added through a custom ECharts wrapper
 - ✅ `npm test`, `npm run build`, and preview startup all pass in `frontend/`
 
 ### In Progress
 
-- ⏳ Expanding the foundation from one KPI slice toward a broader runtime shell
+- ⏳ Expanding the runtime beyond inline sample payloads and addressing bundle-size tradeoffs from ECharts
 
 ---
 
@@ -89,8 +90,9 @@ Extending the new frontend foundation in `frontend/` after proving the first spe
 ## Open Questions
 
 1. Should the React app replace the root scaffold immediately or be introduced alongside it for one sprint?
-2. Which next primitive gives the best leverage after the KPI slice: line chart, table, or donut?
+2. Which next primitive gives the best leverage after KPI + line: table, donut, or gauge?
 3. When should the Python scaffold be retired versus kept as historical bootstrap residue?
+4. Should the ECharts wrapper be code-split before more chart primitives land?
 
 ---
 
@@ -98,9 +100,9 @@ Extending the new frontend foundation in `frontend/` after proving the first spe
 
 | Rank | Action | Owner | Done When |
 |------|--------|-------|----------|
-| 1 | Add the second primitive and expand the DashboardSpec subset | AI | More than one widget type renders cleanly |
-| 2 | Introduce richer sample data while keeping the adapter seam intact | AI | Runtime no longer depends on a single inline KPI payload |
-| 3 | Evaluate when to switch from CSS grid shell to `react-grid-layout` | Human+AI | Decision recorded with rationale |
+| 1 | Introduce richer sample data while keeping the adapter seam intact | AI | Runtime no longer depends on inline-only sample payloads |
+| 2 | Evaluate when to switch from CSS grid shell to `react-grid-layout` | Human+AI | Decision recorded with rationale |
+| 3 | Reduce bundle size after adding ECharts | AI | Build warning is resolved or consciously accepted |
 | 4 | Decide retirement plan for the Python scaffold | Human+AI | Transition path is explicit |
 
 ---

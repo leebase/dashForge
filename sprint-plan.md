@@ -43,6 +43,7 @@ This sprint does not need to solve the full MVP. It needs to make the target arc
 - [x] Scaffolded a React/Vite/TypeScript app shell
 - [x] Added a validated DashboardSpec subset with Ajv
 - [x] Added a static adapter, `DashboardBox`, and a KPI widget rendered from sample spec data
+- [x] Added a line-chart primitive with a custom ECharts wrapper
 - [x] Verified the slice with unit tests, production build, and preview startup
 
 ## Ordered Work Queue
@@ -73,9 +74,10 @@ This sprint does not need to solve the full MVP. It needs to make the target arc
 
 ## Next Slice Queue
 
-- [ ] Add a second widget primitive and expand the schema beyond KPI-only rendering
+- [x] Add a second widget primitive and expand the schema beyond KPI-only rendering
 - [ ] Move from inline sample payloads to richer mock datasets behind the adapter seam
 - [ ] Evaluate adoption of `react-grid-layout` now that a spec-driven shell is running
+- [ ] Reduce the current frontend bundle size after introducing ECharts
 
 ## Decisions To Make During This Sprint
 

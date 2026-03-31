@@ -6,6 +6,30 @@
 
 ---
 
+## 2026-03-31 — Second Primitive Added with ECharts
+
+**What Was Built**
+
+The frontend foundation now supports more than one widget type. A custom ECharts wrapper was added, the DashboardSpec subset was expanded to cover line-chart widgets, the sample dashboard now includes a bed-occupancy trend widget, and the runtime renders both KPI and line-chart content from spec data.
+
+**Why It Matters**
+
+This moves the project from “single proof widget” to an actual primitive runtime direction. It also proves that the adapter seam and spec-driven rendering survive the introduction of a real charting library rather than only simple text-based cards.
+
+**How to Verify**
+
+```bash
+cd frontend
+npm install
+npm test
+npm run build
+npm exec vite preview -- --host 127.0.0.1 --port 4173
+```
+
+Then open `http://127.0.0.1:4173` and confirm the page renders both the "Readmission Rate" KPI card and the "Bed Occupancy Trend" line-chart widget.
+
+---
+
 ## 2026-03-31 — Frontend Foundation Slice Running
 
 **What Was Built**

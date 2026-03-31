@@ -15,6 +15,7 @@ describe("DashboardRenderer", () => {
     );
 
     expect(screen.getByText("Readmission Rate")).toBeInTheDocument();
+    expect(screen.getByText("Bed Occupancy Trend")).toBeInTheDocument();
     expect(screen.getByText("9.8%")).toBeInTheDocument();
     expect(screen.getByText(/vs prior quarter/i)).toBeInTheDocument();
   });

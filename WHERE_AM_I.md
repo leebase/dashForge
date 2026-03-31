@@ -13,7 +13,7 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 1 — Core Foundation |
-| **Overall Status** | 🟡 First frontend runtime slice is working |
+| **Overall Status** | 🟡 Multi-widget frontend runtime is working |
 | **Last Updated** | 2026-03-31 |
 
 ---
@@ -27,7 +27,7 @@
 | Criterion | Status | Notes |
 |-----------|--------|-------|
 | Industry mock data engine | ⬜ Not started | Adapter seam exists, but data is still inline sample data |
-| Dashboard spec + primitive runtime | 🟡 Started | Static spec, validation, `DashboardBox`, and KPI slice are running |
+| Dashboard spec + primitive runtime | 🟡 Started | Static spec, validation, `DashboardBox`, KPI, and line chart are running |
 | Presenter mode | ⬜ Not started | Deferred until foundation and runtime exist |
 | Planning and canon docs | ✅ Done | Product and architecture are now aligned with project memory |
 
@@ -38,7 +38,7 @@
 | Establish implementation-ready planning docs | ✅ Done | Planning/state docs now match canon |
 | Decide repo layout for frontend foundation | ✅ Done | Canonical frontend lives in `frontend/` during transition |
 | Deliver first working frontend slice | ✅ Done | Static spec-driven KPI slice is running and verified |
-| Expand runtime beyond the first slice | ⬜ Not started | Next focus within Sprint 1 |
+| Expand runtime beyond the first slice | 🟡 Started | KPI plus line-chart widgets are now working |
 
 ---
 
@@ -55,7 +55,8 @@
 | Risk/Blocker | Impact | Status |
 |-------------|--------|--------|
 | Repo still reflects bootstrap Python scaffold | Temporary dual structure could confuse future contributors | 🟡 Action needed |
-| Frontend foundation is still only one widget deep | Value is proven, but breadth is not | 🟡 Action needed |
+| Frontend foundation still uses inline sample payloads | Data realism and adapter depth are not proven yet | 🟡 Action needed |
+| ECharts adds a noticeable bundle-size warning | Could become expensive if chart scope grows without optimization | 🟡 Watch |
 | Mock data realism remains unproven | High product risk once implementation starts | 🟡 Watch |
 
 ---

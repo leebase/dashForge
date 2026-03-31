@@ -49,5 +49,27 @@ export const sampleDashboard: DashboardSpec = {
         },
       },
     },
+    {
+      id: "occupancy-trend",
+      position: { x: 4, y: 0, w: 8, h: 3 },
+      title: "Bed Occupancy Trend",
+      subtitle: "Monthly capacity pressure",
+      chart: { type: "line", smooth: true },
+      data: {
+        source: "inline",
+        payload: {
+          points: [
+            { label: "Jan", value: 88 },
+            { label: "Feb", value: 90 },
+            { label: "Mar", value: 92 },
+            { label: "Apr", value: 91 },
+            { label: "May", value: 89 },
+            { label: "Jun", value: 93 },
+          ],
+          seriesLabel: "Occupancy",
+          caption: "Foundation sample with static inline mock data",
+        },
+      },
+    },
   ],
 };

@@ -42,6 +42,17 @@ export interface KpiInlineData {
   caption?: string;
 }
 
+export interface LineInlinePoint {
+  label: string;
+  value: number;
+}
+
+export interface LineInlineData {
+  points: LineInlinePoint[];
+  seriesLabel?: string;
+  caption?: string;
+}
+
 export interface WidgetPosition {
   x: number;
   y: number;
@@ -51,19 +62,26 @@ export interface WidgetPosition {
 
 export interface WidgetDataRef {
   source: "inline";
-  payload: KpiInlineData;
+  payload: KpiInlineData | LineInlineData;
 }
 
 export interface KpiChartSpec {
   type: "kpi";
 }
 
+export interface LineChartSpec {
+  type: "line";
+  smooth?: boolean;
+}
+
+export type WidgetChartSpec = KpiChartSpec | LineChartSpec;
+
 export interface WidgetSpec {
   id: string;
   position: WidgetPosition;
   title: string;
   subtitle?: string;
-  chart: KpiChartSpec;
+  chart: WidgetChartSpec;
   data: WidgetDataRef;
 }
 

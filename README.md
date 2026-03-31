@@ -19,6 +19,7 @@ DashForge is in the foundation stage.
 - Technical architecture is defined
 - Tactical planning is aligned
 - A real frontend foundation now exists in `frontend/`
+- The runtime now renders both KPI and line-chart widgets from DashboardSpec
 
 The repository still contains a bootstrap Python scaffold from project initialization. That code is not the intended long-term product architecture. The active implementation target is a React 19 + Vite + TypeScript application with DashboardSpec as the core artifact, and the first foundation slice now lives in `frontend/`.
 
@@ -39,8 +40,8 @@ The workshop-ready MVP includes:
 
 Sprint 1 is focused on extending the first real vertical slice:
 
-- grow the DashboardSpec subset beyond a single KPI widget
-- add additional primitives and layout behavior
+- grow the DashboardSpec subset beyond the current KPI + line-chart slice
+- add additional primitives and richer layout behavior
 - preserve the adapter seam while moving beyond inline sample data
 - decide when to retire the legacy Python scaffold
 

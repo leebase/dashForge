@@ -1,8 +1,8 @@
-import Ajv, { JSONSchemaType } from "ajv";
+import Ajv from "ajv";
 
 import type { DashboardSpec } from "./dashboardSpec";
 
-const dashboardSchema: JSONSchemaType<DashboardSpec> = {
+const dashboardSchema = {
   type: "object",
   additionalProperties: false,
   required: [
@@ -80,61 +80,125 @@ const dashboardSchema: JSONSchemaType<DashboardSpec> = {
       type: "array",
       minItems: 1,
       items: {
-        type: "object",
-        additionalProperties: false,
-        required: ["id", "position", "title", "chart", "data"],
-        properties: {
-          id: { type: "string", minLength: 1 },
-          position: {
+        anyOf: [
+          {
             type: "object",
             additionalProperties: false,
-            required: ["x", "y", "w", "h"],
+            required: ["id", "position", "title", "chart", "data"],
             properties: {
-              x: { type: "integer", minimum: 0 },
-              y: { type: "integer", minimum: 0 },
-              w: { type: "integer", minimum: 1 },
-              h: { type: "integer", minimum: 1 },
-            },
-          },
-          title: { type: "string", minLength: 1 },
-          subtitle: { type: "string", nullable: true },
-          chart: {
-            type: "object",
-            additionalProperties: false,
-            required: ["type"],
-            properties: {
-              type: { type: "string", const: "kpi" },
-            },
-          },
-          data: {
-            type: "object",
-            additionalProperties: false,
-            required: ["source", "payload"],
-            properties: {
-              source: { type: "string", const: "inline" },
-              payload: {
+              id: { type: "string", minLength: 1 },
+              position: {
                 type: "object",
                 additionalProperties: false,
-                required: ["value"],
+                required: ["x", "y", "w", "h"],
                 properties: {
-                  value: { type: "number" },
-                  delta: { type: "number", nullable: true },
-                  deltaLabel: { type: "string", nullable: true },
-                  suffix: { type: "string", nullable: true },
-                  prefix: { type: "string", nullable: true },
-                  caption: { type: "string", nullable: true },
+                  x: { type: "integer", minimum: 0 },
+                  y: { type: "integer", minimum: 0 },
+                  w: { type: "integer", minimum: 1 },
+                  h: { type: "integer", minimum: 1 },
+                },
+              },
+              title: { type: "string", minLength: 1 },
+              subtitle: { type: "string", nullable: true },
+              chart: {
+                type: "object",
+                additionalProperties: false,
+                required: ["type"],
+                properties: {
+                  type: { type: "string", const: "kpi" },
+                },
+              },
+              data: {
+                type: "object",
+                additionalProperties: false,
+                required: ["source", "payload"],
+                properties: {
+                  source: { type: "string", const: "inline" },
+                  payload: {
+                    type: "object",
+                    additionalProperties: false,
+                    required: ["value"],
+                    properties: {
+                      value: { type: "number" },
+                      delta: { type: "number", nullable: true },
+                      deltaLabel: { type: "string", nullable: true },
+                      suffix: { type: "string", nullable: true },
+                      prefix: { type: "string", nullable: true },
+                      caption: { type: "string", nullable: true },
+                    },
+                  },
                 },
               },
             },
           },
-        },
+          {
+            type: "object",
+            additionalProperties: false,
+            required: ["id", "position", "title", "chart", "data"],
+            properties: {
+              id: { type: "string", minLength: 1 },
+              position: {
+                type: "object",
+                additionalProperties: false,
+                required: ["x", "y", "w", "h"],
+                properties: {
+                  x: { type: "integer", minimum: 0 },
+                  y: { type: "integer", minimum: 0 },
+                  w: { type: "integer", minimum: 1 },
+                  h: { type: "integer", minimum: 1 },
+                },
+              },
+              title: { type: "string", minLength: 1 },
+              subtitle: { type: "string", nullable: true },
+              chart: {
+                type: "object",
+                additionalProperties: false,
+                required: ["type"],
+                properties: {
+                  type: { type: "string", const: "line" },
+                  smooth: { type: "boolean", nullable: true },
+                },
+              },
+              data: {
+                type: "object",
+                additionalProperties: false,
+                required: ["source", "payload"],
+                properties: {
+                  source: { type: "string", const: "inline" },
+                  payload: {
+                    type: "object",
+                    additionalProperties: false,
+                    required: ["points"],
+                    properties: {
+                      points: {
+                        type: "array",
+                        minItems: 1,
+                        items: {
+                          type: "object",
+                          additionalProperties: false,
+                          required: ["label", "value"],
+                          properties: {
+                            label: { type: "string", minLength: 1 },
+                            value: { type: "number" },
+                          },
+                        },
+                      },
+                      seriesLabel: { type: "string", nullable: true },
+                      caption: { type: "string", nullable: true },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
       },
     },
   },
-};
+} as const;
 
 const ajv = new Ajv({ allErrors: true });
-const validate = ajv.compile(dashboardSchema);
+const validate = ajv.compile<DashboardSpec>(dashboardSchema);
 
 export function validateDashboardSpec(spec: unknown): {
   ok: true;

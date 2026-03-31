@@ -174,6 +174,21 @@ select {
   font-size: 0.95rem;
 }
 
+.chart-shell {
+  width: 100%;
+  min-height: 220px;
+}
+
+.line-chart {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.line-chart__caption {
+  color: var(--df-muted);
+  font-size: 0.95rem;
+}
+
 @media (max-width: 860px) {
   .app-shell {
     width: min(100% - 1rem, 1000px);
