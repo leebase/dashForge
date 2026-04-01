@@ -12,7 +12,8 @@
     "ajv": "^8.17.1",
     "echarts": "^6.0.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-grid-layout": "^2.2.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",

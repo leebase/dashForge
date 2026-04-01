@@ -1,0 +1,192 @@
+{
+  "packId": "financial",
+  "version": 1,
+  "months": [
+    { "id": "2025-01", "label": "Jan", "quarter": "Q1", "days": 31 },
+    { "id": "2025-02", "label": "Feb", "quarter": "Q1", "days": 28 },
+    { "id": "2025-03", "label": "Mar", "quarter": "Q1", "days": 31 },
+    { "id": "2025-04", "label": "Apr", "quarter": "Q2", "days": 30 },
+    { "id": "2025-05", "label": "May", "quarter": "Q2", "days": 31 },
+    { "id": "2025-06", "label": "Jun", "quarter": "Q2", "days": 30 },
+    { "id": "2025-07", "label": "Jul", "quarter": "Q3", "days": 31 },
+    { "id": "2025-08", "label": "Aug", "quarter": "Q3", "days": 31 },
+    { "id": "2025-09", "label": "Sep", "quarter": "Q3", "days": 30 },
+    { "id": "2025-10", "label": "Oct", "quarter": "Q4", "days": 31 },
+    { "id": "2025-11", "label": "Nov", "quarter": "Q4", "days": 30 },
+    { "id": "2025-12", "label": "Dec", "quarter": "Q4", "days": 31 }
+  ],
+  "entities": {
+    "advisors": [
+      { "id": "alex-harper", "name": "Alex Harper", "region": "Northeast", "baseAum": 2850, "baseClients": 430, "baseRetention": 0.98, "baseCompliance": 94, "baseNps": 54 },
+      { "id": "maya-lopez", "name": "Maya Lopez", "region": "Midwest", "baseAum": 2620, "baseClients": 390, "baseRetention": 0.95, "baseCompliance": 92, "baseNps": 50 },
+      { "id": "ravi-patel", "name": "Ravi Patel", "region": "West", "baseAum": 2410, "baseClients": 360, "baseRetention": 0.96, "baseCompliance": 90, "baseNps": 48 },
+      { "id": "sara-hsu", "name": "Sara Hsu", "region": "South", "baseAum": 2180, "baseClients": 335, "baseRetention": 0.94, "baseCompliance": 91, "baseNps": 52 },
+      { "id": "jamie-ross", "name": "Jamie Ross", "region": "Northeast", "baseAum": 2040, "baseClients": 310, "baseRetention": 0.93, "baseCompliance": 89, "baseNps": 47 },
+      { "id": "lina-garcía", "name": "Lina García", "region": "Central", "baseAum": 1960, "baseClients": 295, "baseRetention": 0.97, "baseCompliance": 93, "baseNps": 56 },
+      { "id": "omar-khan", "name": "Omar Khan", "region": "West", "baseAum": 1880, "baseClients": 280, "baseRetention": 0.95, "baseCompliance": 88, "baseNps": 49 },
+      { "id": "nora-bennett", "name": "Nora Bennett", "region": "Midwest", "baseAum": 1760, "baseClients": 270, "baseRetention": 0.92, "baseCompliance": 87, "baseNps": 46 },
+      { "id": "carl-chen", "name": "Carl Chen", "region": "Northeast", "baseAum": 1650, "baseClients": 260, "baseRetention": 0.94, "baseCompliance": 91, "baseNps": 45 },
+      { "id": "irene-gould", "name": "Irene Gould", "region": "South", "baseAum": 1520, "baseClients": 240, "baseRetention": 0.96, "baseCompliance": 90, "baseNps": 53 }
+    ],
+    "funds": [
+      { "id": "core-value", "name": "Core Value", "riskLevel": "low", "aumWeight": 0.28, "baseReturn": 0.032, "expenseRatio": 0.63, "feeRate": 0.0125 },
+      { "id": "income-plus", "name": "Income Plus", "riskLevel": "low", "aumWeight": 0.22, "baseReturn": 0.027, "expenseRatio": 0.59, "feeRate": 0.0119 },
+      { "id": "balanced-alloc", "name": "Balanced Allocation", "riskLevel": "medium", "aumWeight": 0.2, "baseReturn": 0.041, "expenseRatio": 0.68, "feeRate": 0.013 },
+      { "id": "equity-growth", "name": "Equity Growth", "riskLevel": "medium", "aumWeight": 0.16, "baseReturn": 0.061, "expenseRatio": 0.75, "feeRate": 0.0142 },
+      { "id": "global-opportun", "name": "Global Opportunities", "riskLevel": "high", "aumWeight": 0.09, "baseReturn": 0.082, "expenseRatio": 0.87, "feeRate": 0.0151 },
+      { "id": "alternative-private", "name": "Alternative Private", "riskLevel": "high", "aumWeight": 0.05, "baseReturn": 0.079, "expenseRatio": 0.91, "feeRate": 0.0158 }
+    ],
+    "segments": [
+      { "id": "hnw", "name": "High Net Worth", "share": 0.34, "retentionPenalty": 0.96 },
+      { "id": "uhn", "name": "Ultra High Net Worth", "share": 0.18, "retentionPenalty": 0.88 },
+      { "id": "mass-affluent", "name": "Mass Affluent", "share": 0.3, "retentionPenalty": 1.0 },
+      { "id": "corporate", "name": "Corporate", "share": 0.18, "retentionPenalty": 0.93 }
+    ],
+    "regions": [
+      { "id": "ne", "name": "Northeast", "marketFactor": 1.03 },
+      { "id": "mw", "name": "Midwest", "marketFactor": 0.99 },
+      { "id": "sw", "name": "Southwest", "marketFactor": 0.98 },
+      { "id": "west", "name": "West", "marketFactor": 1.01 }
+    ]
+  },
+  "scenarios": [
+    {
+      "scenarioId": "market-downturn",
+      "seed": 5301,
+      "title": "Market Downturn",
+      "story": "Equity selloff and flight-to-quality are shifting flows out of higher-risk products, compressing AUM and increasing retention pressure.",
+      "previewDatasets": {
+        "executive_summary": [
+          { "metricId": "aum", "value": 1.21, "delta": -7.1, "deltaLabel": "vs prior quarter", "prefix": "", "suffix": "B", "caption": "Advisory books underperform as clients reduce equity exposure." },
+          { "metricId": "net-flows", "value": -84.2, "delta": -18.6, "deltaLabel": "vs prior quarter", "prefix": "$", "suffix": "M", "caption": "Net flows turned negative under stress with sustained redemptions." },
+          { "metricId": "expense-ratio", "value": 0.89, "delta": 8.2, "deltaLabel": "basis-point move", "suffix": "%", "caption": "Spread management is protecting margin by reducing discretionary costs." },
+          { "metricId": "client-retention", "value": 91.6, "delta": -2.8, "deltaLabel": "retention rate", "suffix": "%", "caption": "Higher-risk segments are concentrating exits." },
+          { "metricId": "revenue-per-advisor", "value": 128.4, "delta": -3.2, "deltaLabel": "Y/Y", "prefix": "$", "suffix": "K", "caption": "Advisor productivity is softer in the selloff months." },
+          { "metricId": "portfolio-return-vs-benchmark", "value": -1.9, "delta": -1.2, "deltaLabel": "basis points", "suffix": "%", "caption": "Market-linked products sit under benchmark in quarter-end stress." },
+          { "metricId": "compliance-score", "value": 95.8, "delta": 0.9, "deltaLabel": "regulatory quality", "suffix": "%", "caption": "Compliance monitoring remained steady through the risk episode." }
+        ],
+        "monthly_summary": [
+          { "month": "Jan", "totalAum": 1300, "netFlow": -55.6, "retentionRate": 0.91, "nps": 46 },
+          { "month": "Feb", "totalAum": 1240, "netFlow": -61.4, "retentionRate": 0.90, "nps": 44 },
+          { "month": "Mar", "totalAum": 1260, "netFlow": -48.2, "retentionRate": 0.9, "nps": 45 },
+          { "month": "Apr", "totalAum": 1360, "netFlow": -39.8, "retentionRate": 0.91, "nps": 47 },
+          { "month": "May", "totalAum": 1390, "netFlow": -34.4, "retentionRate": 0.92, "nps": 48 },
+          { "month": "Jun", "totalAum": 1425, "netFlow": -29.1, "retentionRate": 0.93, "nps": 49 },
+          { "month": "Jul", "totalAum": 1445, "netFlow": -22.3, "retentionRate": 0.93, "nps": 50 },
+          { "month": "Aug", "totalAum": 1460, "netFlow": -20.4, "retentionRate": 0.93, "nps": 50 },
+          { "month": "Sep", "totalAum": 1485, "netFlow": -18.9, "retentionRate": 0.92, "nps": 49 },
+          { "month": "Oct", "totalAum": 1420, "netFlow": -24.1, "retentionRate": 0.91, "nps": 47 },
+          { "month": "Nov", "totalAum": 1380, "netFlow": -29.8, "retentionRate": 0.9, "nps": 46 },
+          { "month": "Dec", "totalAum": 1325, "netFlow": -36.2, "retentionRate": 0.89, "nps": 45 }
+        ],
+        "advisor_concentration": [
+          { "advisorName": "Alex Harper", "aumShare": 21.8, "retentionRate": 0.94 },
+          { "advisorName": "Maya Lopez", "aumShare": 19.6, "retentionRate": 0.92 },
+          { "advisorName": "Ravi Patel", "aumShare": 17.4, "retentionRate": 0.93 }
+        ]
+      },
+      "generationProfile": {
+        "aumShiftByMonth": [0.83, 0.81, 0.86, 0.9, 0.94, 0.97, 0.99, 0.98, 0.97, 0.95, 0.93, 0.9],
+        "flowShiftByMonth": [-0.17, -0.18, -0.14, -0.12, -0.11, -0.1, -0.09, -0.11, -0.13, -0.15, -0.16, -0.18],
+        "expenseShiftByMonth": [0.02, 0.022, 0.024, 0.022, 0.018, 0.015, 0.014, 0.013, 0.013, 0.014, 0.016, 0.017],
+        "returnShiftByMonth": [-0.018, -0.02, -0.022, -0.021, -0.018, -0.013, -0.01, -0.008, -0.007, -0.01, -0.012, -0.015],
+        "retentionShiftByMonth": [0.012, 0.01, 0.008, 0.005, 0.004, 0.003, 0.002, 0.002, 0.001, 0.0, -0.001, -0.002],
+        "complianceShiftByMonth": [0.01, 0.012, 0.014, 0.014, 0.013, 0.012, 0.012, 0.011, 0.011, 0.011, 0.01, 0.009],
+        "npsShiftByMonth": [0.0, -0.6, -0.8, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.5, -0.6, -0.8],
+        "advisorConcentrationPenaltyByMonth": [0.04, 0.05, 0.05, 0.04, 0.03, 0.02, 0.02, 0.02, 0.03, 0.04, 0.05, 0.06]
+      }
+    },
+    {
+      "scenarioId": "advisor-attrition",
+      "seed": 5314,
+      "title": "Advisor Attrition",
+      "story": "Three top-producing advisors transition out, forcing portfolio relocation and short-term client concentration risk.",
+      "previewDatasets": {
+        "executive_summary": [
+          { "metricId": "aum", "value": 1.31, "delta": -3.4, "deltaLabel": "Q/Q", "prefix": "", "suffix": "B", "caption": "Total AUM has dipped on advisor exits despite retention campaigns." },
+          { "metricId": "net-flows", "value": 24.9, "delta": 1.9, "deltaLabel": "vs prior quarter", "prefix": "$", "suffix": "M", "caption": "New deposits are stable while transfers out spike." },
+          { "metricId": "revenue-per-advisor", "value": 142.6, "delta": -4.5, "deltaLabel": "productivity", "prefix": "$", "suffix": "K", "caption": "Concentration losses reduce productivity in the top book slice." },
+          { "metricId": "client-retention", "value": 93.2, "delta": -1.9, "deltaLabel": "portfolio retention", "suffix": "%", "caption": "Retention holdouts remain in the low-risk segment." },
+          { "metricId": "expense-ratio", "value": 0.82, "delta": -0.4, "deltaLabel": "basis-point move", "suffix": "%", "caption": "Efficiency improves as the team rebalances book mix." },
+          { "metricId": "portfolio-return-vs-benchmark", "value": 0.84, "delta": -0.3, "deltaLabel": "outperformance", "suffix": "%", "caption": "Execution quality remains stable after the portfolio reshuffle." },
+          { "metricId": "nps", "value": 52, "delta": -3, "deltaLabel": "customer sentiment", "suffix": "%", "caption": "Service transitions are landing slower in impacted accounts." }
+        ],
+        "monthly_summary": [
+          { "month": "Jan", "totalAum": 1330, "netFlow": 28.2, "retentionRate": 0.94, "nps": 49 },
+          { "month": "Feb", "totalAum": 1328, "netFlow": 24.8, "retentionRate": 0.94, "nps": 48 },
+          { "month": "Mar", "totalAum": 1322, "netFlow": 21.6, "retentionRate": 0.93, "nps": 48 },
+          { "month": "Apr", "totalAum": 1318, "netFlow": 18.4, "retentionRate": 0.92, "nps": 47 },
+          { "month": "May", "totalAum": 1312, "netFlow": 22.9, "retentionRate": 0.93, "nps": 49 },
+          { "month": "Jun", "totalAum": 1305, "netFlow": 25.5, "retentionRate": 0.94, "nps": 50 },
+          { "month": "Jul", "totalAum": 1300, "netFlow": 31.6, "retentionRate": 0.95, "nps": 51 },
+          { "month": "Aug", "totalAum": 1308, "netFlow": 36.4, "retentionRate": 0.95, "nps": 51 },
+          { "month": "Sep", "totalAum": 1314, "netFlow": 38.1, "retentionRate": 0.95, "nps": 50 },
+          { "month": "Oct", "totalAum": 1319, "netFlow": 36.9, "retentionRate": 0.95, "nps": 50 },
+          { "month": "Nov", "totalAum": 1323, "netFlow": 32.1, "retentionRate": 0.96, "nps": 51 },
+          { "month": "Dec", "totalAum": 1328, "netFlow": 29.8, "retentionRate": 0.96, "nps": 52 }
+        ],
+        "advisor_concentration": [
+          { "advisorName": "Alex Harper", "aumShare": 19.9, "retentionRate": 0.9 },
+          { "advisorName": "Maya Lopez", "aumShare": 18.1, "retentionRate": 0.89 },
+          { "advisorName": "Ravi Patel", "aumShare": 16.8, "retentionRate": 0.91 }
+        ]
+      },
+      "generationProfile": {
+        "aumShiftByMonth": [1.02, 1.0, 0.99, 0.98, 0.975, 0.97, 0.97, 0.98, 0.99, 1.0, 1.01, 1.01],
+        "flowShiftByMonth": [0.03, 0.026, 0.02, 0.014, 0.01, 0.01, 0.009, 0.011, 0.014, 0.017, 0.02, 0.021],
+        "expenseShiftByMonth": [-0.02, -0.018, -0.016, -0.014, -0.013, -0.012, -0.011, -0.01, -0.01, -0.009, -0.008, -0.008],
+        "returnShiftByMonth": [0.003, 0.002, 0.001, 0.0, 0.001, 0.002, 0.002, 0.003, 0.003, 0.003, 0.004, 0.003],
+        "retentionShiftByMonth": [0.009, 0.007, 0.006, 0.006, 0.007, 0.008, 0.009, 0.01, 0.01, 0.009, 0.008, 0.007],
+        "complianceShiftByMonth": [0.01, 0.01, 0.011, 0.011, 0.01, 0.01, 0.009, 0.009, 0.009, 0.009, 0.008, 0.008],
+        "npsShiftByMonth": [0.7, 0.8, 0.6, 0.5, 0.5, 0.6, 0.8, 1.0, 1.1, 1.2, 1.2, 1.3],
+        "advisorConcentrationPenaltyByMonth": [0.0, 0.05, 0.09, 0.12, 0.12, 0.11, 0.08, 0.05, 0.03, 0.02, 0.01, 0.0]
+      }
+    },
+    {
+      "scenarioId": "growth-quarter",
+      "seed": 5378,
+      "title": "Growth Quarter",
+      "story": "New book growth and elevated retention from new client acquisition produce record inflows and improving economics.",
+      "previewDatasets": {
+        "executive_summary": [
+          { "metricId": "aum", "value": 1.41, "delta": 8.9, "deltaLabel": "vs prior quarter", "prefix": "", "suffix": "B", "caption": "New mandates and rebalanced portfolios lift book size materially." },
+          { "metricId": "net-flows", "value": 116.7, "delta": 24.2, "deltaLabel": "net growth", "prefix": "$", "suffix": "M", "caption": "Growth cohorts are still converting after acquisition pushes." },
+          { "metricId": "compliance-score", "value": 97.1, "delta": 1.4, "deltaLabel": "quality", "suffix": "%", "caption": "Rapid growth did not degrade control quality." },
+          { "metricId": "revenue-per-advisor", "value": 151.4, "delta": 6.1, "deltaLabel": "advisor productivity", "prefix": "$", "suffix": "K", "caption": "Cross-sell pace compounds advisor-level revenue." },
+          { "metricId": "expense-ratio", "value": 0.71, "delta": -4.8, "deltaLabel": "basis-point move", "suffix": "%", "caption": "Scale improved relative efficiency and spread." },
+          { "metricId": "client-retention", "value": 95.8, "delta": 1.2, "deltaLabel": "retention trend", "suffix": "%", "caption": "Post-onboarding cohorts are holding better than expected." },
+          { "metricId": "portfolio-return-vs-benchmark", "value": 1.6, "delta": 2.5, "deltaLabel": "outperformance", "suffix": "%", "caption": "Model picks improved versus the benchmark basket." }
+        ],
+        "monthly_summary": [
+          { "month": "Jan", "totalAum": 1430, "netFlow": 55.6, "retentionRate": 0.95, "nps": 53 },
+          { "month": "Feb", "totalAum": 1438, "netFlow": 58.9, "retentionRate": 0.95, "nps": 53 },
+          { "month": "Mar", "totalAum": 1451, "netFlow": 62.1, "retentionRate": 0.96, "nps": 54 },
+          { "month": "Apr", "totalAum": 1478, "netFlow": 66.3, "retentionRate": 0.96, "nps": 54 },
+          { "month": "May", "totalAum": 1505, "netFlow": 71.8, "retentionRate": 0.97, "nps": 55 },
+          { "month": "Jun", "totalAum": 1538, "netFlow": 78.2, "retentionRate": 0.97, "nps": 56 },
+          { "month": "Jul", "totalAum": 1578, "netFlow": 86.4, "retentionRate": 0.97, "nps": 57 },
+          { "month": "Aug", "totalAum": 1612, "netFlow": 95.7, "retentionRate": 0.98, "nps": 58 },
+          { "month": "Sep", "totalAum": 1650, "netFlow": 102.4, "retentionRate": 0.98, "nps": 59 },
+          { "month": "Oct", "totalAum": 1688, "netFlow": 111.3, "retentionRate": 0.98, "nps": 59 },
+          { "month": "Nov", "totalAum": 1723, "netFlow": 118.9, "retentionRate": 0.98, "nps": 60 },
+          { "month": "Dec", "totalAum": 1760, "netFlow": 124.2, "retentionRate": 0.99, "nps": 61 }
+        ],
+        "advisor_concentration": [
+          { "advisorName": "Alex Harper", "aumShare": 23.1, "retentionRate": 0.97 },
+          { "advisorName": "Lina García", "aumShare": 20.2, "retentionRate": 0.96 },
+          { "advisorName": "Maya Lopez", "aumShare": 18.1, "retentionRate": 0.97 }
+        ]
+      },
+      "generationProfile": {
+        "aumShiftByMonth": [1.03, 1.04, 1.06, 1.09, 1.12, 1.16, 1.2, 1.25, 1.3, 1.35, 1.4, 1.46],
+        "flowShiftByMonth": [0.04, 0.045, 0.05, 0.056, 0.064, 0.074, 0.086, 0.1, 0.116, 0.132, 0.145, 0.158],
+        "expenseShiftByMonth": [-0.045, -0.044, -0.043, -0.042, -0.04, -0.038, -0.036, -0.033, -0.03, -0.028, -0.025, -0.022],
+        "returnShiftByMonth": [0.012, 0.013, 0.014, 0.015, 0.016, 0.018, 0.019, 0.02, 0.021, 0.022, 0.024, 0.025],
+        "retentionShiftByMonth": [-0.006, -0.005, -0.004, -0.003, -0.002, -0.001, 0.0, 0.001, 0.002, 0.003, 0.004, 0.005],
+        "complianceShiftByMonth": [0.008, 0.008, 0.007, 0.007, 0.007, 0.007, 0.006, 0.006, 0.006, 0.006, 0.007, 0.007],
+        "npsShiftByMonth": [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.7, 1.8, 2.0, 2.1, 2.2, 2.3],
+        "advisorConcentrationPenaltyByMonth": [0.01, 0.01, 0.01, 0.008, 0.007, 0.006, 0.005, 0.005, 0.004, 0.004, 0.003, 0.002]
+      }
+    }
+  ]
+}

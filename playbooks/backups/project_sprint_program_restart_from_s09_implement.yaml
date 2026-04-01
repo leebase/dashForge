@@ -1,0 +1,250 @@
+{
+  "playbook_id": "project_sprint_program_restart_from_s09_implement",
+  "name": "DashForge governed sprint program (restart from Sprint 9 implement)",
+  "defaults": {
+    "worker": "codex_cli",
+    "retry_policy": {
+      "max_attempts": 2,
+      "strategy": "rerun_with_validation_feedback"
+    }
+  },
+  "run_policy": {
+    "on_step_failure": "halt",
+    "require_validation_pass_to_advance": true
+  },
+  "steps": [
+    {
+      "step_id": "s09_implement",
+      "name": "Sprint 9 implement",
+      "mission": "Read AGENTS.md, skills/development-loop.md, docs/sprint-09-contract.md, plans/sprint-09-plan.md, product-definition.md, and architecture.md. Implement Sprint 9: the binding workflow, the REST adapter, and the first governed production-data path required by the canon.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "docs/sprint-09-contract.md",
+        "plans/sprint-09-plan.md",
+        "product-definition.md",
+        "architecture.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "src/",
+        "tests/",
+        "docs/",
+        "plans/",
+        "code-reviews/",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "README.md",
+        "pyproject.toml",
+        "package.json",
+        "artifacts/"
+      ],
+      "depends_on": [],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/builder/BindingPanel.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/core/data/RestDataAdapter.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/BindingPanel.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/core/data/RestDataAdapter.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair Sprint 9 implementation until the production-binding artifacts land cleanly.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "s09_verify",
+      "name": "Sprint 9 verify",
+      "mission": "Read AGENTS.md, skills/test-as-lee.md, docs/sprint-09-contract.md, plans/sprint-09-plan.md, and the Sprint 9 implementation. Run the relevant checks, record what passed and failed, and write code-reviews/verify-sprint-09.md.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/test-as-lee.md",
+        "docs/sprint-09-contract.md",
+        "plans/sprint-09-plan.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "src/",
+        "tests/",
+        "code-reviews/",
+        "docs/",
+        "plans/",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "README.md",
+        "artifacts/"
+      ],
+      "depends_on": [
+        "s09_implement"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/verify-sprint-09.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/verify-sprint-09.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair Sprint 9 verification so the check results are captured durably.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "s09_repair",
+      "name": "Sprint 9 repair",
+      "mission": "Read AGENTS.md, skills/development-loop.md, docs/sprint-09-contract.md, plans/sprint-09-plan.md, and code-reviews/verify-sprint-09.md. Repair any Sprint 9 verification issues, or write an explicit no-op repair note if no fixes were required, then save the outcome in code-reviews/repair-sprint-09.md.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "docs/sprint-09-contract.md",
+        "plans/sprint-09-plan.md",
+        "code-reviews/verify-sprint-09.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "src/",
+        "tests/",
+        "code-reviews/",
+        "docs/",
+        "plans/",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "README.md",
+        "pyproject.toml",
+        "package.json",
+        "artifacts/"
+      ],
+      "depends_on": [
+        "s09_verify"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/repair-sprint-09.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/repair-sprint-09.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair Sprint 9 so verification findings are addressed and the repair artifact exists.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "s09_review_handoff",
+      "name": "Sprint 9 review and handoff",
+      "mission": "Read AGENTS.md, skills/code-review.md, skills/documentation.md, docs/sprint-09-contract.md, plans/sprint-09-plan.md, code-reviews/verify-sprint-09.md, and code-reviews/repair-sprint-09.md. Produce code-reviews/review-sprint-09.md and update context.md, result-review.md, sprint-plan.md, WHERE_AM_I.md, project-plan.md, and README.md so the remaining governed program is fully closed and handed off.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/code-review.md",
+        "skills/documentation.md",
+        "docs/sprint-09-contract.md",
+        "plans/sprint-09-plan.md",
+        "code-reviews/verify-sprint-09.md",
+        "code-reviews/repair-sprint-09.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "src/",
+        "tests/",
+        "code-reviews/",
+        "docs/",
+        "plans/",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "README.md",
+        "artifacts/"
+      ],
+      "depends_on": [
+        "s09_repair"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/review-sprint-09.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/review-sprint-09.md"
+          }
+        ],
+        "system": [
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "test"
+            ]
+          },
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "run",
+              "build"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair Sprint 9 review and handoff until the checks pass and the durable docs reflect the completed governed program.",
+        "after_retries_exhausted": "halt"
+      }
+    }
+  ]
+}

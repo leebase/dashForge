@@ -1,0 +1,475 @@
+{
+  "packId": "healthcare",
+  "version": 1,
+  "months": [
+    { "id": "2025-01", "label": "Jan", "quarter": "Q1", "days": 31 },
+    { "id": "2025-02", "label": "Feb", "quarter": "Q1", "days": 28 },
+    { "id": "2025-03", "label": "Mar", "quarter": "Q1", "days": 31 },
+    { "id": "2025-04", "label": "Apr", "quarter": "Q2", "days": 30 },
+    { "id": "2025-05", "label": "May", "quarter": "Q2", "days": 31 },
+    { "id": "2025-06", "label": "Jun", "quarter": "Q2", "days": 30 },
+    { "id": "2025-07", "label": "Jul", "quarter": "Q3", "days": 31 },
+    { "id": "2025-08", "label": "Aug", "quarter": "Q3", "days": 31 },
+    { "id": "2025-09", "label": "Sep", "quarter": "Q3", "days": 30 },
+    { "id": "2025-10", "label": "Oct", "quarter": "Q4", "days": 31 },
+    { "id": "2025-11", "label": "Nov", "quarter": "Q4", "days": 30 },
+    { "id": "2025-12", "label": "Dec", "quarter": "Q4", "days": 31 }
+  ],
+  "entities": {
+    "facilities": [
+      {
+        "id": "north-medical-center",
+        "name": "North Medical Center",
+        "region": "North",
+        "bedCapacity": 420,
+        "baselineOccupancy": 0.88,
+        "baselineSatisfaction": 78.5,
+        "baselineReadmission": 10.4,
+        "baselineInfection": 2.4,
+        "baselineCostPerCase": 11240,
+        "baselineEdWaitMinutes": 44,
+        "baselineLengthOfStay": 4.7,
+        "baselineMarginPct": 8.9
+      },
+      {
+        "id": "lakeside-regional",
+        "name": "Lakeside Regional",
+        "region": "Central",
+        "bedCapacity": 360,
+        "baselineOccupancy": 0.86,
+        "baselineSatisfaction": 79.8,
+        "baselineReadmission": 10.1,
+        "baselineInfection": 2.1,
+        "baselineCostPerCase": 10980,
+        "baselineEdWaitMinutes": 40,
+        "baselineLengthOfStay": 4.5,
+        "baselineMarginPct": 9.4
+      },
+      {
+        "id": "riverside-general",
+        "name": "Riverside General",
+        "region": "South",
+        "bedCapacity": 305,
+        "baselineOccupancy": 0.84,
+        "baselineSatisfaction": 77.9,
+        "baselineReadmission": 10.8,
+        "baselineInfection": 2.6,
+        "baselineCostPerCase": 11580,
+        "baselineEdWaitMinutes": 47,
+        "baselineLengthOfStay": 4.9,
+        "baselineMarginPct": 7.8
+      },
+      {
+        "id": "st-anselm-health",
+        "name": "St. Anselm Health",
+        "region": "East",
+        "bedCapacity": 280,
+        "baselineOccupancy": 0.83,
+        "baselineSatisfaction": 81.2,
+        "baselineReadmission": 9.6,
+        "baselineInfection": 1.8,
+        "baselineCostPerCase": 10490,
+        "baselineEdWaitMinutes": 36,
+        "baselineLengthOfStay": 4.3,
+        "baselineMarginPct": 10.4
+      },
+      {
+        "id": "metro-community",
+        "name": "Metro Community Hospital",
+        "region": "Metro",
+        "bedCapacity": 395,
+        "baselineOccupancy": 0.89,
+        "baselineSatisfaction": 76.8,
+        "baselineReadmission": 11.2,
+        "baselineInfection": 2.8,
+        "baselineCostPerCase": 11890,
+        "baselineEdWaitMinutes": 53,
+        "baselineLengthOfStay": 5.1,
+        "baselineMarginPct": 7.1
+      },
+      {
+        "id": "prairie-view-health",
+        "name": "Prairie View Health",
+        "region": "West",
+        "bedCapacity": 250,
+        "baselineOccupancy": 0.82,
+        "baselineSatisfaction": 80.5,
+        "baselineReadmission": 9.9,
+        "baselineInfection": 1.9,
+        "baselineCostPerCase": 10180,
+        "baselineEdWaitMinutes": 34,
+        "baselineLengthOfStay": 4.1,
+        "baselineMarginPct": 10.8
+      }
+    ],
+    "departments": [
+      {
+        "id": "emergency",
+        "name": "Emergency",
+        "serviceLine": "acute-care",
+        "share": 0.22,
+        "readmissionRisk": 1.08,
+        "infectionRisk": 0.96,
+        "costMultiplier": 1.12,
+        "waitMultiplier": 1.28
+      },
+      {
+        "id": "inpatient-medicine",
+        "name": "Inpatient Medicine",
+        "serviceLine": "acute-care",
+        "share": 0.18,
+        "readmissionRisk": 1.1,
+        "infectionRisk": 1.04,
+        "costMultiplier": 1.03,
+        "waitMultiplier": 0.92
+      },
+      {
+        "id": "cardiology",
+        "name": "Cardiology",
+        "serviceLine": "specialty",
+        "share": 0.12,
+        "readmissionRisk": 1.05,
+        "infectionRisk": 1.02,
+        "costMultiplier": 1.16,
+        "waitMultiplier": 0.88
+      },
+      {
+        "id": "orthopedics",
+        "name": "Orthopedics",
+        "serviceLine": "surgical",
+        "share": 0.11,
+        "readmissionRisk": 0.92,
+        "infectionRisk": 0.98,
+        "costMultiplier": 1.1,
+        "waitMultiplier": 0.84
+      },
+      {
+        "id": "oncology",
+        "name": "Oncology",
+        "serviceLine": "specialty",
+        "share": 0.1,
+        "readmissionRisk": 1.02,
+        "infectionRisk": 1.08,
+        "costMultiplier": 1.24,
+        "waitMultiplier": 0.78
+      },
+      {
+        "id": "surgery",
+        "name": "Surgery",
+        "serviceLine": "surgical",
+        "share": 0.15,
+        "readmissionRisk": 0.94,
+        "infectionRisk": 1.06,
+        "costMultiplier": 1.2,
+        "waitMultiplier": 0.82
+      },
+      {
+        "id": "women-children",
+        "name": "Women & Children",
+        "serviceLine": "family-care",
+        "share": 0.12,
+        "readmissionRisk": 0.88,
+        "infectionRisk": 0.9,
+        "costMultiplier": 0.94,
+        "waitMultiplier": 0.74
+      }
+    ],
+    "payers": [
+      {
+        "id": "medicare",
+        "name": "Medicare",
+        "share": 0.38,
+        "costMultiplier": 1.02,
+        "readmissionModifier": 1.05
+      },
+      {
+        "id": "medicaid",
+        "name": "Medicaid",
+        "share": 0.18,
+        "costMultiplier": 0.97,
+        "readmissionModifier": 1.08
+      },
+      {
+        "id": "commercial",
+        "name": "Commercial",
+        "share": 0.32,
+        "costMultiplier": 1.06,
+        "readmissionModifier": 0.94
+      },
+      {
+        "id": "self-pay",
+        "name": "Self-Pay",
+        "share": 0.12,
+        "costMultiplier": 0.91,
+        "readmissionModifier": 1.12
+      }
+    ],
+    "diagnosisCategories": [
+      {
+        "id": "respiratory",
+        "name": "Respiratory",
+        "share": 0.28,
+        "lengthOfStayMultiplier": 1.12,
+        "infectionRisk": 1.05
+      },
+      {
+        "id": "cardiac",
+        "name": "Cardiac",
+        "share": 0.22,
+        "lengthOfStayMultiplier": 1.08,
+        "infectionRisk": 1.02
+      },
+      {
+        "id": "orthopedic",
+        "name": "Orthopedic",
+        "share": 0.18,
+        "lengthOfStayMultiplier": 0.96,
+        "infectionRisk": 0.94
+      },
+      {
+        "id": "infectious-disease",
+        "name": "Infectious Disease",
+        "share": 0.16,
+        "lengthOfStayMultiplier": 1.14,
+        "infectionRisk": 1.12
+      },
+      {
+        "id": "maternity",
+        "name": "Maternity",
+        "share": 0.16,
+        "lengthOfStayMultiplier": 0.82,
+        "infectionRisk": 0.88
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "scenarioId": "flu-season",
+      "seed": 3101,
+      "title": "Flu Season Surge",
+      "story": "ED volume and bed demand spike in winter, driving occupancy above safe comfort bands and dragging on wait times, readmissions, and patient experience.",
+      "previewDatasets": {
+        "executive_summary": [
+          {
+            "metricId": "readmission-rate",
+            "value": 11.6,
+            "delta": 1.1,
+            "deltaLabel": "vs prior quarter",
+            "suffix": "%",
+            "caption": "Winter surge pressure is lifting readmissions alongside longer stays."
+          },
+          {
+            "metricId": "bed-occupancy",
+            "value": 96.8,
+            "delta": 4.6,
+            "deltaLabel": "peak seasonal swing",
+            "suffix": "%",
+            "caption": "System occupancy is running above the operating comfort range."
+          },
+          {
+            "metricId": "patient-satisfaction",
+            "value": 76.1,
+            "delta": -2.7,
+            "deltaLabel": "HCAHPS movement",
+            "suffix": "%",
+            "caption": "Crowding and wait time strain are visible in patient experience."
+          },
+          {
+            "metricId": "ed-wait-time",
+            "value": 58,
+            "delta": 9,
+            "deltaLabel": "vs baseline",
+            "suffix": " min",
+            "caption": "Emergency throughput is absorbing the worst of the surge."
+          },
+          {
+            "metricId": "cost-per-case",
+            "value": 11890,
+            "delta": 420,
+            "deltaLabel": "winter premium",
+            "prefix": "$",
+            "caption": "Premium staffing and supply mix are increasing cost per case."
+          }
+        ],
+        "monthly_capacity": [
+          { "month": "Jan", "bedOccupancy": 97, "patientSatisfaction": 74.8 },
+          { "month": "Feb", "bedOccupancy": 96, "patientSatisfaction": 75.4 },
+          { "month": "Mar", "bedOccupancy": 93, "patientSatisfaction": 76.8 },
+          { "month": "Apr", "bedOccupancy": 90, "patientSatisfaction": 78.2 },
+          { "month": "May", "bedOccupancy": 88, "patientSatisfaction": 79.1 },
+          { "month": "Jun", "bedOccupancy": 87, "patientSatisfaction": 79.8 },
+          { "month": "Jul", "bedOccupancy": 88, "patientSatisfaction": 79.2 },
+          { "month": "Aug", "bedOccupancy": 89, "patientSatisfaction": 78.9 },
+          { "month": "Sep", "bedOccupancy": 90, "patientSatisfaction": 78.5 },
+          { "month": "Oct", "bedOccupancy": 92, "patientSatisfaction": 77.6 },
+          { "month": "Nov", "bedOccupancy": 94, "patientSatisfaction": 76.9 },
+          { "month": "Dec", "bedOccupancy": 97, "patientSatisfaction": 75.3 }
+        ]
+      },
+      "generationProfile": {
+        "volumeMultiplierByMonth": [1.34, 1.28, 1.1, 1.02, 0.98, 0.97, 0.98, 0.99, 1.01, 1.08, 1.18, 1.32],
+        "occupancyShiftByMonth": [0.085, 0.075, 0.04, 0.02, 0.0, -0.005, 0.0, 0.005, 0.01, 0.03, 0.055, 0.08],
+        "readmissionShiftByMonth": [0.11, 0.095, 0.05, 0.025, 0.01, 0.005, 0.01, 0.015, 0.025, 0.04, 0.07, 0.1],
+        "infectionShiftByMonth": [0.05, 0.045, 0.02, 0.01, 0.0, -0.005, 0.0, 0.005, 0.01, 0.02, 0.03, 0.045],
+        "satisfactionShiftByMonth": [-0.05, -0.045, -0.025, -0.012, -0.005, 0.0, -0.005, -0.01, -0.012, -0.02, -0.03, -0.045],
+        "costShiftByMonth": [0.038, 0.035, 0.024, 0.018, 0.015, 0.014, 0.015, 0.016, 0.018, 0.022, 0.03, 0.036],
+        "waitShiftByMonth": [0.2, 0.18, 0.1, 0.05, 0.02, 0.01, 0.015, 0.02, 0.03, 0.07, 0.12, 0.18],
+        "lengthOfStayShiftByMonth": [0.09, 0.08, 0.05, 0.02, 0.01, 0.0, 0.0, 0.01, 0.015, 0.03, 0.05, 0.08],
+        "marginShiftByMonth": [-0.02, -0.018, -0.012, -0.01, -0.008, -0.006, -0.006, -0.008, -0.01, -0.012, -0.016, -0.02],
+        "laborCostShiftByMonth": [0.06, 0.056, 0.04, 0.03, 0.022, 0.02, 0.022, 0.024, 0.028, 0.036, 0.046, 0.055]
+      }
+    },
+    {
+      "scenarioId": "quality-improvement",
+      "seed": 2048,
+      "title": "Quality Improvement Initiative",
+      "story": "Infection prevention and patient experience investments are working steadily, but readmission reduction remains gradual and capacity stays tight enough to require continued attention.",
+      "previewDatasets": {
+        "executive_summary": [
+          {
+            "metricId": "readmission-rate",
+            "value": 9.8,
+            "delta": -0.7,
+            "deltaLabel": "vs prior quarter",
+            "suffix": "%",
+            "caption": "Readmissions are improving, but only gradually."
+          },
+          {
+            "metricId": "patient-satisfaction",
+            "value": 82.4,
+            "delta": 2.1,
+            "deltaLabel": "HCAHPS movement",
+            "suffix": "%",
+            "caption": "Patient experience is improving faster than readmissions."
+          },
+          {
+            "metricId": "infection-rate",
+            "value": 1.9,
+            "delta": -0.4,
+            "deltaLabel": "CLABSI / CAUTI blend",
+            "suffix": "%",
+            "caption": "Infection controls are trending in the right direction."
+          },
+          {
+            "metricId": "bed-occupancy",
+            "value": 89.6,
+            "delta": -0.3,
+            "deltaLabel": "vs prior quarter",
+            "suffix": "%",
+            "caption": "Capacity remains tight even with cleaner care pathways."
+          },
+          {
+            "metricId": "cost-per-case",
+            "value": 11140,
+            "delta": 90,
+            "deltaLabel": "implementation spend",
+            "prefix": "$",
+            "caption": "Quality work is not free, but the cost pressure is controlled."
+          }
+        ],
+        "monthly_capacity": [
+          { "month": "Jan", "bedOccupancy": 89, "patientSatisfaction": 79.4 },
+          { "month": "Feb", "bedOccupancy": 90, "patientSatisfaction": 79.9 },
+          { "month": "Mar", "bedOccupancy": 91, "patientSatisfaction": 80.3 },
+          { "month": "Apr", "bedOccupancy": 90, "patientSatisfaction": 80.8 },
+          { "month": "May", "bedOccupancy": 89, "patientSatisfaction": 81.2 },
+          { "month": "Jun", "bedOccupancy": 90, "patientSatisfaction": 81.5 },
+          { "month": "Jul", "bedOccupancy": 91, "patientSatisfaction": 81.8 },
+          { "month": "Aug", "bedOccupancy": 90, "patientSatisfaction": 82.0 },
+          { "month": "Sep", "bedOccupancy": 89, "patientSatisfaction": 82.1 },
+          { "month": "Oct", "bedOccupancy": 88, "patientSatisfaction": 82.2 },
+          { "month": "Nov", "bedOccupancy": 88, "patientSatisfaction": 82.3 },
+          { "month": "Dec", "bedOccupancy": 89, "patientSatisfaction": 82.4 }
+        ]
+      },
+      "generationProfile": {
+        "volumeMultiplierByMonth": [0.99, 1.0, 1.0, 1.01, 1.0, 1.01, 1.01, 1.0, 0.99, 0.99, 1.0, 1.0],
+        "occupancyShiftByMonth": [0.01, 0.012, 0.012, 0.008, 0.004, 0.004, 0.005, 0.004, 0.0, -0.002, -0.004, -0.002],
+        "readmissionShiftByMonth": [0.01, 0.008, 0.006, 0.004, 0.002, 0.0, -0.004, -0.006, -0.008, -0.01, -0.012, -0.014],
+        "infectionShiftByMonth": [-0.04, -0.055, -0.07, -0.085, -0.1, -0.11, -0.12, -0.13, -0.14, -0.15, -0.16, -0.17],
+        "satisfactionShiftByMonth": [0.012, 0.018, 0.024, 0.03, 0.036, 0.042, 0.047, 0.052, 0.056, 0.06, 0.064, 0.068],
+        "costShiftByMonth": [0.01, 0.011, 0.012, 0.013, 0.013, 0.014, 0.014, 0.014, 0.015, 0.015, 0.015, 0.016],
+        "waitShiftByMonth": [0.01, 0.008, 0.004, 0.0, -0.005, -0.008, -0.01, -0.012, -0.014, -0.016, -0.018, -0.02],
+        "lengthOfStayShiftByMonth": [0.02, 0.018, 0.015, 0.012, 0.008, 0.006, 0.004, 0.002, 0.0, -0.004, -0.008, -0.01],
+        "marginShiftByMonth": [-0.004, -0.004, -0.004, -0.004, -0.003, -0.003, -0.003, -0.003, -0.002, -0.002, -0.002, -0.002],
+        "laborCostShiftByMonth": [0.01, 0.01, 0.01, 0.01, 0.01, 0.011, 0.011, 0.011, 0.011, 0.012, 0.012, 0.012]
+      }
+    },
+    {
+      "scenarioId": "cost-pressure",
+      "seed": 4127,
+      "title": "Cost Pressure",
+      "story": "Supply chain and labor inflation are pushing cost per case higher while occupancy remains mostly flat, compressing margins without the cover of a demand surge.",
+      "previewDatasets": {
+        "executive_summary": [
+          {
+            "metricId": "cost-per-case",
+            "value": 12280,
+            "delta": 8.4,
+            "deltaLabel": "YoY change",
+            "prefix": "$",
+            "caption": "Supply and labor inflation are raising cost per case without added demand."
+          },
+          {
+            "metricId": "margin",
+            "value": 6.4,
+            "delta": -1.8,
+            "deltaLabel": "operating margin",
+            "suffix": "%",
+            "caption": "Margins are absorbing the inflation shock."
+          },
+          {
+            "metricId": "bed-occupancy",
+            "value": 86.2,
+            "delta": 0.3,
+            "deltaLabel": "vs prior quarter",
+            "suffix": "%",
+            "caption": "Demand is stable, so occupancy is not offsetting the cost problem."
+          },
+          {
+            "metricId": "patient-satisfaction",
+            "value": 77.3,
+            "delta": -1.1,
+            "deltaLabel": "staffing friction",
+            "suffix": "%",
+            "caption": "Staffing strain is beginning to touch patient experience."
+          },
+          {
+            "metricId": "readmission-rate",
+            "value": 10.3,
+            "delta": 0.2,
+            "deltaLabel": "vs baseline",
+            "suffix": "%",
+            "caption": "Readmissions are mostly flat; this is a cost story, not a demand story."
+          }
+        ],
+        "monthly_capacity": [
+          { "month": "Jan", "bedOccupancy": 86, "patientSatisfaction": 78.4 },
+          { "month": "Feb", "bedOccupancy": 86, "patientSatisfaction": 78.1 },
+          { "month": "Mar", "bedOccupancy": 87, "patientSatisfaction": 77.9 },
+          { "month": "Apr", "bedOccupancy": 86, "patientSatisfaction": 77.7 },
+          { "month": "May", "bedOccupancy": 86, "patientSatisfaction": 77.5 },
+          { "month": "Jun", "bedOccupancy": 85, "patientSatisfaction": 77.4 },
+          { "month": "Jul", "bedOccupancy": 85, "patientSatisfaction": 77.2 },
+          { "month": "Aug", "bedOccupancy": 86, "patientSatisfaction": 77.0 },
+          { "month": "Sep", "bedOccupancy": 86, "patientSatisfaction": 76.9 },
+          { "month": "Oct", "bedOccupancy": 87, "patientSatisfaction": 76.8 },
+          { "month": "Nov", "bedOccupancy": 86, "patientSatisfaction": 76.7 },
+          { "month": "Dec", "bedOccupancy": 86, "patientSatisfaction": 76.6 }
+        ]
+      },
+      "generationProfile": {
+        "volumeMultiplierByMonth": [1.0, 1.0, 1.01, 1.0, 0.99, 0.99, 0.99, 1.0, 1.0, 1.01, 1.0, 1.0],
+        "occupancyShiftByMonth": [0.0, 0.0, 0.005, 0.004, 0.0, -0.002, -0.004, -0.004, -0.002, 0.0, 0.002, 0.002],
+        "readmissionShiftByMonth": [0.01, 0.01, 0.012, 0.012, 0.012, 0.012, 0.012, 0.012, 0.014, 0.014, 0.014, 0.015],
+        "infectionShiftByMonth": [0.01, 0.012, 0.014, 0.014, 0.016, 0.016, 0.018, 0.018, 0.018, 0.02, 0.02, 0.022],
+        "satisfactionShiftByMonth": [-0.01, -0.012, -0.014, -0.016, -0.018, -0.02, -0.022, -0.024, -0.026, -0.028, -0.03, -0.032],
+        "costShiftByMonth": [0.06, 0.066, 0.072, 0.079, 0.086, 0.093, 0.1, 0.107, 0.114, 0.124, 0.132, 0.14],
+        "waitShiftByMonth": [0.02, 0.02, 0.022, 0.024, 0.026, 0.028, 0.03, 0.032, 0.032, 0.034, 0.034, 0.036],
+        "lengthOfStayShiftByMonth": [0.004, 0.004, 0.006, 0.006, 0.006, 0.008, 0.008, 0.008, 0.008, 0.01, 0.01, 0.01],
+        "marginShiftByMonth": [-0.015, -0.018, -0.022, -0.024, -0.028, -0.03, -0.034, -0.038, -0.04, -0.044, -0.046, -0.05],
+        "laborCostShiftByMonth": [0.04, 0.043, 0.046, 0.049, 0.052, 0.055, 0.058, 0.061, 0.064, 0.067, 0.07, 0.073]
+      }
+    }
+  ]
+}

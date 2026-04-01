@@ -1,23 +1,27 @@
-import type { CSSProperties } from "react";
-
 import type { DataAdapter } from "../core/data/DataAdapter";
-import type { DashboardSpec, WidgetSpec } from "../core/spec/dashboardSpec";
+import type { DashboardSpec } from "../core/spec/dashboardSpec";
 import { validateDashboardSpec } from "../core/spec/dashboardSchema";
+import { resolveDashboardTheme } from "../core/theme/themeRegistry";
+import { ResponsiveDashboardGrid } from "../dashboard/ResponsiveDashboardGrid";
 import { WidgetRenderer } from "./WidgetRenderer";
+
+interface DashboardPresentationState {
+  activeWidgetIds?: string[];
+  dimInactiveWidgets?: boolean;
+  showAnnotationLayer?: boolean;
+}
 
 interface DashboardRendererProps {
   adapter: DataAdapter;
   spec: DashboardSpec;
+  presentation?: DashboardPresentationState;
 }
 
-function gridStyle(widget: WidgetSpec): CSSProperties {
-  return {
-    gridColumn: `${widget.position.x + 1} / span ${widget.position.w}`,
-    gridRow: `${widget.position.y + 1} / span ${widget.position.h}`,
-  };
-}
-
-export function DashboardRenderer({ adapter, spec }: DashboardRendererProps) {
+export function DashboardRenderer({
+  adapter,
+  spec,
+  presentation,
+}: DashboardRendererProps) {
   const validated = validateDashboardSpec(spec);
 
   if (!validated.ok) {
@@ -30,19 +34,36 @@ export function DashboardRenderer({ adapter, spec }: DashboardRendererProps) {
     );
   }
 
+  const theme = resolveDashboardTheme(validated.spec.theme);
+  const activeWidgetIds = new Set(presentation?.activeWidgetIds ?? []);
+  const dimInactiveWidgets =
+    presentation?.dimInactiveWidgets === true && activeWidgetIds.size > 0;
+
   return (
     <section
-      aria-label={`${spec.meta.title} dashboard`}
+      aria-label={`${validated.spec.meta.title} dashboard`}
       className="dashboard"
       style={{
-        gridTemplateColumns: `repeat(${spec.layout.columns}, minmax(0, 1fr))`,
+        ...theme.cssVariables,
       }}
     >
-      {spec.widgets.map((widget) => (
-        <div key={widget.id} style={gridStyle(widget)}>
-          <WidgetRenderer adapter={adapter} widget={widget} />
-        </div>
-      ))}
+      <ResponsiveDashboardGrid
+        layout={validated.spec.layout}
+        renderWidget={(widget) => (
+          <WidgetRenderer
+            adapter={adapter}
+            presentation={{
+              isDimmed: dimInactiveWidgets ? !activeWidgetIds.has(widget.id) : false,
+              isHighlighted: activeWidgetIds.has(widget.id),
+              showAnnotationLayer: presentation?.showAnnotationLayer ?? false,
+            }}
+            spec={validated.spec}
+            theme={theme}
+            widget={widget}
+          />
+        )}
+        widgets={validated.spec.widgets}
+      />
     </section>
   );
 }

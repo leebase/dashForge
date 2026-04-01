@@ -24,6 +24,35 @@ At the start of every session, in order:
 3. Check `result-review.md` — what was recently completed
 4. Read `sprint-plan.md` — current sprint tasks and priorities
 
+## Agent-Orch First
+
+DashForge is now being delivered through Agent-Orch, not just documented by it.
+
+- Treat Agent-Orch as the primary builder for multi-step roadmap work.
+- If the human asks for broad progress such as "build the rest of the app" or
+  "run sprint by sprint," prefer loading that scope into a governed workflow
+  under `playbooks/` instead of hand-implementing the entire effort directly.
+- When the work spans multiple sprints, keep it in one workflow and make each
+  sprint close through verify, repair, and review/handoff before the next
+  sprint begins.
+- Use direct/manual coding for small fixes, unblockers, or when the human
+  explicitly wants immediate hands-on edits instead of orchestration.
+
+### Human Visibility
+
+- The human-facing run view is `artifacts/runs/<run_id>/dashboard.html`.
+- `progress.json` is the machine-facing projection.
+- `render-run-dashboard --watch --interval 60` rewrites the HTML snapshot on
+  disk about once a minute, but an open browser tab may still need a manual
+  refresh.
+
+### Long-Running Steps
+
+- Real implementation steps may take much longer than ten minutes.
+- For substantial governed runs, set `AGENT_ORCH_CODEX_TIMEOUT_SECONDS`
+  explicitly before launch so implementation work does not get retried only
+  because of a short worker timeout.
+
 ---
 
 ## Available Skills

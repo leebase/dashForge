@@ -6,7 +6,10 @@ interface DashboardBoxProps {
   title: string;
   subtitle?: string;
   state?: BoxState;
+  message?: string;
   children?: ReactNode;
+  className?: string;
+  bodyClassName?: string;
 }
 
 const stateCopy: Record<Exclude<BoxState, "ready">, string> = {
@@ -19,10 +22,16 @@ export function DashboardBox({
   title,
   subtitle,
   state = "ready",
+  message,
   children,
+  className,
+  bodyClassName,
 }: DashboardBoxProps) {
   return (
-    <section className="dashboard-box" aria-label={title}>
+    <section
+      aria-label={title}
+      className={className ? `dashboard-box ${className}` : "dashboard-box"}
+    >
       <header className="dashboard-box__header">
         <div>
           <h2 className="dashboard-box__title">{title}</h2>
@@ -32,12 +41,18 @@ export function DashboardBox({
         </div>
       </header>
 
-      <div className="dashboard-box__body">
+      <div
+        className={
+          bodyClassName
+            ? `dashboard-box__body ${bodyClassName}`
+            : "dashboard-box__body"
+        }
+      >
         {state === "ready" ? (
           children
         ) : (
           <div className="dashboard-box__state" role="status">
-            {stateCopy[state]}
+            {message ?? stateCopy[state]}
           </div>
         )}
       </div>

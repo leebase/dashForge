@@ -1,0 +1,420 @@
+{
+  "playbook_id": "s1_01_remaining_foundation_governed_delivery",
+  "name": "Sprint 1 - Remaining foundation governed delivery",
+  "defaults": {
+    "worker": "fake_worker",
+    "retry_policy": {
+      "max_attempts": 2,
+      "strategy": "rerun_with_validation_feedback"
+    }
+  },
+  "run_policy": {
+    "on_step_failure": "halt",
+    "require_validation_pass_to_advance": true
+  },
+  "steps": [
+    {
+      "step_id": "step_01_define_remaining_foundation_contract",
+      "name": "Define the remaining Sprint 1 foundation contract",
+      "mission": "Read AGENTS.md, product-definition.md, architecture.md, context.md, sprint-plan.md, and WHERE_AM_I.md. Write docs/sprint-1-remaining-foundation-contract.md with the remaining Sprint 1 objectives, explicit scope boundaries, acceptance checks, and dependency order. Keep all writes inside docs/.",
+      "inputs": [
+        "AGENTS.md",
+        "product-definition.md",
+        "architecture.md",
+        "context.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md"
+      ],
+      "allowed_paths": [
+        "docs/"
+      ],
+      "depends_on": [],
+      "outputs": {
+        "required": [
+          {
+            "path": "docs/sprint-1-remaining-foundation-contract.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "docs/sprint-1-remaining-foundation-contract.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "docs/sprint-1-remaining-foundation-contract.md",
+            "headings": [
+              "Overview",
+              "Remaining Objectives Inventory",
+              "In Scope",
+              "Out of Scope",
+              "Required Outputs",
+              "Acceptance Checks",
+              "Constraints",
+              "Dependency Order"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the contract so it captures the real remaining Sprint 1 scope, not invented work, and keep all writes inside docs/.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_02_plan_remaining_foundation_delivery",
+      "name": "Turn the contract into an implementation plan",
+      "mission": "Read the contract and turn it into plans/sprint-1-remaining-foundation-implementation-plan.md with concrete architecture, data, bundle, verification, and risk sections. Keep all writes inside plans/.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/sprint-1-remaining-foundation-contract.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "plans/"
+      ],
+      "depends_on": [
+        "step_01_define_remaining_foundation_contract"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "plans/sprint-1-remaining-foundation-implementation-plan.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "plans/sprint-1-remaining-foundation-implementation-plan.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "plans/sprint-1-remaining-foundation-implementation-plan.md",
+            "headings": [
+              "Architecture",
+              "Data Strategy",
+              "Bundle Strategy",
+              "Decision Handling",
+              "Work Items",
+              "Verification",
+              "Risks",
+              "Open Questions"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the implementation plan so it stays narrow, concrete, and specific about data, bundle, verification, and decision handling. Keep all writes inside plans/.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_03_implement_adapter_backed_foundation",
+      "name": "Implement adapter-backed mock data and bundle mitigation",
+      "mission": "Read AGENTS.md, skills/development-loop.md, and skills/test-as-lee.md. Implement the remaining Sprint 1 slice in frontend/: replace inline-only sample data with scenario-backed mock data through the adapter seam, reduce the ECharts bundle impact, and add/update targeted tests. Keep all writes inside frontend/.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "skills/test-as-lee.md",
+        "docs/sprint-1-remaining-foundation-contract.md",
+        "plans/sprint-1-remaining-foundation-implementation-plan.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_02_plan_remaining_foundation_delivery"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/mock-data/healthcareQualityImprovement.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/scenarioCatalog.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/core/data/StaticDataAdapter.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/healthcareQualityImprovement.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/scenarioCatalog.ts"
+          }
+        ],
+        "system": [
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "test"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the remaining Sprint 1 implementation until adapter-backed mock data and targeted tests pass cleanly. Keep all writes inside frontend/.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_04_record_decisions_and_operator_docs",
+      "name": "Record architecture decisions and operator-facing docs",
+      "mission": "Read AGENTS.md, architecture.md, README.md, context.md, and sprint-plan.md. Record the decisions on layout-engine timing and Python scaffold retirement, and update README.md so the current foundation state is accurate. Keep all writes within architecture.md and README.md.",
+      "inputs": [
+        "AGENTS.md",
+        "architecture.md",
+        "README.md",
+        "context.md",
+        "sprint-plan.md"
+      ],
+      "allowed_paths": [
+        "architecture.md",
+        "README.md"
+      ],
+      "depends_on": [
+        "step_03_implement_adapter_backed_foundation"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "architecture.md",
+            "type": "markdown"
+          },
+          {
+            "path": "README.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "architecture.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "README.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the docs so the layout and scaffold decisions are explicit and the README matches the current frontend foundation. Keep all writes inside architecture.md and README.md.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_05_repair_and_verify_remaining_foundation",
+      "name": "Repair failures and drive verification green",
+      "mission": "Read AGENTS.md, skills/development-loop.md, skills/test-as-lee.md, and the slice contract/plan. Repair any remaining issues, then run the full frontend verification loop and a real preview smoke command until the slice is green. Keep writes inside frontend/, README.md, architecture.md, docs/, plans/, and tmp/.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "skills/test-as-lee.md",
+        "docs/sprint-1-remaining-foundation-contract.md",
+        "plans/sprint-1-remaining-foundation-implementation-plan.md",
+        "architecture.md",
+        "README.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "README.md",
+        "architecture.md",
+        "docs/",
+        "plans/",
+        "tmp/"
+      ],
+      "depends_on": [
+        "step_04_record_decisions_and_operator_docs"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/package.json",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "system": [
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "test"
+            ]
+          },
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "run",
+              "build"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the slice until the full frontend verification loop passes cleanly. Keep all writes inside the declared paths.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_06_review_verified_foundation_slice",
+      "name": "Review the verified slice and record findings",
+      "mission": "Read AGENTS.md, architecture.md, product-definition.md, sprint-plan.md, and the verified frontend slice. Record a concise review under code-reviews/ and say explicitly if no findings remain.",
+      "inputs": [
+        "AGENTS.md",
+        "architecture.md",
+        "product-definition.md",
+        "sprint-plan.md",
+        "docs/sprint-1-remaining-foundation-contract.md",
+        "plans/sprint-1-remaining-foundation-implementation-plan.md"
+      ],
+      "allowed_paths": [
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "step_05_repair_and_verify_remaining_foundation"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/review-sprint-1-remaining-foundation.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/review-sprint-1-remaining-foundation.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "code-reviews/review-sprint-1-remaining-foundation.md",
+            "headings": [
+              "Architecture Summary",
+              "Checks Run",
+              "Findings",
+              "Remediation Roadmap",
+              "Patch Suggestions",
+              "Test Additions Recommended"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the review artifact so it records the verified slice honestly and stays within code-reviews/.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_07_closeout_memory_and_handoff",
+      "name": "Update durable memory and handoff docs",
+      "mission": "Read AGENTS.md, context.md, result-review.md, sprint-plan.md, WHERE_AM_I.md, the contract, the implementation plan, and the review artifact. Update the durable docs to reflect what was completed, what remains, and the next phase transition. Keep all writes within context.md, result-review.md, sprint-plan.md, WHERE_AM_I.md, and project-plan.md.",
+      "inputs": [
+        "AGENTS.md",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "docs/sprint-1-remaining-foundation-contract.md",
+        "plans/sprint-1-remaining-foundation-implementation-plan.md",
+        "code-reviews/review-sprint-1-remaining-foundation.md"
+      ],
+      "allowed_paths": [
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md"
+      ],
+      "depends_on": [
+        "step_06_review_verified_foundation_slice"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "context.md",
+            "type": "markdown"
+          },
+          {
+            "path": "result-review.md",
+            "type": "markdown"
+          },
+          {
+            "path": "sprint-plan.md",
+            "type": "markdown"
+          },
+          {
+            "path": "WHERE_AM_I.md",
+            "type": "markdown"
+          },
+          {
+            "path": "project-plan.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "context.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "result-review.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "sprint-plan.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "WHERE_AM_I.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "project-plan.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the handoff docs so they describe the actual completion state and remaining roadmap without losing DashForge's existing identity.",
+        "after_retries_exhausted": "halt"
+      }
+    }
+  ],
+  "operational_paths": [
+    "artifacts/current/"
+  ]
+}

@@ -1,6 +1,14 @@
-import type { KpiInlineData, LineInlineData, WidgetSpec } from "../spec/dashboardSpec";
+import type {
+  AggregateRequest,
+  DataRequest,
+  DataResult,
+  DataSchema,
+  DatasetInfo,
+} from "./dataContract";
 
 export interface DataAdapter {
-  getKpiData(widget: WidgetSpec): KpiInlineData;
-  getLineData(widget: WidgetSpec): LineInlineData;
+  query(request: DataRequest): Promise<DataResult>;
+  aggregate(request: AggregateRequest): Promise<DataResult>;
+  getSchema(datasetId: string): Promise<DataSchema>;
+  listDatasets(): Promise<DatasetInfo[]>;
 }

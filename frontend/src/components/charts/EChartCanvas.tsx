@@ -1,17 +1,33 @@
 import { useEffect, useRef } from "react";
-import { LineChart } from "echarts/charts";
-import { GridComponent, TooltipComponent } from "echarts/components";
+import { BarChart, GaugeChart, LineChart, PieChart } from "echarts/charts";
+import {
+  GridComponent,
+  LegendComponent,
+  MarkLineComponent,
+  TooltipComponent,
+} from "echarts/components";
 import { init, use, type EChartsCoreOption } from "echarts/core";
 import { SVGRenderer } from "echarts/renderers";
 
-use([LineChart, GridComponent, TooltipComponent, SVGRenderer]);
+use([
+  LineChart,
+  BarChart,
+  PieChart,
+  GaugeChart,
+  GridComponent,
+  LegendComponent,
+  MarkLineComponent,
+  TooltipComponent,
+  SVGRenderer,
+]);
 
 interface EChartCanvasProps {
   option: EChartsCoreOption;
   title: string;
+  className?: string;
 }
 
-export function EChartCanvas({ option, title }: EChartCanvasProps) {
+export function EChartCanvas({ option, title, className }: EChartCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -43,5 +59,12 @@ export function EChartCanvas({ option, title }: EChartCanvasProps) {
     };
   }, [option]);
 
-  return <div aria-label={title} className="chart-shell" ref={containerRef} role="img" />;
+  return (
+    <div
+      aria-label={title}
+      className={className ?? "chart-shell"}
+      ref={containerRef}
+      role="img"
+    />
+  );
 }

@@ -1,0 +1,552 @@
+{
+  "playbook_id": "mvp_remaining_governed_delivery",
+  "name": "DashForge remaining MVP governed delivery",
+  "defaults": {
+    "worker": "codex_cli",
+    "retry_policy": {
+      "max_attempts": 2,
+      "strategy": "rerun_with_validation_feedback"
+    }
+  },
+  "run_policy": {
+    "on_step_failure": "halt",
+    "require_validation_pass_to_advance": true
+  },
+  "steps": [
+    {
+      "step_id": "step_01_define_mvp_remaining_contract",
+      "name": "Define the remaining MVP contract",
+      "mission": "Read AGENTS.md, context.md, sprint-plan.md, project-plan.md, product-definition.md, and architecture.md. Write docs/mvp-remaining-contract.md so it captures the remaining workshop-ready MVP scope, excludes optional future work, and records the dependency order for a single long-running governed delivery.",
+      "inputs": [
+        "AGENTS.md",
+        "context.md",
+        "sprint-plan.md",
+        "project-plan.md",
+        "product-definition.md",
+        "architecture.md"
+      ],
+      "allowed_paths": [
+        "docs/"
+      ],
+      "depends_on": [],
+      "outputs": {
+        "required": [
+          {
+            "path": "docs/mvp-remaining-contract.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "docs/mvp-remaining-contract.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "docs/mvp-remaining-contract.md",
+            "headings": [
+              "Overview",
+              "Remaining Objectives Inventory",
+              "In Scope",
+              "Out of Scope",
+              "Required Outputs",
+              "Acceptance Checks",
+              "Constraints",
+              "Dependency Order"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the contract so it captures the remaining MVP only and makes the long-running workflow ordering explicit.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_02_plan_mvp_remaining_delivery",
+      "name": "Plan the remaining MVP delivery",
+      "mission": "Read the contract plus the canon docs and write plans/mvp-remaining-delivery-plan.md with the ordered architecture, data, primitive, builder, presenter/export, verification, and risk strategy for the remaining MVP.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/mvp-remaining-contract.md",
+        "project-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "plans/"
+      ],
+      "depends_on": [
+        "step_01_define_mvp_remaining_contract"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "plans/mvp-remaining-delivery-plan.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "plans/mvp-remaining-delivery-plan.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "plans/mvp-remaining-delivery-plan.md",
+            "headings": [
+              "Architecture",
+              "Data Strategy",
+              "Primitive Strategy",
+              "Workflow Strategy",
+              "Verification",
+              "Risks",
+              "Open Questions"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the plan so it remains ordered, specific, and tied to the workshop-ready MVP rather than optional future work.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_03_expand_data_packs_and_templates",
+      "name": "Expand data packs, scenarios, and templates",
+      "mission": "Read AGENTS.md, the remaining-MVP contract, the delivery plan, product-definition.md, and architecture.md. Implement the remaining MVP content foundation in frontend/: add Financial Services and SaaS mock-data packs, broaden scenario/template catalog coverage, and wire the adapter-facing content structures so the frontend can resolve templates beyond the single healthcare slice.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/mvp-remaining-contract.md",
+        "plans/mvp-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_02_plan_mvp_remaining_delivery"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/mock-data/financialServicesGrowthQuarter.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/saasChurnCrisis.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/templateCatalog.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/financialServicesGrowthQuarter.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/saasChurnCrisis.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/templateCatalog.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the remaining data/template foundation so all MVP packs and template catalog paths exist under frontend/ and remain adapter-friendly.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_04_expand_primitive_library_and_runtime",
+      "name": "Expand the primitive library and runtime",
+      "mission": "Read AGENTS.md, the contract/plan, product-definition.md, architecture.md, and the current frontend runtime. Implement the remaining MVP primitives and runtime wiring in frontend/: add bar, stacked bar, donut, table, sparkline, and gauge support while preserving spec-driven rendering and adapter isolation.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/mvp-remaining-contract.md",
+        "plans/mvp-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_03_expand_data_packs_and_templates"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/components/charts/BarChart.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/components/charts/StackedBarChart.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/components/charts/DonutChart.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/components/charts/SparklineChart.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/components/charts/GaugeChart.tsx",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/BarChart.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/StackedBarChart.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/DonutChart.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/SparklineChart.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/GaugeChart.tsx"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the primitive expansion so the missing MVP chart components exist and the runtime still centers the spec and adapter seams.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_05_build_builder_mode_and_spec_io",
+      "name": "Build composition, template, theme, and spec IO flows",
+      "mission": "Read AGENTS.md, the contract/plan, product-definition.md, architecture.md, and the expanded frontend runtime. Implement the MVP builder/composition slice in frontend/: add react-grid-layout-backed composition, template selection, theme selection, and spec save/load flows in a way that fits the current app shell.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/mvp-remaining-contract.md",
+        "plans/mvp-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_04_expand_primitive_library_and_runtime"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/builder/BuilderShell.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/builder/TemplateGallery.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/builder/specIo.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/BuilderShell.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/TemplateGallery.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/specIo.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the builder/composition slice so template selection, spec IO, and composition files exist and remain consistent with the canon architecture.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_06_build_presenter_and_export",
+      "name": "Build presenter mode and export flows",
+      "mission": "Read AGENTS.md, the contract/plan, product-definition.md, architecture.md, and the current frontend implementation. Implement the remaining MVP storytelling slice in frontend/: add presenter mode, narrative-aware section stepping, and export support for JSON plus PNG/PDF proposal artifacts.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/mvp-remaining-contract.md",
+        "plans/mvp-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_05_build_builder_mode_and_spec_io"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/presenter/PresenterMode.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/presenter/narrativeStore.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/export/exportDashboard.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/presenter/PresenterMode.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/presenter/narrativeStore.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/export/exportDashboard.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the presenter/export slice so the remaining MVP storytelling files exist and reflect the canon requirements.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_07_repair_and_verify_remaining_mvp",
+      "name": "Repair failures and drive the remaining MVP green",
+      "mission": "Read AGENTS.md, skills/development-loop.md, skills/test-as-lee.md, the remaining-MVP contract/plan, and the current frontend implementation. Repair the repo until the full frontend verification loop passes cleanly after the remaining MVP work.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "skills/test-as-lee.md",
+        "docs/mvp-remaining-contract.md",
+        "plans/mvp-remaining-delivery-plan.md",
+        "README.md",
+        "architecture.md",
+        "project-plan.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "README.md",
+        "architecture.md",
+        "project-plan.md",
+        "docs/",
+        "plans/",
+        "tmp/"
+      ],
+      "depends_on": [
+        "step_06_build_presenter_and_export"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/package.json",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "system": [
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "test"
+            ]
+          },
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "run",
+              "build"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the remaining MVP implementation until the frontend tests and build pass again.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_08_review_remaining_mvp_delivery",
+      "name": "Review the verified remaining-MVP delivery",
+      "mission": "Read AGENTS.md, architecture.md, product-definition.md, project-plan.md, sprint-plan.md, the contract, the plan, and the verified frontend implementation. Record a concise review under code-reviews/ that prioritizes actual findings and explicitly says if none remain.",
+      "inputs": [
+        "AGENTS.md",
+        "architecture.md",
+        "product-definition.md",
+        "project-plan.md",
+        "sprint-plan.md",
+        "docs/mvp-remaining-contract.md",
+        "plans/mvp-remaining-delivery-plan.md"
+      ],
+      "allowed_paths": [
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "step_07_repair_and_verify_remaining_mvp"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/review-mvp-remaining-delivery.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/review-mvp-remaining-delivery.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "code-reviews/review-mvp-remaining-delivery.md",
+            "headings": [
+              "Architecture Summary",
+              "Checks Run",
+              "Findings",
+              "Remediation Roadmap",
+              "Patch Suggestions",
+              "Test Additions Recommended"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the remaining-MVP review so it records findings honestly and stays inside code-reviews/.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_09_closeout_remaining_mvp_memory",
+      "name": "Update durable memory and handoff docs",
+      "mission": "Read AGENTS.md, context.md, result-review.md, sprint-plan.md, WHERE_AM_I.md, project-plan.md, the remaining-MVP contract and plan, and the review artifact. Update the durable docs so they reflect the exact post-run state, what remains if anything halted, and the next recommended action.",
+      "inputs": [
+        "AGENTS.md",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "docs/mvp-remaining-contract.md",
+        "plans/mvp-remaining-delivery-plan.md",
+        "code-reviews/review-mvp-remaining-delivery.md"
+      ],
+      "allowed_paths": [
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "README.md"
+      ],
+      "depends_on": [
+        "step_08_review_remaining_mvp_delivery"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "context.md",
+            "type": "markdown"
+          },
+          {
+            "path": "result-review.md",
+            "type": "markdown"
+          },
+          {
+            "path": "sprint-plan.md",
+            "type": "markdown"
+          },
+          {
+            "path": "WHERE_AM_I.md",
+            "type": "markdown"
+          },
+          {
+            "path": "project-plan.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "context.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "result-review.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "sprint-plan.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "WHERE_AM_I.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "project-plan.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the handoff docs so they reflect the actual run state without claiming work that is not shipped.",
+        "after_retries_exhausted": "halt"
+      }
+    }
+  ],
+  "operational_paths": [
+    "artifacts/current/"
+  ]
+}

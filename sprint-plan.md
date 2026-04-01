@@ -1,6 +1,6 @@
 # DashForge Sprint Plan
 
-> **Tactical execution plan** for the active sprint.
+> **Tactical execution plan** for the current sprint window.
 >
 > This file should stay concrete. If the strategy changes, update `project-plan.md`. If product direction changes, update `product-definition.md` or `architecture.md`.
 
@@ -10,101 +10,129 @@
 
 | Field | Value |
 |------|-------|
-| **Sprint** | Sprint 1 — Foundation |
-| **Status** | ACTIVE |
-| **Start Date** | 2026-03-31 |
-| **Goal** | Move the repo from scaffold-era placeholder state to a real frontend foundation that proves the spec-first architecture. |
+| **Sprint** | Sprint 9 — Production binding |
+| **Status** | COMPLETE — governed verify, repair, review, and handoff are now closed in-repo |
+| **Start Date** | 2026-04-01 |
+| **Execution Model** | Agent-Orch governed program complete; future reruns should use the canonical durable workflow |
+| **Workflow** | `playbooks/project_sprint_program.yaml` |
+| **Goal** | Lock a bounded production-binding slice on top of the closed Sprint 8 AI-assisted authoring baseline without widening the product into backend credential brokering, live SaaS platform work, or unrelated repo cleanup. |
 
-## Sprint Intent
+## Sprint Outcome
 
-By the end of this sprint, DashForge should have a minimal but real implementation path:
+Sprint 9 is now formally closed in the repo.
 
-- a React/Vite/TypeScript app shell
-- canonical DashboardSpec types and validation
-- a dashboard runtime shell with theme tokens
-- one rendered vertical slice from a static spec
+- `docs/sprint-09-contract.md` and `plans/sprint-09-plan.md` locked the slice
+  against the closed Sprint 8 baseline.
+- The implementation landed one shared adapter-resolution seam for `mock`,
+  `live`, and `hybrid` specs, plus a bounded read-only REST adapter and hybrid
+  composition under `frontend/src/core/data/`.
+- The builder property rail now exposes dataset-aware binding controls, mode
+  switching, and per-dataset REST metadata editing without forking the shared
+  preview/presenter/export runtime.
+- JSON import/export now accepts valid live and hybrid specs, and durable spec
+  serialization strips `connection.headers` so product artifacts do not persist
+  secrets.
+- Governed verification found one field-map readiness gap (`V901`), the repair
+  closed it, and the formal review artifact now records a clean post-repair
+  closeout state in `code-reviews/review-sprint-09.md`.
 
-This sprint does not need to solve the full MVP. It needs to make the target architecture executable.
+## Governed Closeout Trail
 
-## Exit Criteria
+Sprint 9's full governed artifact set now exists under:
 
-- [x] The repository contains the target frontend scaffold, not just the bootstrap Python CLI
-- [x] A static DashboardSpec can render without widget-specific hard-coded layout logic
-- [x] `DashboardBox` exists with at least basic title and state handling
-- [x] One initial widget primitive renders from spec-driven data
-- [x] Baseline tests/build checks exist for the new foundation
-- [x] Project memory docs reflect what was actually built
+- `docs/sprint-09-contract.md`
+- `plans/sprint-09-plan.md`
+- `code-reviews/verify-sprint-09.md`
+- `code-reviews/repair-sprint-09.md`
+- `code-reviews/review-sprint-09.md`
 
-## Completed This Sprint
+The governed sprint ladder is now closed through Sprint 9. The stable
+human-facing run dashboard remains:
 
-- [x] Reconciled planning and state docs with `product-definition.md` and `architecture.md`
-- [x] Created this sprint plan and established the first implementation target
-- [x] Chose a transition-friendly repo layout with the canonical frontend in `frontend/`
-- [x] Scaffolded a React/Vite/TypeScript app shell
-- [x] Added a validated DashboardSpec subset with Ajv
-- [x] Added a static adapter, `DashboardBox`, and a KPI widget rendered from sample spec data
-- [x] Added a line-chart primitive with a custom ECharts wrapper
-- [x] Verified the slice with unit tests, production build, and preview startup
+`artifacts/current/dashboard.html`
 
-## Ordered Work Queue
+Recovery-specific restart workflows used during delivery are now archived under
+`playbooks/backups/`. Future recovery should prefer Agent-Orch `resume-run`
+against the canonical workflow rather than creating new restart playbooks.
 
-### 1. Repo Foundation
+## Governed Exit Criteria
 
-- [x] Decide the repository layout for the canonical frontend implementation
-- [x] Scaffold React 19 + Vite + TypeScript in a way that leaves room for spec/runtime separation
-- [x] Decide how to contain the existing Python bootstrap artifacts for the transition
+- [x] `docs/sprint-09-contract.md` exists
+- [x] `plans/sprint-09-plan.md` exists
+- [x] Sprint 9 scope stayed locked against the closed Sprint 8 AI-assisted
+      authoring baseline
+- [x] The governed workflow advanced beyond Sprint 8 closeout into Sprint 9 work
+- [x] Sprint 9 implementation started only after the contract and plan existed
+- [x] Central adapter resolution, REST binding, and builder binding UI are in-repo
+- [x] `python3 -m pytest -q`, `npm --prefix frontend test`, and `npm --prefix frontend run build` passed on 2026-04-01
+- [x] Governed Sprint 9 verify/repair/review artifacts exist
 
-### 2. Spec Runtime
+## Remaining Host-Only Follow-Up
 
-- [x] Define the initial DashboardSpec types from the architecture doc
-- [x] Add schema validation and a place for versioning/migration concerns
-- [x] Create a sample spec fixture that represents the smallest meaningful dashboard
+- [ ] Run one host-environment browser smoke of the Sprint 9 binding workflow
 
-### 3. UI Foundation
+This item remains outside governed closeout because localhost binding is denied
+in this sandbox. `npm --prefix frontend run dev -- --host 127.0.0.1` still
+fails here with `listen EPERM`.
 
-- [x] Establish app shell, theme tokens, and base layout structure
-- [x] Implement `DashboardBox`
-- [x] Render one primitive from the sample spec
+## Baseline After Closeout
 
-### 4. Quality Gate
+Sprint 8 remains the closed AI-assisted authoring baseline underneath Sprint
+9, and Sprint 9 now extends that baseline with:
 
-- [x] Add baseline test/build commands for the new implementation
-- [x] Verify the first slice works end to end locally
-- [x] Update docs and result review with actual implementation outcomes
+- `createDashboardDataAdapter.ts` as the single adapter factory for `mock`,
+  `live`, and `hybrid`
+- `RestDataAdapter.ts` for the bounded first live REST path
+- `HybridDataAdapter.ts` for mixed mock/live dashboards on one adapter
+- `BindingPanel.tsx` and `BuilderShell.tsx` updates for dataset-oriented
+  binding authoring in the existing builder chrome
+- widened live/hybrid import/export plus safe header stripping in serialized
+  artifacts
 
-## Next Slice Queue
+Fresh Sprint 9 closeout verification on 2026-04-01 stayed green in the
+sandbox:
 
-- [x] Add a second widget primitive and expand the schema beyond KPI-only rendering
-- [ ] Move from inline sample payloads to richer mock datasets behind the adapter seam
-- [ ] Evaluate adoption of `react-grid-layout` now that a spec-driven shell is running
-- [ ] Reduce the current frontend bundle size after introducing ECharts
+- `python3 -m pytest -q`
+- `npm --prefix frontend test`
+- `npm --prefix frontend run build`
 
-## Decisions To Make During This Sprint
+The only unchanged manual gap is local browser startup. `npm --prefix frontend
+run dev -- --host 127.0.0.1` still fails here with `listen EPERM` because this
+sandbox denies localhost port binding.
 
-These are the decisions that could materially affect the repo shape:
+## Current Follow-up
 
-1. Whether the React app replaces the current root scaffold or lives alongside it during transition
-2. Whether spec/runtime code should live in a package-style structure from day one
-3. How much of the canonical schema to encode immediately versus staging it behind a smaller initial subset
+- [ ] Run one local browser smoke in a host environment that permits
+      `127.0.0.1:5173` or preview binding
+- [ ] Decide the next bounded roadmap slice beyond the now-closed governed
+      Sprint 1-9 ladder
 
-## Out of Scope
+## Sprint Carry-Forward Decisions
 
-The following are intentionally deferred until after the foundation is real:
+1. Sprint 8's AI-assisted authoring slice remains the stable pre-binding
+   baseline and should not be reopened casually.
+2. Sprint 9's shared runtime path remains `DashboardRenderer`; production
+   binding now extends the same `DashboardSpec` and `DataAdapter` seams rather
+   than creating a second renderer or spec format.
+3. Browser-local smoke remains a host-environment validation task because
+   sandbox port binding is still denied.
+4. Any work after Sprint 9 should start as a new bounded roadmap slice rather
+   than widening the closed production-binding sprint in place.
 
-- AI-generated specs
-- live production data bindings
-- multi-user collaboration
-- full industry-pack coverage
-- full primitive library coverage
-
-## Risks This Sprint
+## Risks Carrying Forward
 
 | Risk | Response |
 |------|----------|
-| Overbuilding before the first vertical slice works | Keep the initial spec and widget set tiny |
-| Repo churn from re-platforming | Make the target layout explicit before moving files |
-| Confusing bootstrap residue for real product progress | Treat Python scaffold code as non-canonical |
+| Browser-local binding workflow smoke is still blocked in this sandbox | Run dev/preview on a host environment before calling the live-binding workflow fully smoke-tested |
+| Frontend-first live binding can be misused if treated like durable secret storage | Keep API configuration explicit, optional, and out of DashboardSpec/exported artifacts; prefer host-local env vars or local overrides only for bounded dev use |
+| Frontend runtime still uses SQLite-derived snapshots instead of direct browser SQLite | Revisit only when a later slice truly needs in-browser SQL behavior |
+| Broader live-source work could sprawl beyond the bounded REST path | Start any warehouse adapter or backend brokering work under a new explicit contract |
 
-## Definition of Sprint Success
+## Definition Of Success For This Window
 
-Sprint 1 is successful if the team can point to a running frontend shell and say: "This is clearly DashForge's architecture, not just a scaffold."
+This sprint window is successful because Sprint 9 is now both landed and
+formally closed: the builder can author live/hybrid dataset bindings, one
+shared adapter path resolves `mock`, `live`, and `hybrid` specs through the
+existing renderer/presenter/export seams, serialization omits durable secrets,
+the automated checks stay green, and the governed verify/repair/review trail
+is complete.

@@ -8,7 +8,10 @@
 
 ## Project Overview
 
-**DashForge** is an internal Anblicks accelerator that helps consultants create realistic, industry-specific dashboard prototypes during client workshops and convert those prototypes into production-ready React assets anchored by a reusable DashboardSpec.
+**DashForge** is an internal Anblicks accelerator that helps consultants create
+realistic, industry-specific dashboard prototypes during client workshops and
+convert those prototypes into production-ready React assets anchored by a
+reusable DashboardSpec.
 
 The philosophy is **Incremental Delivery**:
 
@@ -18,7 +21,10 @@ The philosophy is **Incremental Delivery**:
 
 ### Primary Objective
 
-Enable an Anblicks consultant to walk into a client workshop and produce a credible, data-populated dashboard prototype in under an hour, with the prototype structured so delivery teams can reuse it instead of rebuilding from scratch.
+Enable an Anblicks consultant to walk into a client workshop and produce a
+credible, data-populated dashboard prototype in under an hour, with the
+prototype structured so delivery teams can reuse it instead of rebuilding from
+scratch.
 
 ### Secondary Objectives
 
@@ -32,7 +38,7 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 - The production target is owned React + ECharts code, not a BI vendor runtime
 - Components consume data only through adapter contracts; UI cannot depend directly on mock-data internals
 - AI may generate structured artifacts such as specs and pack definitions, but not raw React component code as product output
-- Scope stays workshop-first; SaaS, collaboration, and live production binding are post-MVP
+- Scope stays workshop-first; broader SaaS, collaboration, and warehouse-grade live binding remain later-slice work even though one bounded REST production-binding path is now landed
 
 ## Development Phases
 
@@ -55,9 +61,10 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 
 ### Phase 1 — Core Foundation
 
-**Status**: ACTIVE
+**Status**: COMPLETE
 
-**Goal**: Establish the minimum real application foundation that proves the spec-first architecture and gives the team a credible base to build on.
+**Goal**: Establish the minimum real application foundation that proves the
+spec-first architecture and gives the team a credible base to build on.
 
 **Core components**:
 
@@ -71,15 +78,30 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 - A static DashboardSpec can render in the app without hard-coded layout logic
 - The codebase has a clear home for spec, runtime, widgets, and adapters
 - Baseline tests and build checks exist for the foundational slice
+- Scenario-backed sample data resolves through the adapter seam instead of inline-only payloads
 
 ---
 
 ### Phase 2 — Feature Expansion
 
-**Goal**: Deliver the mock-data and primitive capabilities that make a workshop prototype feel real.
+**Status**: COMPLETE
+
+**Goal**: Deliver the mock-data and primitive capabilities that make a workshop
+prototype feel real.
+
+Sprint 2 completed the spec/runtime baseline that this phase depends on:
+shared validation, concrete themes, persistence seams, and the browser-side
+SQLite adapter boundary now exist in `frontend/`. Sprint 3 shifted this phase
+forward with deterministic healthcare scenario generation and a repo-level
+SQLite-backed mock engine. Sprint 4 closed the three-pack MVP mock-data surface
+with financial and saas packs plus shared template-catalog metadata. Sprint 5
+closed the remaining Phase 2 runtime-breadth work with the full MVP primitive
+set, shared chart/theme compilers, and a responsive read-only dashboard
+runtime.
 
 **Components**:
 
+- Sprint 2 runtime baseline and persistence/theme/data seams
 - industry pack definitions and seeded scenario generation
 - SQLite-backed mock data storage with adapter access
 - expanded primitive set toward the MVP target
@@ -87,6 +109,7 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 
 **Success Criteria**:
 
+- Sprint 3+ can build on the Sprint 2 runtime seams without reopening core contracts
 - At least one industry pack feels believable to a domain-aware reviewer
 - Multiple primitives render from spec-driven data bindings
 - Templates exist for executive summary and at least one detailed scenario
@@ -95,7 +118,16 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 
 ### Phase 3 — Integration & Polish
 
+**Status**: COMPLETE
+
 **Goal**: Turn the foundation into a workshop-ready experience.
+
+Sprint 6 closed the bounded manual builder workflow with editable composition
+and spec JSON save/load. Sprint 7 then closed presenter mode and browser-local
+export flows on top of that builder baseline. Sprint 8 closed the bounded
+AI-assisted DashboardSpec generation slice on top of the same shared runtime.
+Those three sprints together form the repo's closed workshop-ready MVP
+baseline.
 
 **Success Criteria**:
 
@@ -106,16 +138,30 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 
 ---
 
-### Phase 4 — Advanced / Future (Optional)
+### Phase 4 — Advanced / Future
 
-**Potential**:
+**Status**: STARTED
 
-- AI-assisted spec generation from prompts or workshop notes
-- live data bindings for Snowflake, Databricks, and APIs
+**Goal**: Extend the workshop baseline into a bounded production-binding bridge
+without turning DashForge into a general backend platform.
+
+Sprint 9 delivered the first Phase 4 slice: one shared adapter-resolution path
+for `mock`, `live`, and `hybrid` dashboards; a bounded read-only REST live
+adapter; hybrid composition; builder-integrated dataset binding controls; and
+safe serialization that strips live header overrides from durable artifacts.
+The governed Sprint 1-9 ladder is now closed in-repo, and the remaining
+near-term follow-up is one host-environment browser smoke plus choosing the
+next bounded roadmap slice explicitly.
+
+**Potential next components**:
+
+- live data bindings for Snowflake, Databricks, and additional APIs
+- backend brokering, workshop-note ingestion, or richer AI orchestration on
+  top of the closed Sprint 8 prompt-to-spec baseline
 - multi-user collaboration and review workflows
 - external productization if consulting value is proven
 
-*Not required for initial success.*
+*Not required for the now-closed Sprint 1-9 program.*
 
 ## Architecture Principles
 
@@ -132,7 +178,7 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 - DashboardSpec schema and validators
 - layout engine and widget registry
 - theme system and presenter runtime
-- DataAdapter contracts for mock and future live sources
+- DataAdapter contracts for mock and live sources
 
 ### Content and Data
 
@@ -153,11 +199,11 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 
 | Risk | Mitigation |
 |------|------------|
-| Scope creep into a full BI platform | Hold to the workshop-ready MVP boundary in `product-definition.md` |
+| Scope creep into a full BI platform | Hold to the workshop-first and bounded-slice constraints in `product-definition.md` and sprint contracts |
 | Repository drift from canon docs | Keep planning and state docs updated whenever architecture or product direction changes |
 | Mock data looks synthetic instead of believable | Validate scenarios with domain-aware reviewers before calling a pack workshop-ready |
-| Current repo scaffold does not match target stack | Treat the Python scaffold as temporary bootstrap residue and re-platform deliberately in Sprint 1 |
-| Premature AI ambition distracts from core value | Defer AI spec generation until the manual workflow and spec runtime are proven |
+| Current repo scaffold still mixes transition-era Python with the React runtime | Keep the Python generator CLI bounded, and retire or isolate the remaining bootstrap-era residue in a later cleanup slice |
+| Later live-binding work sprawls past the bounded REST path without enough governance | Start warehouse adapters, backend brokering, or credential helpers only under a new explicit contract |
 
 ## Success Metrics
 
@@ -168,9 +214,9 @@ Enable an Anblicks consultant to walk into a client workshop and produce a credi
 
 ## Current Status
 
-**Phase**: Phase 1 — Core Foundation
+**Phase**: Phase 4 — Advanced / Future
 **Mode**: Collaborative execution (`Mode 2`)
-**Next Milestone**: Render a static dashboard shell from canonical DashboardSpec in the new frontend foundation
+**Next Milestone**: Run one host-environment smoke of the closed Sprint 9 live-binding workflow and choose the next bounded roadmap slice beyond the governed Sprint 1-9 ladder
 
 ## Guiding Philosophy
 

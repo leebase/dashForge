@@ -1,0 +1,209 @@
+{
+  "packId": "saas",
+  "version": 1,
+  "months": [
+    { "id": "2025-01", "label": "Jan", "quarter": "Q1", "days": 31 },
+    { "id": "2025-02", "label": "Feb", "quarter": "Q1", "days": 28 },
+    { "id": "2025-03", "label": "Mar", "quarter": "Q1", "days": 31 },
+    { "id": "2025-04", "label": "Apr", "quarter": "Q2", "days": 30 },
+    { "id": "2025-05", "label": "May", "quarter": "Q2", "days": 31 },
+    { "id": "2025-06", "label": "Jun", "quarter": "Q2", "days": 30 },
+    { "id": "2025-07", "label": "Jul", "quarter": "Q3", "days": 31 },
+    { "id": "2025-08", "label": "Aug", "quarter": "Q3", "days": 31 },
+    { "id": "2025-09", "label": "Sep", "quarter": "Q3", "days": 30 },
+    { "id": "2025-10", "label": "Oct", "quarter": "Q4", "days": 31 },
+    { "id": "2025-11", "label": "Nov", "quarter": "Q4", "days": 30 },
+    { "id": "2025-12", "label": "Dec", "quarter": "Q4", "days": 31 }
+  ],
+  "entities": {
+    "planTiers": [
+      { "id": "starter", "name": "Starter", "pricePoint": 39, "targetSegment": "smb", "featureCap": 4 },
+      { "id": "growth", "name": "Growth", "pricePoint": 129, "targetSegment": "mid-market", "featureCap": 9 },
+      { "id": "scale", "name": "Scale", "pricePoint": 279, "targetSegment": "enterprise", "featureCap": 14 },
+      { "id": "enterprise", "name": "Enterprise", "pricePoint": 599, "targetSegment": "enterprise", "featureCap": 22 }
+    ],
+    "featureAreas": [
+      { "id": "analytics", "name": "Analytics", "baselineAdoption": 0.53 },
+      { "id": "collaboration", "name": "Collaboration", "baselineAdoption": 0.68 },
+      { "id": "automation", "name": "Automation", "baselineAdoption": 0.41 },
+      { "id": "security", "name": "Security", "baselineAdoption": 0.57 },
+      { "id": "integrations", "name": "Integrations", "baselineAdoption": 0.46 },
+      { "id": "support", "name": "Support", "baselineAdoption": 0.34 }
+    ],
+    "segments": [
+      { "id": "smb", "name": "SMB", "baseCustomers": 4100, "baseChurn": 0.047, "priceSensitivity": 0.87 },
+      { "id": "mid-market", "name": "Mid-market", "baseCustomers": 1900, "baseChurn": 0.031, "priceSensitivity": 0.64 },
+      { "id": "enterprise", "name": "Enterprise", "baseCustomers": 680, "baseChurn": 0.018, "priceSensitivity": 0.43 }
+    ],
+    "regions": [
+      { "id": "na", "name": "North America", "regionGrowth": 1.07 },
+      { "id": "eu", "name": "Europe", "regionGrowth": 0.97 },
+      { "id": "apac", "name": "APAC", "regionGrowth": 1.03 },
+      { "id": "latam", "name": "LATAM", "regionGrowth": 0.94 }
+    ]
+  },
+  "scenarios": [
+    {
+      "scenarioId": "churn-crisis",
+      "seed": 8301,
+      "title": "Churn Crisis",
+      "story": "A recent price reset increased cancellation rates, with SMB customers leaving faster than expected and support demand above baseline.",
+      "previewDatasets": {
+        "executive_summary": [
+          { "metricId": "mrr", "value": 18.2, "delta": -8.4, "deltaLabel": "YoY", "prefix": "$", "suffix": "M", "caption": "New pricing noise widened volatility in top-line growth." },
+          { "metricId": "arr", "value": 218.4, "delta": -7.6, "deltaLabel": "YoY", "prefix": "$", "suffix": "M", "caption": "Annualized revenue now tracks active customer retention stress." },
+          { "metricId": "churn-rate", "value": 4.8, "delta": 2.1, "deltaLabel": "pp", "suffix": "%", "caption": "Monthly churn rose after the latest plan refresh." },
+          { "metricId": "nps", "value": 34, "delta": -6, "deltaLabel": "points", "suffix": "", "caption": "Executive sentiment softened as support incidents increased." },
+          { "metricId": "support-volume", "value": 14320, "delta": 18.4, "deltaLabel": "increase", "suffix": "/mo", "caption": "Ticket volume is growing faster than growth in new usage." },
+          { "metricId": "ltv-cac", "value": 4.1, "delta": -0.3, "deltaLabel": "ratio", "suffix": "x", "caption": "Retention drag is lowering the LTV-to-CAC ratio." },
+          { "metricId": "csat", "value": 55, "delta": -5, "deltaLabel": "points", "suffix": "", "caption": "Customer sentiment mirrors renewed onboarding friction." },
+          { "metricId": "time-to-value", "value": 12.4, "delta": 1.6, "deltaLabel": "days", "suffix": "", "caption": "Longer onboarding paths are elongating onboarding duration." }
+        ],
+        "monthly_summary": [
+          { "month": "Jan", "mrr": 18.2, "arr": 218.4, "churnRate": 0.041, "nps": 39, "supportTickets": 11500 },
+          { "month": "Feb", "mrr": 18.0, "arr": 216.4, "churnRate": 0.044, "nps": 38, "supportTickets": 11890 },
+          { "month": "Mar", "mrr": 17.8, "arr": 213.6, "churnRate": 0.047, "nps": 37, "supportTickets": 12320 },
+          { "month": "Apr", "mrr": 17.4, "arr": 208.8, "churnRate": 0.049, "nps": 36, "supportTickets": 12690 },
+          { "month": "May", "mrr": 17.1, "arr": 205.2, "churnRate": 0.053, "nps": 35, "supportTickets": 13230 },
+          { "month": "Jun", "mrr": 16.9, "arr": 202.8, "churnRate": 0.056, "nps": 34, "supportTickets": 13680 },
+          { "month": "Jul", "mrr": 16.7, "arr": 200.4, "churnRate": 0.058, "nps": 33, "supportTickets": 14400 },
+          { "month": "Aug", "mrr": 16.4, "arr": 196.8, "churnRate": 0.061, "nps": 33, "supportTickets": 15230 },
+          { "month": "Sep", "mrr": 16.2, "arr": 194.4, "churnRate": 0.064, "nps": 32, "supportTickets": 15890 },
+          { "month": "Oct", "mrr": 16.0, "arr": 192.0, "churnRate": 0.066, "nps": 31, "supportTickets": 16780 },
+          { "month": "Nov", "mrr": 15.8, "arr": 189.6, "churnRate": 0.069, "nps": 31, "supportTickets": 17660 },
+          { "month": "Dec", "mrr": 15.6, "arr": 187.2, "churnRate": 0.071, "nps": 30, "supportTickets": 18420 }
+        ],
+        "segment_engagement": [
+          { "segment": "smb", "customerCount": 4200, "churnRate": 0.064, "netRetention": 0.88, "featureAdoption": 0.62 },
+          { "segment": "mid-market", "customerCount": 1960, "churnRate": 0.036, "netRetention": 0.93, "featureAdoption": 0.71 },
+          { "segment": "enterprise", "customerCount": 690, "churnRate": 0.021, "netRetention": 0.96, "featureAdoption": 0.79 }
+        ],
+        "feature_adoption": [
+          { "feature": "Analytics", "adoptionRate": 0.57, "activationRate": 0.39, "supportTicketsPer100": 31 },
+          { "feature": "Collaboration", "adoptionRate": 0.66, "activationRate": 0.47, "supportTicketsPer100": 26 },
+          { "feature": "Automation", "adoptionRate": 0.31, "activationRate": 0.23, "supportTicketsPer100": 23 },
+          { "feature": "Security", "adoptionRate": 0.44, "activationRate": 0.31, "supportTicketsPer100": 18 },
+          { "feature": "Integrations", "adoptionRate": 0.42, "activationRate": 0.29, "supportTicketsPer100": 21 },
+          { "feature": "Support", "adoptionRate": 0.78, "activationRate": 0.65, "supportTicketsPer100": 48 }
+        ]
+      },
+      "generationProfile": {
+        "mrrGrowthByMonth": [1.01, 0.99, 0.98, 0.97, 0.96, 0.95, 0.93, 0.92, 0.91, 0.9, 0.89, 0.88],
+        "churnShiftByMonth": [1.02, 1.07, 1.12, 1.16, 1.21, 1.25, 1.3, 1.34, 1.38, 1.41, 1.45, 1.48],
+        "supportShiftByMonth": [1.03, 1.05, 1.08, 1.11, 1.14, 1.18, 1.22, 1.27, 1.29, 1.33, 1.37, 1.41],
+        "csatShiftByMonth": [0.97, 0.98, 0.97, 0.96, 0.95, 0.94, 0.93, 0.92, 0.9, 0.88, 0.86, 0.84],
+        "ltvShiftByMonth": [1.0, 0.99, 0.97, 0.96, 0.95, 0.93, 0.92, 0.9, 0.89, 0.87, 0.86, 0.84],
+        "segmentConcentrationByMonth": [0.62, 0.64, 0.67, 0.7, 0.74, 0.78, 0.79, 0.8, 0.8, 0.81, 0.82, 0.83],
+        "featureAdoptionShiftByMonth": [1.0, 1.01, 1.0, 0.99, 0.98, 0.98, 0.97, 0.98, 0.97, 0.96, 0.96, 0.95]
+      }
+    },
+    {
+      "scenarioId": "product-led-growth",
+      "seed": 8308,
+      "title": "Product-Led Growth",
+      "story": "Freemium trials convert faster as usage-based activation climbs, but enterprise motion is still lagging despite stronger bottom-up traction.",
+      "previewDatasets": {
+        "executive_summary": [
+          { "metricId": "mrr", "value": 20.4, "delta": 7.6, "deltaLabel": "YoY", "prefix": "$", "suffix": "M", "caption": "Free-to-paid activation has improved with cleaner onboarding paths." },
+          { "metricId": "arr", "value": 244.8, "delta": 9.2, "deltaLabel": "YoY", "prefix": "$", "suffix": "M", "caption": "ARR gains are strongest in SMB and mid-market motion." },
+          { "metricId": "churn-rate", "value": 2.6, "delta": -0.7, "deltaLabel": "pp", "suffix": "%", "caption": "Product-led retention is helping stabilize core cohorts." },
+          { "metricId": "expansion-revenue", "value": 12.8, "delta": 16.4, "deltaLabel": "YoY", "prefix": "$", "suffix": "M", "caption": "Expansion bookings improved with stronger feature adoption." },
+          { "metricId": "nps", "value": 54, "delta": 7, "deltaLabel": "points", "suffix": "", "caption": "Product delight improved in onboarding and collaboration paths." },
+          { "metricId": "feature-adoption", "value": 71, "delta": 4.5, "deltaLabel": "pct", "suffix": "%", "caption": "Key workflows are seeing faster activation among new customers." },
+          { "metricId": "csat", "value": 68, "delta": 4, "deltaLabel": "points", "suffix": "", "caption": "Support outcomes are improving with better self-serve content." },
+          { "metricId": "time-to-value", "value": 10.1, "delta": -2.2, "deltaLabel": "days", "suffix": "", "caption": "Time to value improved as templates and in-product onboarding matured." }
+        ],
+        "monthly_summary": [
+          { "month": "Jan", "mrr": 20.4, "arr": 244.8, "churnRate": 0.031, "nps": 48, "supportTickets": 9100 },
+          { "month": "Feb", "mrr": 20.8, "arr": 249.6, "churnRate": 0.03, "nps": 49, "supportTickets": 9040 },
+          { "month": "Mar", "mrr": 21.4, "arr": 256.8, "churnRate": 0.029, "nps": 50, "supportTickets": 8970 },
+          { "month": "Apr", "mrr": 21.8, "arr": 261.6, "churnRate": 0.028, "nps": 50, "supportTickets": 8850 },
+          { "month": "May", "mrr": 22.3, "arr": 267.6, "churnRate": 0.028, "nps": 51, "supportTickets": 8810 },
+          { "month": "Jun", "mrr": 22.9, "arr": 274.8, "churnRate": 0.027, "nps": 52, "supportTickets": 8690 },
+          { "month": "Jul", "mrr": 23.4, "arr": 280.8, "churnRate": 0.026, "nps": 53, "supportTickets": 8640 },
+          { "month": "Aug", "mrr": 23.8, "arr": 285.6, "churnRate": 0.026, "nps": 53, "supportTickets": 8580 },
+          { "month": "Sep", "mrr": 24.3, "arr": 291.6, "churnRate": 0.025, "nps": 54, "supportTickets": 8520 },
+          { "month": "Oct", "mrr": 24.8, "arr": 297.6, "churnRate": 0.025, "nps": 54, "supportTickets": 8460 },
+          { "month": "Nov", "mrr": 25.4, "arr": 304.8, "churnRate": 0.024, "nps": 55, "supportTickets": 8400 },
+          { "month": "Dec", "mrr": 25.8, "arr": 309.6, "churnRate": 0.024, "nps": 56, "supportTickets": 8320 }
+        ],
+        "segment_engagement": [
+          { "segment": "smb", "customerCount": 4600, "churnRate": 0.029, "netRetention": 0.95, "featureAdoption": 0.72 },
+          { "segment": "mid-market", "customerCount": 2060, "churnRate": 0.023, "netRetention": 0.96, "featureAdoption": 0.77 },
+          { "segment": "enterprise", "customerCount": 670, "churnRate": 0.02, "netRetention": 0.98, "featureAdoption": 0.83 }
+        ],
+        "feature_adoption": [
+          { "feature": "Analytics", "adoptionRate": 0.67, "activationRate": 0.49, "supportTicketsPer100": 22 },
+          { "feature": "Collaboration", "adoptionRate": 0.71, "activationRate": 0.56, "supportTicketsPer100": 17 },
+          { "feature": "Automation", "adoptionRate": 0.52, "activationRate": 0.38, "supportTicketsPer100": 14 },
+          { "feature": "Security", "adoptionRate": 0.53, "activationRate": 0.39, "supportTicketsPer100": 13 },
+          { "feature": "Integrations", "adoptionRate": 0.58, "activationRate": 0.4, "supportTicketsPer100": 15 },
+          { "feature": "Support", "adoptionRate": 0.61, "activationRate": 0.54, "supportTicketsPer100": 20 }
+        ]
+      },
+      "generationProfile": {
+        "mrrGrowthByMonth": [1.08, 1.1, 1.12, 1.14, 1.18, 1.22, 1.27, 1.31, 1.34, 1.38, 1.41, 1.45],
+        "churnShiftByMonth": [0.98, 0.98, 0.97, 0.96, 0.95, 0.94, 0.94, 0.93, 0.92, 0.92, 0.91, 0.91],
+        "supportShiftByMonth": [1.02, 1.01, 1.0, 0.99, 0.99, 0.98, 0.98, 0.97, 0.97, 0.96, 0.96, 0.96],
+        "csatShiftByMonth": [1.01, 1.02, 1.03, 1.05, 1.05, 1.06, 1.08, 1.09, 1.09, 1.1, 1.12, 1.13],
+        "ltvShiftByMonth": [1.02, 1.03, 1.05, 1.05, 1.06, 1.07, 1.08, 1.09, 1.1, 1.11, 1.12, 1.13],
+        "segmentConcentrationByMonth": [0.55, 0.56, 0.56, 0.55, 0.54, 0.53, 0.52, 0.52, 0.51, 0.51, 0.5, 0.5],
+        "featureAdoptionShiftByMonth": [1.03, 1.04, 1.05, 1.06, 1.08, 1.09, 1.11, 1.12, 1.13, 1.14, 1.15, 1.17]
+      }
+    },
+    {
+      "scenarioId": "scaling-success",
+      "seed": 8312,
+      "title": "Scaling Success",
+      "story": "Usage and upsell cycles drive ARR above $10M and net retention above target, but support load is rising ahead of staffing.",
+      "previewDatasets": {
+        "executive_summary": [
+          { "metricId": "mrr", "value": 22.8, "delta": 18.2, "deltaLabel": "YoY", "prefix": "$", "suffix": "M", "caption": "Top-line growth is now sustained across most cohorts." },
+          { "metricId": "arr", "value": 273.6, "delta": 19.4, "deltaLabel": "YoY", "prefix": "$", "suffix": "M", "caption": "Scale phase crossed strategic milestones." },
+          { "metricId": "net-retention", "value": 121.8, "delta": 12.4, "deltaLabel": "pct", "suffix": "%", "caption": "Expansion and reduced churn are compounding ARR." },
+          { "metricId": "churn-rate", "value": 1.8, "delta": -0.9, "deltaLabel": "pp", "suffix": "%", "caption": "Retention is stabilizing with stronger onboarding and usage." },
+          { "metricId": "support-volume", "value": 20200, "delta": 14.8, "deltaLabel": "increase", "suffix": "/mo", "caption": "Support volume is the primary scaling friction." },
+          { "metricId": "ltv-cac", "value": 5.8, "delta": 1.4, "deltaLabel": "ratio", "suffix": "x", "caption": "High-quality growth is lifting unit economics." },
+          { "metricId": "csat", "value": 72, "delta": 3, "deltaLabel": "points", "suffix": "", "caption": "Customers report stronger value realization and adoption." },
+          { "metricId": "time-to-value", "value": 8.6, "delta": -1.6, "deltaLabel": "days", "suffix": "", "caption": "Faster setup completion helped reinforce retention." }
+        ],
+        "monthly_summary": [
+          { "month": "Jan", "mrr": 22.8, "arr": 273.6, "churnRate": 0.026, "nps": 49, "supportTickets": 11200 },
+          { "month": "Feb", "mrr": 23.2, "arr": 278.4, "churnRate": 0.025, "nps": 49, "supportTickets": 11560 },
+          { "month": "Mar", "mrr": 23.7, "arr": 284.4, "churnRate": 0.024, "nps": 50, "supportTickets": 11910 },
+          { "month": "Apr", "mrr": 24.1, "arr": 289.2, "churnRate": 0.023, "nps": 51, "supportTickets": 12500 },
+          { "month": "May", "mrr": 24.7, "arr": 296.4, "churnRate": 0.022, "nps": 51, "supportTickets": 13120 },
+          { "month": "Jun", "mrr": 25.3, "arr": 303.6, "churnRate": 0.022, "nps": 52, "supportTickets": 13710 },
+          { "month": "Jul", "mrr": 26.0, "arr": 312.0, "churnRate": 0.021, "nps": 52, "supportTickets": 14520 },
+          { "month": "Aug", "mrr": 26.6, "arr": 319.2, "churnRate": 0.021, "nps": 53, "supportTickets": 15160 },
+          { "month": "Sep", "mrr": 27.3, "arr": 327.6, "churnRate": 0.02, "nps": 53, "supportTickets": 15820 },
+          { "month": "Oct", "mrr": 28.0, "arr": 336.0, "churnRate": 0.02, "nps": 54, "supportTickets": 16540 },
+          { "month": "Nov", "mrr": 28.6, "arr": 343.2, "churnRate": 0.019, "nps": 55, "supportTickets": 17310 },
+          { "month": "Dec", "mrr": 29.4, "arr": 352.8, "churnRate": 0.018, "nps": 55, "supportTickets": 18180 }
+        ],
+        "segment_engagement": [
+          { "segment": "smb", "customerCount": 5200, "churnRate": 0.022, "netRetention": 0.97, "featureAdoption": 0.81 },
+          { "segment": "mid-market", "customerCount": 2250, "churnRate": 0.017, "netRetention": 0.98, "featureAdoption": 0.87 },
+          { "segment": "enterprise", "customerCount": 760, "churnRate": 0.014, "netRetention": 1.02, "featureAdoption": 0.9 }
+        ],
+        "feature_adoption": [
+          { "feature": "Analytics", "adoptionRate": 0.78, "activationRate": 0.64, "supportTicketsPer100": 17 },
+          { "feature": "Collaboration", "adoptionRate": 0.83, "activationRate": 0.7, "supportTicketsPer100": 14 },
+          { "feature": "Automation", "adoptionRate": 0.71, "activationRate": 0.58, "supportTicketsPer100": 12 },
+          { "feature": "Security", "adoptionRate": 0.76, "activationRate": 0.63, "supportTicketsPer100": 11 },
+          { "feature": "Integrations", "adoptionRate": 0.72, "activationRate": 0.59, "supportTicketsPer100": 13 },
+          { "feature": "Support", "adoptionRate": 0.88, "activationRate": 0.77, "supportTicketsPer100": 33 }
+        ]
+      },
+      "generationProfile": {
+        "mrrGrowthByMonth": [1.02, 1.05, 1.08, 1.11, 1.14, 1.17, 1.21, 1.25, 1.31, 1.36, 1.41, 1.46],
+        "churnShiftByMonth": [1.0, 0.98, 0.97, 0.96, 0.95, 0.94, 0.93, 0.92, 0.92, 0.91, 0.9, 0.89],
+        "supportShiftByMonth": [1.02, 1.03, 1.05, 1.07, 1.09, 1.12, 1.15, 1.18, 1.21, 1.24, 1.27, 1.3],
+        "csatShiftByMonth": [1.01, 1.01, 1.02, 1.02, 1.03, 1.03, 1.04, 1.04, 1.04, 1.05, 1.05, 1.06],
+        "ltvShiftByMonth": [1.02, 1.03, 1.04, 1.05, 1.06, 1.08, 1.09, 1.11, 1.12, 1.13, 1.14, 1.15],
+        "segmentConcentrationByMonth": [0.52, 0.52, 0.51, 0.5, 0.5, 0.49, 0.48, 0.48, 0.47, 0.47, 0.46, 0.46],
+        "featureAdoptionShiftByMonth": [1.03, 1.04, 1.06, 1.08, 1.09, 1.11, 1.12, 1.13, 1.14, 1.16, 1.17, 1.19]
+      }
+    }
+  ]
+}

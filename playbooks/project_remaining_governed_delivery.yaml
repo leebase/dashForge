@@ -1,0 +1,1111 @@
+{
+  "playbook_id": "project_remaining_governed_delivery",
+  "name": "DashForge remaining project governed delivery",
+  "defaults": {
+    "worker": "codex_cli",
+    "retry_policy": {
+      "max_attempts": 2,
+      "strategy": "rerun_with_validation_feedback"
+    }
+  },
+  "run_policy": {
+    "on_step_failure": "halt",
+    "require_validation_pass_to_advance": true
+  },
+  "steps": [
+    {
+      "step_id": "step_01_define_remaining_project_contract",
+      "name": "Define the remaining project contract",
+      "mission": "Read AGENTS.md, context.md, sprint-plan.md, project-plan.md, product-definition.md, and architecture.md. Write docs/project-remaining-contract.md so it captures the full remaining documented project scope after Sprint 1 and the dependency order for one governed long-running delivery.",
+      "inputs": [
+        "AGENTS.md",
+        "context.md",
+        "sprint-plan.md",
+        "project-plan.md",
+        "product-definition.md",
+        "architecture.md"
+      ],
+      "allowed_paths": [
+        "docs/"
+      ],
+      "depends_on": [],
+      "outputs": {
+        "required": [
+          {
+            "path": "docs/project-remaining-contract.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "docs/project-remaining-contract.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "docs/project-remaining-contract.md",
+            "headings": [
+              "Overview",
+              "Remaining Objectives Inventory",
+              "In Scope",
+              "Out of Scope",
+              "Required Outputs",
+              "Acceptance Checks",
+              "Constraints",
+              "Dependency Order"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the contract so it reflects the full remaining documented project work and not just broad umbrella phases.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_02_plan_remaining_project_delivery",
+      "name": "Plan the remaining project delivery",
+      "mission": "Read the remaining-project contract and the canon docs. Write plans/project-remaining-delivery-plan.md with the architecture, scope layers, data/runtime workflow strategy, verification approach, risks, and open questions for the remaining project.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "project-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "plans/"
+      ],
+      "depends_on": [
+        "step_01_define_remaining_project_contract"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "plans/project-remaining-delivery-plan.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "plans/project-remaining-delivery-plan.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "plans/project-remaining-delivery-plan.md",
+            "headings": [
+              "Architecture",
+              "Scope Layers",
+              "Data Strategy",
+              "Runtime Strategy",
+              "Workflow Strategy",
+              "Verification",
+              "Risks",
+              "Open Questions"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the plan so it decomposes the remaining project into clear, operator-visible layers.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_03_finish_spec_and_runtime_prerequisites",
+      "name": "Finish spec and runtime prerequisites",
+      "mission": "Read AGENTS.md, the remaining-project contract and plan, product-definition.md, and architecture.md. Implement the remaining spec/runtime prerequisites in frontend/: broaden DashboardSpec and validation coverage, add spec save/load scaffolding, complete theme definitions, and add the browser-side SQLite/sql.js adapter scaffold described in the architecture.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_02_plan_remaining_project_delivery"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/core/spec/dashboardSpec.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/core/spec/dashboardSchema.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/core/data/SQLiteDataAdapter.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/core/data/SQLiteDataAdapter.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the spec/runtime prerequisite slice so the remaining architecture scaffolding exists before the heavier project phases.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_04_build_generation_cli_and_sqlite_foundation",
+      "name": "Build generation CLI and SQLite foundation",
+      "mission": "Read AGENTS.md, the remaining-project contract/plan, product-definition.md, and architecture.md. Implement the SQLite-backed mock-data generation foundation and CLI path described in the architecture so DashForge can generate seeded scenario databases.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "package.json"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "src/",
+        "package.json"
+      ],
+      "depends_on": [
+        "step_03_finish_spec_and_runtime_prerequisites"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "src/dashForge/generate.py",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "src/dashForge/generate.py"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the generation foundation so the project has a concrete SQLite-generation implementation path.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_05_complete_healthcare_pack",
+      "name": "Complete the healthcare pack and scenarios",
+      "mission": "Read AGENTS.md, the canon docs, and the current mock-data implementation. Complete the Healthcare industry pack with the documented scenario set, broader dataset coverage, and template assets under the implementation path.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "src/"
+      ],
+      "depends_on": [
+        "step_04_build_generation_cli_and_sqlite_foundation"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/mock-data/healthcareFluSeason.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/healthcareCostPressure.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/healthcareFluSeason.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/healthcareCostPressure.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the healthcare pack slice so the documented scenario coverage exists beyond the current single scenario.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_06_complete_financial_services_pack",
+      "name": "Complete the Financial Services pack",
+      "mission": "Read AGENTS.md, the canon docs, and the mock-data implementation. Implement the Financial Services industry pack, scenarios, and template-ready assets described in the product definition.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "src/"
+      ],
+      "depends_on": [
+        "step_05_complete_healthcare_pack"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/mock-data/financialServicesGrowthQuarter.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/financialServicesMarketDownturn.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/financialServicesAdvisorAttrition.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/financialServicesGrowthQuarter.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/financialServicesMarketDownturn.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/financialServicesAdvisorAttrition.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the Financial Services pack slice so the documented scenarios and assets exist.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_07_complete_saas_pack",
+      "name": "Complete the SaaS pack",
+      "mission": "Read AGENTS.md, the canon docs, and the mock-data implementation. Implement the SaaS/Technology industry pack, scenarios, and template-ready assets described in the product definition.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "src/"
+      ],
+      "depends_on": [
+        "step_06_complete_financial_services_pack"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/mock-data/saasChurnCrisis.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/saasProductLedGrowth.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/saasScalingSuccess.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/saasChurnCrisis.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/saasProductLedGrowth.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/saasScalingSuccess.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the SaaS pack slice so the documented scenarios and assets exist.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_08_build_chart_and_theme_compilers",
+      "name": "Build chart and theme compiler infrastructure",
+      "mission": "Read AGENTS.md, the canon docs, and the current runtime. Implement the compiler-style chart/theme infrastructure that the broader primitive library and theme system need.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_07_complete_saas_pack"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/core/charts/chartCompiler.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/core/theme/themeCompiler.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/core/charts/chartCompiler.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/core/theme/themeCompiler.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the compiler infrastructure so primitives and theming have a scalable implementation base.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_09_add_bar_and_stacked_bar_primitives",
+      "name": "Add bar and stacked bar primitives",
+      "mission": "Read AGENTS.md, the canon docs, and the runtime/compiler layer. Implement bar and stacked-bar primitives in the frontend runtime with spec-driven rendering and tests.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_08_build_chart_and_theme_compilers"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/components/charts/BarChart.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/components/charts/StackedBarChart.tsx",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/BarChart.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/StackedBarChart.tsx"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the bar/stacked-bar primitive slice so both components exist and fit the runtime/compiler architecture.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_10_add_donut_table_sparkline_gauge_primitives",
+      "name": "Add donut, table, sparkline, and gauge primitives",
+      "mission": "Read AGENTS.md, the canon docs, and the runtime/compiler layer. Implement the remaining MVP primitives in the frontend runtime with spec-driven rendering and tests.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_09_add_bar_and_stacked_bar_primitives"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/components/charts/DonutChart.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/components/charts/TableChart.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/components/charts/SparklineChart.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/components/charts/GaugeChart.tsx",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/DonutChart.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/TableChart.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/SparklineChart.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/components/charts/GaugeChart.tsx"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the remaining primitive slice so the documented MVP chart set exists in the runtime.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_11_add_responsive_grid_runtime_and_template_catalog",
+      "name": "Add responsive grid runtime and template catalog",
+      "mission": "Read AGENTS.md, the canon docs, and the current frontend runtime. Implement the read-only responsive-grid runtime and template-catalog layer needed before full builder mode.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_10_add_donut_table_sparkline_gauge_primitives"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/dashboard/ResponsiveDashboardGrid.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/mock-data/templateCatalog.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/dashboard/ResponsiveDashboardGrid.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/mock-data/templateCatalog.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the responsive-grid/template slice so the runtime is ready for builder-mode composition.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_12_build_builder_palette_and_property_panel",
+      "name": "Build builder palette and property panel",
+      "mission": "Read AGENTS.md, the canon docs, and the current runtime. Implement the builder core with widget palette, selection, and property-panel editing flows.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_11_add_responsive_grid_runtime_and_template_catalog"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/builder/BuilderShell.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/builder/WidgetPalette.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/builder/PropertyPanel.tsx",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/BuilderShell.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/WidgetPalette.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/PropertyPanel.tsx"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the builder-core slice so palette and property-panel editing exist as explicit implementation steps.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_13_build_builder_toolbar_templates_and_spec_io",
+      "name": "Build builder toolbar, templates, and spec IO",
+      "mission": "Read AGENTS.md, the canon docs, and the current builder implementation. Implement theme/pack/scenario switching, template gallery, undo/redo, and spec save/load behavior.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_12_build_builder_palette_and_property_panel"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/builder/TemplateGallery.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/builder/BuilderToolbar.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/builder/specIo.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/TemplateGallery.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/BuilderToolbar.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/builder/specIo.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the builder-toolbar/template/spec-IO slice so the builder workflow is explicit and operator-visible.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_14_build_presenter_narrative_model",
+      "name": "Build presenter narrative model and story editor",
+      "mission": "Read AGENTS.md, the canon docs, and the builder/runtime implementation. Implement NarrativeSpec support, story-arc editing structures, and presenter-state management.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_13_build_builder_toolbar_templates_and_spec_io"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/presenter/narrativeStore.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/presenter/StoryArcEditor.tsx",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/presenter/narrativeStore.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/presenter/StoryArcEditor.tsx"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the presenter-model slice so the narrative structure exists before the walkthrough UI.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_15_build_presenter_walkthrough_and_annotations",
+      "name": "Build presenter walkthrough and annotations",
+      "mission": "Read AGENTS.md, the canon docs, and the presenter model. Implement presenter mode, section-by-section walkthrough behavior, highlighting/dimming, commentary display, and chart annotations.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_14_build_presenter_narrative_model"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/presenter/PresenterMode.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/presenter/ChartAnnotationLayer.tsx",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/presenter/PresenterMode.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/presenter/ChartAnnotationLayer.tsx"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the presenter-walkthrough slice so the consulting-storytelling behavior exists as its own explicit step.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_16_build_export_flows",
+      "name": "Build export flows",
+      "mission": "Read AGENTS.md, the canon docs, and the presenter/runtime implementation. Implement export support for spec JSON and proposal-ready PNG/PDF outputs.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_15_build_presenter_walkthrough_and_annotations"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/export/exportDashboard.ts",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/export/exportSpec.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/export/exportDashboard.ts"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/export/exportSpec.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the export slice so JSON and PNG/PDF export paths exist as concrete implementation outputs.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_17_build_ai_spec_generation",
+      "name": "Build AI spec generation",
+      "mission": "Read AGENTS.md, the canon docs, and the current builder/presenter implementation. Implement the documented AI-spec-generation slice, including prompt entry, schema-validated output handling, and improvement-mode scaffolding.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_16_build_export_flows"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/ai/AIPromptBar.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/ai/generateSpec.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/ai/AIPromptBar.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/ai/generateSpec.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the AI-generation slice so the documented post-MVP phase is represented as a concrete implementation step.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_18_build_production_binding",
+      "name": "Build production data binding",
+      "mission": "Read AGENTS.md, the canon docs, and the current implementation. Implement the documented production-binding slice, including field mapping, live-adapter scaffolding, and mock-to-production binding workflows.",
+      "inputs": [
+        "AGENTS.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "product-definition.md",
+        "architecture.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/"
+      ],
+      "depends_on": [
+        "step_17_build_ai_spec_generation"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/features/binding/BindingWorkflow.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/core/data/RestDataAdapter.ts",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/binding/BindingWorkflow.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/core/data/RestDataAdapter.ts"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the production-binding slice so the documented mock-to-production workflow is represented concretely.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_19_repair_and_verify_remaining_project",
+      "name": "Repair failures and drive the remaining project green",
+      "mission": "Read AGENTS.md, skills/development-loop.md, skills/test-as-lee.md, the remaining-project contract and plan, and the current implementation. Repair the repo until the frontend verification loop passes cleanly after the long project run.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "skills/test-as-lee.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "README.md",
+        "architecture.md",
+        "project-plan.md"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "README.md",
+        "architecture.md",
+        "project-plan.md",
+        "docs/",
+        "plans/",
+        "tmp/"
+      ],
+      "depends_on": [
+        "step_18_build_production_binding"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/package.json",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "system": [
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "test"
+            ]
+          },
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "run",
+              "build"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the remaining-project implementation until the frontend tests and build pass again.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_20_review_remaining_project_delivery",
+      "name": "Review the verified remaining-project delivery",
+      "mission": "Read AGENTS.md, architecture.md, product-definition.md, project-plan.md, sprint-plan.md, the remaining-project contract and plan, and the verified implementation. Record a concise code review under code-reviews/ that prioritizes actual findings.",
+      "inputs": [
+        "AGENTS.md",
+        "architecture.md",
+        "product-definition.md",
+        "project-plan.md",
+        "sprint-plan.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md"
+      ],
+      "allowed_paths": [
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "step_19_repair_and_verify_remaining_project"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/review-remaining-project-delivery.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/review-remaining-project-delivery.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "code-reviews/review-remaining-project-delivery.md",
+            "headings": [
+              "Architecture Summary",
+              "Checks Run",
+              "Findings",
+              "Remediation Roadmap",
+              "Patch Suggestions",
+              "Test Additions Recommended"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the remaining-project review so it captures findings honestly and stays inside code-reviews/.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "step_21_closeout_remaining_project_memory",
+      "name": "Update durable memory and handoff docs",
+      "mission": "Read AGENTS.md, context.md, result-review.md, sprint-plan.md, WHERE_AM_I.md, project-plan.md, the remaining-project contract and plan, and the review artifact. Update the durable docs so they reflect the exact run state and what remains next.",
+      "inputs": [
+        "AGENTS.md",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "docs/project-remaining-contract.md",
+        "plans/project-remaining-delivery-plan.md",
+        "code-reviews/review-remaining-project-delivery.md"
+      ],
+      "allowed_paths": [
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "project-plan.md",
+        "README.md"
+      ],
+      "depends_on": [
+        "step_20_review_remaining_project_delivery"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "context.md",
+            "type": "markdown"
+          },
+          {
+            "path": "result-review.md",
+            "type": "markdown"
+          },
+          {
+            "path": "sprint-plan.md",
+            "type": "markdown"
+          },
+          {
+            "path": "WHERE_AM_I.md",
+            "type": "markdown"
+          },
+          {
+            "path": "project-plan.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "context.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "result-review.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "sprint-plan.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "WHERE_AM_I.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "project-plan.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the handoff docs so the human-visible state matches the actual long project run.",
+        "after_retries_exhausted": "halt"
+      }
+    }
+  ],
+  "operational_paths": [
+    "artifacts/current/"
+  ]
+}

@@ -1,16 +1,21 @@
 import { describe, expect, it } from "vitest";
 
-import { buildLineChartOption } from "./LineChart";
+import { compileLineChartOption } from "../../core/charts/chartCompiler";
+import { resolveDashboardTheme } from "../../core/theme/themeRegistry";
 
-describe("buildLineChartOption", () => {
+describe("compileLineChartOption", () => {
   it("maps inline points into echarts axes and series values", () => {
-    const option = buildLineChartOption({
-      points: [
-        { label: "Jan", value: 91 },
-        { label: "Feb", value: 94 },
-      ],
-      seriesLabel: "Occupancy",
-    });
+    const theme = resolveDashboardTheme({ id: "light-professional" });
+    const option = compileLineChartOption(
+      {
+        points: [
+          { label: "Jan", value: 91 },
+          { label: "Feb", value: 94 },
+        ],
+        seriesLabel: "Occupancy",
+      },
+      theme,
+    );
 
     expect(option.xAxis).toMatchObject({
       data: ["Jan", "Feb"],

@@ -2,10 +2,55 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.1  
+**Version:** 1.3  
 **Date:** March 31, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.1 adds SQLite as primary mock data storage, enforces adapter pattern for data layer isolation, and adds relational consistency guarantees for drill-down safety.
+**Revision notes:** v1.3 records the Sprint 3 SQLite generation foundation and the SQLite-derived snapshot bridge used by the current frontend runtime.
+
+---
+
+## 2026-04-01 — Sprint 9 Adapter Resolution Stays Behind One Factory
+
+**Decision:** Sprint 9 resolves production binding through one central
+`createDashboardDataAdapter(...)` seam that returns a single `DataAdapter` for
+`mock`, `live`, and `hybrid` dashboards instead of letting builder, renderer,
+or presenter code branch on data mode directly.
+
+**Rationale:** The product already proved through earlier sprints that the
+shared renderer path is the durable asset. Production binding only stays
+bounded if live/hybrid behavior remains behind the existing adapter contract
+rather than leaking mode-specific logic into view code.
+
+**Alternatives rejected:** Letting `BuilderShell`, `DashboardRenderer`, or
+individual widgets special-case live mode would have been faster locally but
+would fragment the runtime and reopen the core architectural seam this sprint
+was supposed to harden.
+
+**Consequences:** The repo now has explicit adapter-factory and hybrid-routing
+helpers under `frontend/src/core/data/`. Future live adapters can join the same
+factory without changing widget components or introducing a second rendering
+path.
+
+---
+
+## 2026-04-01 — Serialized Specs Strip Live Header Overrides
+
+**Decision:** Serialized `DashboardSpec` artifacts omit
+`dataContext.live.bindings.*.connection.headers` before export or storage.
+
+**Rationale:** Sprint 9 needed live-binding metadata to round-trip, but durable
+product artifacts still need to be safe by default. Stripping header overrides
+keeps endpoint/type/field-map metadata portable without treating spec JSON as a
+credential store.
+
+**Alternatives rejected:** Persisting headers directly would have made spec
+artifacts unsafe. Removing the entire live-binding block would have defeated
+the bounded production-binding goal by making imports/exports lose the actual
+binding setup.
+
+**Consequences:** Live and hybrid specs can still be imported/exported, but any
+local-only credential overrides must be re-applied outside serialized
+DashboardSpec output.
 
 ---
 
@@ -18,6 +63,69 @@
 **Alternatives rejected:** Replacing the repo root immediately would create more churn than value in the first slice. Keeping implementation in the Python scaffold would conflict with the canon architecture.
 
 **Consequences:** The repository has a temporary dual structure. Once the frontend runtime is established enough to carry the project, the Python scaffold can be retired or isolated more aggressively.
+
+---
+
+## 2026-03-31 — Mock Scenario Registry for Foundation Data
+
+**Decision:** Sprint 1 foundation widgets resolve sample data through scenario-backed mock references and the `DataAdapter` seam rather than embedding inline-only payloads inside the sample dashboard.
+
+**Rationale:** This proves the architectural boundary that matters for DashForge: widgets consume data through a stable contract while the underlying source can evolve from static scenarios to SQLite and later live bindings. It also makes the sample dashboard feel closer to an industry scenario instead of a hard-coded demo.
+
+**Alternatives rejected:** Keeping inline payloads longer would make the foundation look simpler than the real product and would delay validation of the adapter contract. Jumping directly to SQLite in Sprint 1 would have expanded the slice beyond the intended proof-of-architecture scope.
+
+**Consequences:** The runtime now has a scenario catalog and mock references that can be swapped for richer storage later without changing widget components. SQLite remains the Phase 2 destination, not a prerequisite for calling Sprint 1 complete.
+
+---
+
+## 2026-03-31 — Layout Engine Deferred Until Builder Mode
+
+**Decision:** `react-grid-layout` is deferred until the first slice that actually needs composition, drag/drop, resize, and responsive layout editing.
+
+**Rationale:** Sprint 1 needed to prove spec-driven rendering, widget registration, and adapter isolation. The current CSS-grid shell is sufficient for that proof. Bringing in `react-grid-layout` before builder behavior exists would add dependency and layout complexity without unlocking new product value.
+
+**Alternatives rejected:** Adopting `react-grid-layout` immediately would have front-loaded builder concerns into a foundation sprint whose job was runtime validation, not composition UX.
+
+**Consequences:** The architecture still endorses `react-grid-layout` as the intended builder-mode engine, but it is now an explicit Phase 2 or Phase 3 adoption point rather than an unfinished Sprint 1 expectation.
+
+---
+
+## 2026-03-31 — Python Scaffold Retirement After Foundation Cleanup
+
+**Decision:** The bootstrap Python scaffold remains in the repository through Sprint 1 and will be retired or isolated in the first cleanup slice after the frontend foundation.
+
+**Rationale:** The highest-value work in Sprint 1 was proving the canonical React/Vite/TypeScript runtime. Removing bootstrap residue during that same sprint would have created repo churn without improving the product proof.
+
+**Alternatives rejected:** Immediate deletion was rejected because it coupled foundation progress to repo hygiene work. Keeping the scaffold indefinitely was rejected because it would leave the repository's implementation story ambiguous.
+
+**Consequences:** Contributors should treat the Python package as historical bootstrap residue, not an active product surface. A cleanup task remains on the roadmap, but it is no longer a blocker for declaring the foundation complete.
+
+---
+
+## 2026-03-31 — SQLite-Derived Snapshot Bridge For Sprint 3
+
+**Decision:** Sprint 3 keeps SQLite as the canonical mock-data artifact, but the
+current frontend runtime consumes SQLite-derived JSON snapshots through
+`DataAdapter` instead of adding a direct browser SQLite engine in the same
+slice.
+
+**Rationale:** The sprint needed a real deterministic SQLite generation path and
+a minimally usable runtime bridge without reopening Sprint 2 seams or adding a
+new browser/runtime dependency just to satisfy one bounded sprint. Exporting a
+snapshot from the generated SQLite database preserves the `DataAdapter`
+contract, keeps widgets storage-agnostic, and gives the frontend a concrete
+runtime path that is materially stronger than the earlier seam proof.
+
+**Alternatives rejected:** Adding a direct browser SQLite runtime immediately
+would have introduced new dependency and packaging work into the same sprint.
+Leaving the frontend on a pure delegation seam would not have delivered a real
+adapter-facing data path for generated healthcare data.
+
+**Consequences:** The repo now has a bounded Python CLI for deterministic SQLite
+generation plus optional snapshot export. The frontend can validate and consume
+SQLite-backed datasets through the snapshot bridge today, and a later sprint
+can replace that bridge with a direct browser SQLite engine without changing
+widget code.
 
 ---
 
@@ -91,7 +199,7 @@ These principles are ordered by priority. When they conflict, higher-ranked prin
 | **Chart rendering** | Apache ECharts 5.x | 20+ chart types; JSON option model ideal for AI generation; built-in theme system; Canvas + SVG rendering; Apache 2.0 license |
 | **ECharts wrapper** | Custom (50 lines) | The existing echarts-for-react wrapper is outdated; a custom useEffect-based wrapper gives full control with zero dependency risk |
 | **Base data generation** | Faker.js | Seeded reproducibility; 70+ locales; extensible; industry-standard |
-| **Mock data storage** | SQLite via sql.js (browser) + better-sqlite3 (CLI) | Relational integrity enforced at the storage layer, not just the generator; supports SQL queries for drill-down, filtering, and aggregation; single-file portable database per scenario; sql.js runs entirely in-browser via WASM for workshop use; better-sqlite3 for CLI generation and testing |
+| **Mock data storage** | SQLite via Python stdlib `sqlite3` for generation, with SQLite-derived JSON snapshots for the current frontend runtime | Keeps SQLite as the canonical scenario artifact in Sprint 3, supports deterministic SQL-backed drill-down and aggregation, and preserves the `DataAdapter` boundary without adding a direct browser SQLite dependency in the same slice |
 | **State management** | Zustand | Lightweight; works naturally with immutable spec snapshots for undo/redo; no boilerplate |
 | **Styling** | Tailwind CSS 4 + CSS custom properties | Utility classes for builder chrome; CSS variables for theme tokens that bridge to ECharts theme objects |
 | **Spec validation** | Ajv (JSON Schema) | Industry-standard JSON Schema validator; fast; supports custom keywords for semantic validation |
