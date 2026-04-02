@@ -45,6 +45,16 @@ const templateCatalog: TemplateCatalogEntry[] = [
     audience: "manager",
   },
   {
+    templateId: "tpl.healthcare.ed-throughput-command",
+    packId: "healthcare",
+    scenarioIds: ["ed-throughput-crunch"],
+    title: "ED Throughput Command View",
+    description:
+      "Focused operational view for emergency department throughput pressure and intervention priority.",
+    intent: "risk_alert",
+    audience: "client_demo",
+  },
+  {
     templateId: "tpl.financial.executive-summary",
     packId: "financial",
     scenarioIds: ["market-downturn", "growth-quarter", "advisor-attrition"],
@@ -115,6 +125,7 @@ const DEFAULT_TEMPLATE_BY_SCENARIO: Record<string, string> = {
   "healthcare:flu-season": "tpl.healthcare.risk-alert",
   "healthcare:quality-improvement": "tpl.healthcare.executive-summary",
   "healthcare:cost-pressure": "tpl.healthcare.risk-alert",
+  "healthcare:ed-throughput-crunch": "tpl.healthcare.ed-throughput-command",
   "financial:market-downturn": "tpl.financial.risk-alert",
   "financial:advisor-attrition": "tpl.financial.operational-detail",
   "financial:growth-quarter": "tpl.financial.executive-summary",

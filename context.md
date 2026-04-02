@@ -10,7 +10,7 @@
 |-----------|-------|
 | **Phase** | Phase 4 — Advanced / Future |
 | **Mode** | 2 (Implementation with approval) |
-| **Last Updated** | 2026-04-01 |
+| **Last Updated** | 2026-04-02 |
 
 ### Sprint Status
 
@@ -53,8 +53,54 @@ The only remaining near-term gap is still outside this sandbox:
 `listen EPERM`, so one host-environment browser smoke of the live-binding
 workflow remains queued as manual follow-up rather than governed closeout work.
 
+The ED throughput demo package candidate next slice has now advanced beyond
+contract/plan definition. Its concrete build materials exist under
+`scenarios/healthcare/` as a data design, dashboard blueprint, and operator
+build checklist that package the scenario into an executable demo assembly
+flow. The first verification/repair pass on that package is also now closed:
+the priority-sites table has an explicit `priority_status` contract defined in
+the data design and reused by the blueprint and operator checklist instead of
+being left to operator improvisation.
+
+That package now also has first-pass materialized demo artifacts aligned to
+the current DashForge mock/runtime shapes:
+`scenarios/healthcare/ed-throughput-crunch-preview.sqlite`,
+`scenarios/healthcare/ed-throughput-crunch-preview-data.json`,
+`scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json`, and
+`scenarios/healthcare/ed-throughput-crunch-binding-map.md`. The new preview
+package now carries the full planned six-dataset package shape with 6 / 36 /
+144 / 324 / 18 / 36 rows across the canonical scenario datasets, the
+SQLite artifact is the canonical mock-data output, the JSON snapshot remains
+for the current nested frontend preview seam, the dashboard JSON is a bounded
+`mock` `DashboardSpec` for `ED Throughput Command View`, and the binding map
+documents how the command-view widgets translate onto the existing
+dataset-binding and presenter-step seams.
+
+The ED throughput scenario is now also registered in the live frontend runtime:
+scenario and template registries include `healthcare:ed-throughput-crunch`,
+a dedicated `tpl.healthcare.ed-throughput-command` template, and a scenario-
+specific template blueprint that instantiates in-app using the current dataset
+contract (`monthly_metrics`) and widget taxonomy.
+
 ### Recently Completed
 
+- ✅ Added the practical ED throughput demo build artifacts:
+  `scenarios/healthcare/ed-throughput-crunch-data-design.md`,
+  `scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md`, and
+  `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`
+- ✅ Materialized first-pass ED throughput demo runtime artifacts:
+  `scenarios/healthcare/ed-throughput-crunch-preview.sqlite`,
+  `scenarios/healthcare/ed-throughput-crunch-preview-data.json`,
+  `scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json`, and
+  `scenarios/healthcare/ed-throughput-crunch-binding-map.md`
+- ✅ Closed the ED throughput demo workflow repair pass by defining
+  `facility_summary.priority_status`, aligning the priority-table widget spec,
+  updating operator label guidance, and recording the outcome in
+  `code-reviews/repair-ed-throughput-crunch-demo-workflow.md`
+- ✅ Defined a bounded ED throughput scenario-to-demo-package workflow in `scenarios/healthcare/ed-throughput-crunch-contract.md` and `plans/ed-throughput-crunch-demo-plan.md`
+- ✅ Registered the ED throughput scenario and dedicated command-view template in the
+  frontend scenario/template catalogs, including scenario-specific blueprint
+  instantiation for in-app dashboard assembly.
 - ✅ Sprint 9 added `createDashboardDataAdapter.ts` so `mock`, `live`, and `hybrid` specs resolve through one shared runtime seam
 - ✅ Sprint 9 added a bounded read-only REST adapter plus explicit hybrid composition under `frontend/src/core/data/`
 - ✅ The builder property rail now exposes data-mode switching, dataset visibility, and per-dataset REST binding/field-map editing
@@ -160,7 +206,9 @@ workflow remains queued as manual follow-up rather than governed closeout work.
 
 - ⏳ Browser preview still needs one real local run outside this sandbox because localhost port binding is denied here (`listen EPERM`)
 - ⏳ One host-environment smoke is still needed for the closed Sprint 9 live-binding workflow
-- ⏳ The next work now needs to be chosen as a new bounded roadmap slice rather than extending the closed Sprint 1-9 governed ladder in place
+- ⏳ The next work now needs to be executed as a new bounded roadmap slice rather than extending the closed Sprint 1-9 governed ladder in place
+- ⏳ One host-capable rehearsal run is still required to validate the ED
+  throughput command-view path end-to-end in a non-restricted browser environment
 
 ---
 

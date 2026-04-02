@@ -4,6 +4,332 @@
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
 
+## 2026-04-02 — ED Throughput Scenario Wired Into Frontend Runtime
+
+### What Was Built
+
+The `healthcare:ed-throughput-crunch` scenario is now fully registered in the
+runtime scenario and template catalogs and can be instantiated as an in-app starter
+spec. `frontend/src/mock-data/scenarioCatalog.ts` now imports the scenario data
+and `frontend/src/mock-data/scenarioCatalog.test.ts` covers its registration.
+`frontend/src/mock-data/templateCatalog.ts` now exposes
+`tpl.healthcare.ed-throughput-command`, `createFreshDraftForScenario` can instantiate
+the ED command view starter, and the corresponding builder blueprint defines the
+ED-specific widget set and dataset contract.
+
+### Why It Matters
+
+This closes the final gap between offline package artifacts and app-visible
+demo assembly. Operators can now run the ED throughput scenario through the same
+builder workflow used by other scenarios, with consistent starter behavior and
+contract checks before moving into presenter/rehearsal mode.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+npm --prefix frontend test -- src/mock-data/scenarioCatalog.test.ts src/mock-data/templateCatalog.test.ts src/features/builder/templateInstantiation.test.ts
+python3 -m pytest -q
+npm --prefix frontend run build
+```
+
+Expect the new scenario/template tests to pass, and the build to remain green.
+
+## 2026-04-01 — ED Throughput Materialization Review And Workflow Handoff Closed
+
+### What Was Built
+
+The ED throughput materialization slice now has its formal closeout artifact in
+`code-reviews/review-ed-throughput-crunch-materialization.md`, completing the
+governed contract/plan, verify, repair, and review trail for the materialized
+scenario package.
+
+This handoff also makes the durable asset locations and automation entrypoint
+explicit for future operators. The materialized scenario artifacts live at:
+
+- `scenarios/healthcare/ed-throughput-crunch-preview.sqlite`
+- `scenarios/healthcare/ed-throughput-crunch-preview-data.json`
+- `scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json`
+- `scenarios/healthcare/ed-throughput-crunch-binding-map.md`
+
+The governed workflow that produced and closed them lives at:
+
+- `playbooks/ed_throughput_crunch_materialization_workflow.yaml`
+
+### Why It Matters
+
+Future operators no longer need to reconstruct where the ED throughput
+materialized demo assets came from or which governed path generated them. The
+review trail now points directly to both the packaged scenario outputs and the
+workflow that can be rerun or resumed for the same bounded slice.
+
+### How to Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+sed -n '1,240p' code-reviews/review-ed-throughput-crunch-materialization.md
+sed -n '1,260p' playbooks/ed_throughput_crunch_materialization_workflow.yaml
+sed -n '1,220p' code-reviews/verify-ed-throughput-crunch-materialization.md
+sed -n '1,220p' code-reviews/repair-ed-throughput-crunch-materialization.md
+python3 -m pytest -q
+npm --prefix frontend test
+npm --prefix frontend run build
+```
+
+Expect the review to state that the only verification finding was repaired,
+the workflow to show the full governed materialization path, and the standard
+repo checks to stay green.
+
+## 2026-04-01 — ED Throughput Materialized Data And Spec Artifacts Added
+
+### What Was Built
+
+The ED throughput healthcare scenario now has concrete materialized demo
+artifacts under `scenarios/healthcare/` that match the current DashForge
+mock-data and `DashboardSpec` seams instead of staying only as design docs.
+
+`scenarios/healthcare/ed-throughput-crunch-preview.sqlite` now exists as the
+canonical mock-data artifact for this package. The dataset package is also
+retained in JSON because the current frontend/demo preview seam still consumes
+the nested `previewDatasets` shape.
+
+`scenarios/healthcare/ed-throughput-crunch-preview-data.json` now contains the
+full concrete mock payload for the scenario: all six documented datasets,
+expanded to the package's planned row floor with six-week history for the
+weekly datasets and a current-day staffing snapshot.
+
+`scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json` contains the
+first serialized `DashboardSpec` for `ED Throughput Command View`. It stays
+fully `mock`-backed, uses only the supported current widget types, and maps
+the five-step presenter arc onto the existing `narrative.storyArc` and
+`presenterNotes` shape.
+
+`scenarios/healthcare/ed-throughput-crunch-binding-map.md` documents the
+widget-to-dataset mapping, the presenter-step ownership of each widget, the
+materialized row counts for each dataset, and the deliberate decision to keep
+`ed_flow` in the preview payload while leaving it out of the first
+command-view page until a later builder swap is wanted.
+
+### Why It Matters
+
+This closes the gap between the ED throughput package's planning documents and
+runtime-shaped deliverables more completely than the earlier first-pass stub.
+The repo now has concrete scenario data at the intended package scale and a
+command-view dashboard document that future frontend registration work can
+lift into the active mock catalog and starter flow without having to
+reconstruct weekly history, drilldown rows, or the first spec shape from
+prose.
+
+### How to Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+python3 - <<'PY'
+import json
+from pathlib import Path
+
+preview = json.loads(Path("scenarios/healthcare/ed-throughput-crunch-preview-data.json").read_text())
+spec = json.loads(Path("scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json").read_text())
+
+print(sorted(preview["previewDatasets"].keys()))
+print(sorted({widget["data"]["datasetId"] for widget in spec["widgets"] if widget["data"]["source"] == "dataset"}))
+print(spec["meta"]["title"])
+print(spec["intent"]["scenario"])
+PY
+
+python3 - <<'PY'
+import sqlite3
+from pathlib import Path
+
+conn = sqlite3.connect(Path("scenarios/healthcare/ed-throughput-crunch-preview.sqlite"))
+tables = [row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
+print(tables)
+for name in tables:
+    count = conn.execute(f'SELECT COUNT(*) FROM \"{name}\"').fetchone()[0]
+    print(name, count)
+conn.close()
+PY
+
+ls -l scenarios/healthcare/ed-throughput-crunch-preview.sqlite
+sed -n '1,260p' scenarios/healthcare/ed-throughput-crunch-preview-data.json
+sed -n '1,320p' scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json
+sed -n '1,260p' scenarios/healthcare/ed-throughput-crunch-binding-map.md
+```
+
+Expect the preview artifact to expose all six canonical datasets, the spec to
+reference only datasets present in that preview payload, and the binding map
+to show the same widget IDs and presenter sequence used in the serialized
+dashboard document.
+
+## 2026-04-01 — ED Throughput Demo Workflow Review And Automation Handoff Closed
+
+### What Was Built
+
+The ED throughput demo-package workflow now has its formal review artifact in
+`code-reviews/review-ed-throughput-crunch-demo-workflow.md`, closing the
+governed verify-repair-review trail for this scenario package. The review
+confirms that the repaired `priority_status` contract is consistently defined
+across the canonical data design, dashboard blueprint, and operator checklist,
+and it records that no further blocking findings remain inside the bounded
+documentation workflow.
+
+This handoff also makes the automation entrypoint explicit for future demo
+reruns: the governed scenario workflow lives at
+`playbooks/ed_throughput_crunch_demo_workflow.yaml` and sequences the package
+through contract/plan, build, verify, repair, and review/handoff.
+
+### Why It Matters
+
+The ED throughput package is now discoverable as both a document set and an
+Agent-Orch workflow. A future operator does not need to reconstruct how this
+scenario was assembled or where to start: the playbook, artifacts, and review
+trail now point to one repeatable automation path.
+
+### How to Verify
+
+```bash
+cd /Users/lee/projects/agent-orch
+python3 -m src.agent_orch.main validate-playbook /Users/lee/projects/dashForge/playbooks/ed_throughput_crunch_demo_workflow.yaml
+
+cd /Users/lee/projects/dashForge
+sed -n '1,240p' code-reviews/review-ed-throughput-crunch-demo-workflow.md
+sed -n '1,220p' code-reviews/verify-ed-throughput-crunch-demo-workflow.md
+sed -n '1,220p' code-reviews/repair-ed-throughput-crunch-demo-workflow.md
+sed -n '1,240p' playbooks/ed_throughput_crunch_demo_workflow.yaml
+```
+
+Expect the playbook validation to pass and the review to state that the
+governed documentation workflow is closed, with only the already-known
+host-environment browser rehearsal remaining before client use.
+
+## 2026-04-01 — ED Throughput Demo Workflow Repair Closed
+
+### What Was Built
+
+The verification finding against the ED throughput demo-package documents is
+now repaired. The canonical `facility_summary` data design in
+`scenarios/healthcare/ed-throughput-crunch-data-design.md` now defines a
+required derived field `priority_status` with bounded management-language
+values tied to facility risk and worsening trend conditions.
+
+The downstream package artifacts now point to that same field instead of
+assuming an operator will invent wording during assembly.
+`scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md` now calls
+for `priority_status` in the `Priority Sites This Week` widget, and
+`scenarios/healthcare/ed-throughput-crunch-build-checklist.md` now tells the
+operator to use `Act Now`, `Watch Closely`, or `Stable Monitor` explicitly.
+
+The repair outcome is recorded in
+`code-reviews/repair-ed-throughput-crunch-demo-workflow.md`.
+
+### Why It Matters
+
+This closes the one medium contract gap from verification. The priority table
+is now specified at the data layer, reflected in the dashboard blueprint, and
+anchored in the operator checklist, so the most important management readout
+is no longer left to ad hoc copy decisions during demo assembly.
+
+### How to Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+rg -n "priority_status|Act Now|Watch Closely|Stable Monitor" \
+  scenarios/healthcare/ed-throughput-crunch-data-design.md \
+  scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md \
+  scenarios/healthcare/ed-throughput-crunch-build-checklist.md \
+  code-reviews/repair-ed-throughput-crunch-demo-workflow.md
+sed -n '156,182p' scenarios/healthcare/ed-throughput-crunch-data-design.md
+sed -n '140,148p' scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md
+sed -n '120,128p' scenarios/healthcare/ed-throughput-crunch-build-checklist.md
+sed -n '1,220p' code-reviews/repair-ed-throughput-crunch-demo-workflow.md
+```
+
+Expect the same `priority_status` contract to appear in the canonical data
+design, the priority-table widget definition, the operator label guidance, and
+the repair artifact.
+
+## 2026-04-01 — ED Throughput Demo Build Artifacts Added
+
+### What Was Built
+
+The healthcare ED throughput demo package now has the three practical build
+artifacts that the earlier contract and plan called for.
+
+`scenarios/healthcare/ed-throughput-crunch-data-design.md` defines the
+dashboard-facing data model: dataset inventory, grain, key fields, hotspot
+facility expectations, widget-to-dataset mapping, and bounded `live` /
+`hybrid` guidance aligned to Sprint 9.
+
+`scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md` defines the
+actual page shape for the demo: executive KPI band, facility concentration
+views, operational driver views, consequence/action close, presenter sequence,
+builder demo edits, AI positioning, and export/handoff framing.
+
+`scenarios/healthcare/ed-throughput-crunch-build-checklist.md` turns that into
+an operator runbook covering pre-flight, dashboard assembly, rehearsal order,
+bounded AI and live-binding mentions, go/no-go review, and final rehearsal.
+
+### Why It Matters
+
+The ED throughput package is no longer just a scenario brief plus talk track.
+The repo now contains enough concrete structure for an operator to build and
+rehearse a credible client-facing demo without inventing the dataset design,
+screen layout, or execution sequence from scratch.
+
+### How to Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+sed -n '1,260p' scenarios/healthcare/ed-throughput-crunch-data-design.md
+sed -n '1,260p' scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md
+sed -n '1,260p' scenarios/healthcare/ed-throughput-crunch-build-checklist.md
+sed -n '1,260p' scenarios/healthcare/ed-throughput-crunch-contract.md
+sed -n '1,280p' plans/ed-throughput-crunch-demo-plan.md
+```
+
+Expect the three new artifacts to stay aligned with the scenario canon, the
+client presentation script, and the bounded Sprint 9 product baseline.
+
+## 2026-04-01 — ED Throughput Demo Package Workflow Defined
+
+### What Was Built
+
+A new bounded planning slice now exists for turning the healthcare
+`ed-throughput-crunch` scenario into a dashboard demo build package.
+`scenarios/healthcare/ed-throughput-crunch-contract.md` locks the scope,
+constraints, required outputs, and acceptance criteria for that package, while
+`plans/ed-throughput-crunch-demo-plan.md` sequences the work from scenario
+alignment through dashboard architecture, builder-demo moments, presenter
+walkthrough, handoff/export framing, and readiness review.
+
+The slice is explicitly framed as scenario packaging on top of the closed
+Sprint 9 baseline rather than new runtime or platform development. It keeps
+the future demo package anchored to the existing healthcare scenario brief,
+client presentation script, and the current `mock` / `live` / `hybrid`
+product story.
+
+### Why It Matters
+
+This gives DashForge a concrete candidate next slice after the Sprint 1-9
+governed ladder closed. Instead of leaving the ED throughput healthcare story
+as loose scenario notes, the repo now has a bounded execution contract for
+building a repeatable client-facing dashboard demo package that fits the
+current product and governance model.
+
+### How to Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+sed -n '1,260p' scenarios/healthcare/ed-throughput-crunch.md
+sed -n '1,260p' scenarios/healthcare/client-presentation-script.md
+sed -n '1,260p' scenarios/healthcare/ed-throughput-crunch-contract.md
+sed -n '1,280p' plans/ed-throughput-crunch-demo-plan.md
+```
+
+Expect the contract and plan to stay aligned with the scenario brief and
+presentation script, and to remain bounded to demo-package assembly rather
+than new product-feature work.
+
 ## 2026-04-01 — Governed Playbooks Normalized For Future Runs
 
 ### What Was Built

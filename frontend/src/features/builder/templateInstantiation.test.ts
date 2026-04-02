@@ -28,4 +28,19 @@ describe("templateInstantiation", () => {
     expect(draft.intent.industry).toBe("financial");
     expect(draft.dataContext.mock?.scenarioId).toBe("market-downturn");
   });
+
+  it("builds the ED throughput command starter from catalog", () => {
+    const draft = createFreshDraftForScenario("healthcare", "ed-throughput-crunch");
+
+    expect(draft.meta.title).toBe("ED Throughput Command View");
+    expect(draft.intent.industry).toBe("healthcare");
+    expect(draft.intent.type).toBe("risk_alert");
+    expect(draft.widgets).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "kpi_arrivals" }),
+      expect.objectContaining({ id: "trend_dtp" }),
+      expect.objectContaining({ id: "priority_table" }),
+      expect.objectContaining({ id: "experience_consequence" }),
+    ]));
+    expect(draft.narrative?.storyArc.hook.widgetIds).toContain("kpi_arrivals");
+  });
 });

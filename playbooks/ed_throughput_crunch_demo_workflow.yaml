@@ -1,0 +1,204 @@
+{
+  "playbook_id": "ed_throughput_crunch_demo_workflow",
+  "name": "ED throughput crunch scenario-to-dashboard demo workflow",
+  "defaults": {
+    "worker": "codex_cli",
+    "retry_policy": {
+      "max_attempts": 2,
+      "strategy": "rerun_with_validation_feedback"
+    }
+  },
+  "run_policy": {
+    "on_step_failure": "halt",
+    "require_validation_pass_to_advance": true
+  },
+  "operational_paths": [
+    "artifacts/current/"
+  ],
+  "steps": [
+    {
+      "step_id": "scenario_contract_plan",
+      "name": "Scenario contract and plan",
+      "mission": "Read AGENTS.md, context.md, architecture.md, product-definition.md, scenarios/healthcare/ed-throughput-crunch.md, and scenarios/healthcare/client-presentation-script.md. Define a bounded workflow for turning the ED throughput scenario into a dashboard demo build package. Write the contract to scenarios/healthcare/ed-throughput-crunch-contract.md and the execution plan to plans/ed-throughput-crunch-demo-plan.md.",
+      "inputs": [
+        "AGENTS.md",
+        "context.md",
+        "architecture.md",
+        "product-definition.md",
+        "scenarios/healthcare/ed-throughput-crunch.md",
+        "scenarios/healthcare/client-presentation-script.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "plans/",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "README.md"
+      ],
+      "depends_on": [],
+      "outputs": {
+        "required": [
+          { "path": "scenarios/healthcare/ed-throughput-crunch-contract.md", "type": "markdown" },
+          { "path": "plans/ed-throughput-crunch-demo-plan.md", "type": "markdown" }
+        ]
+      },
+      "validation": {
+        "structural": [
+          { "type": "file_exists", "path": "scenarios/healthcare/ed-throughput-crunch-contract.md" },
+          { "type": "file_exists", "path": "plans/ed-throughput-crunch-demo-plan.md" }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the scenario contract and plan so the workflow scope, outputs, and ordering are explicit and bounded.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "build_demo_artifacts",
+      "name": "Build data and dashboard artifacts",
+      "mission": "Read AGENTS.md, skills/development-loop.md, scenarios/healthcare/ed-throughput-crunch-contract.md, plans/ed-throughput-crunch-demo-plan.md, scenarios/healthcare/ed-throughput-crunch.md, and scenarios/healthcare/client-presentation-script.md. Produce the practical build artifacts for the demo: a concrete data design, a dashboard blueprint, and an operator build checklist. Write them to scenarios/healthcare/ed-throughput-crunch-data-design.md, scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md, and scenarios/healthcare/ed-throughput-crunch-build-checklist.md.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "scenarios/healthcare/ed-throughput-crunch-contract.md",
+        "plans/ed-throughput-crunch-demo-plan.md",
+        "scenarios/healthcare/ed-throughput-crunch.md",
+        "scenarios/healthcare/client-presentation-script.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "plans/",
+        "code-reviews/",
+        "README.md"
+      ],
+      "depends_on": [
+        "scenario_contract_plan"
+      ],
+      "outputs": {
+        "required": [
+          { "path": "scenarios/healthcare/ed-throughput-crunch-data-design.md", "type": "markdown" },
+          { "path": "scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md", "type": "markdown" },
+          { "path": "scenarios/healthcare/ed-throughput-crunch-build-checklist.md", "type": "markdown" }
+        ]
+      },
+      "validation": {
+        "structural": [
+          { "type": "file_exists", "path": "scenarios/healthcare/ed-throughput-crunch-data-design.md" },
+          { "type": "file_exists", "path": "scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md" },
+          { "type": "file_exists", "path": "scenarios/healthcare/ed-throughput-crunch-build-checklist.md" }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the demo build artifacts so the data design, dashboard blueprint, and operator checklist all exist and are usable.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "verify_demo_artifacts",
+      "name": "Verify demo artifacts",
+      "mission": "Read AGENTS.md, skills/test-as-lee.md, scenarios/healthcare/ed-throughput-crunch-contract.md, plans/ed-throughput-crunch-demo-plan.md, and the generated scenario artifacts. Verify that the data design, dashboard blueprint, and build checklist tell one coherent story from scenario to dashboard. Record findings in code-reviews/verify-ed-throughput-crunch-demo-workflow.md.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/test-as-lee.md",
+        "scenarios/healthcare/ed-throughput-crunch-contract.md",
+        "plans/ed-throughput-crunch-demo-plan.md",
+        "scenarios/healthcare/ed-throughput-crunch-data-design.md",
+        "scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md",
+        "scenarios/healthcare/ed-throughput-crunch-build-checklist.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "build_demo_artifacts"
+      ],
+      "outputs": {
+        "required": [
+          { "path": "code-reviews/verify-ed-throughput-crunch-demo-workflow.md", "type": "markdown" }
+        ]
+      },
+      "validation": {
+        "structural": [
+          { "type": "file_exists", "path": "code-reviews/verify-ed-throughput-crunch-demo-workflow.md" }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair verification so the scenario-to-dashboard workflow findings are documented clearly.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "repair_demo_artifacts",
+      "name": "Repair demo artifacts",
+      "mission": "Read AGENTS.md, skills/development-loop.md, code-reviews/verify-ed-throughput-crunch-demo-workflow.md, and the generated scenario artifacts. Repair any issues found during verification and record the repair outcome in code-reviews/repair-ed-throughput-crunch-demo-workflow.md.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "code-reviews/verify-ed-throughput-crunch-demo-workflow.md",
+        "scenarios/healthcare/ed-throughput-crunch-data-design.md",
+        "scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md",
+        "scenarios/healthcare/ed-throughput-crunch-build-checklist.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "verify_demo_artifacts"
+      ],
+      "outputs": {
+        "required": [
+          { "path": "code-reviews/repair-ed-throughput-crunch-demo-workflow.md", "type": "markdown" }
+        ]
+      },
+      "validation": {
+        "structural": [
+          { "type": "file_exists", "path": "code-reviews/repair-ed-throughput-crunch-demo-workflow.md" }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the scenario-to-dashboard demo package and record the repair outcome durably.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "review_handoff_demo_artifacts",
+      "name": "Review and handoff demo artifacts",
+      "mission": "Read AGENTS.md, skills/code-review.md, skills/documentation.md, scenarios/healthcare/ed-throughput-crunch-contract.md, plans/ed-throughput-crunch-demo-plan.md, code-reviews/verify-ed-throughput-crunch-demo-workflow.md, and code-reviews/repair-ed-throughput-crunch-demo-workflow.md. Write the formal review to code-reviews/review-ed-throughput-crunch-demo-workflow.md and update result-review.md so the scenario automation path is discoverable for future demos.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/code-review.md",
+        "skills/documentation.md",
+        "scenarios/healthcare/ed-throughput-crunch-contract.md",
+        "plans/ed-throughput-crunch-demo-plan.md",
+        "code-reviews/verify-ed-throughput-crunch-demo-workflow.md",
+        "code-reviews/repair-ed-throughput-crunch-demo-workflow.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "code-reviews/",
+        "result-review.md"
+      ],
+      "depends_on": [
+        "repair_demo_artifacts"
+      ],
+      "outputs": {
+        "required": [
+          { "path": "code-reviews/review-ed-throughput-crunch-demo-workflow.md", "type": "markdown" }
+        ]
+      },
+      "validation": {
+        "structural": [
+          { "type": "file_exists", "path": "code-reviews/review-ed-throughput-crunch-demo-workflow.md" }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the review and handoff so the scenario-to-dashboard workflow is documented and discoverable.",
+        "after_retries_exhausted": "halt"
+      }
+    }
+  ]
+}

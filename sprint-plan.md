@@ -106,6 +106,35 @@ sandbox denies localhost port binding.
       `127.0.0.1:5173` or preview binding
 - [ ] Decide the next bounded roadmap slice beyond the now-closed governed
       Sprint 1-9 ladder
+- [ ] Define a bounded scenario-building slice that turns the ED throughput
+      workflow pattern into a reusable DashForge scenario-building agent
+      surface
+- [ ] Specify the first scenario-building skill set under `skills/` so future
+      scenario work can consistently produce the scenario brief, data design,
+      dashboard blueprint, operator script, and SQLite-plus-JSON mock package
+
+## Next Slice Candidate
+
+The strongest near-term roadmap candidate is a reusable scenario-building
+system on top of the successful ED throughput pattern.
+
+That slice should package today's ad hoc scenario workflow knowledge into a
+repeatable DashForge capability:
+
+- a named scenario-building agent/workflow that can take an industry prompt or
+  scenario brief and drive the governed contract, design, materialization, and
+  review path
+- a dedicated scenario skill set under `skills/` for scenario authoring,
+  dataset shaping, dashboard story framing, and client-demo packaging
+- output contracts that consistently produce:
+  - scenario brief
+  - client presentation script
+  - data design
+  - dashboard blueprint
+  - build checklist
+  - canonical SQLite mock-data artifact
+  - companion nested JSON preview artifact
+  - first-pass `DashboardSpec`
 
 ## Sprint Carry-Forward Decisions
 

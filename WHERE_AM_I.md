@@ -14,7 +14,7 @@
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / Future |
 | **Overall Status** | 🟢 Sprint 9 production binding is now formally closed in-repo, and the governed Sprint 1-9 program is complete |
-| **Last Updated** | 2026-04-01 |
+| **Last Updated** | 2026-04-02 |
 
 ---
 
@@ -40,6 +40,7 @@
 | Deliver the workshop-ready MVP baseline | ✅ Done | The closed Sprint 8 baseline satisfies the bounded workshop-ready authoring target in-repo |
 | Deliver the first bounded production-binding path | ✅ Done | Sprint 9 closed with shared adapter resolution, REST live binding, hybrid composition, builder-integrated binding controls, and safe spec serialization |
 | Close the governed Agent-Orch sprint ladder | ✅ Done | The governed Sprint 1-9 program is now closed through `code-reviews/review-sprint-09.md` |
+| Register ED throughput command-view scenario in runtime | ✅ Done | `healthcare:ed-throughput-crunch` and `tpl.healthcare.ed-throughput-command` now instantiate in-app with dedicated blueprint wiring |
 | Run one host-environment browser smoke of the live-binding workflow | 🟡 Planned | Still blocked in this sandbox by localhost `listen EPERM`; remains a manual host-only follow-up |
 
 ---

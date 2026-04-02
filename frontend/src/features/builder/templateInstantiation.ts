@@ -13,8 +13,24 @@ type TemplateWidgetBlueprint = {
   title?: string;
   subtitle?: string;
   caption?: string;
+  annotations?: WidgetSpec["annotations"];
   patch?: (widget: WidgetSpec) => WidgetSpec;
 };
+
+function edThroughputNarrativeChartPatch(
+  widget: WidgetSpec,
+  chartPatch: Partial<WidgetSpec["chart"]>,
+  data: WidgetSpec["data"],
+) {
+  return {
+    ...widget,
+    chart: {
+      ...widget.chart,
+      ...chartPatch,
+    },
+    data,
+  } as WidgetSpec;
+}
 
 const TEMPLATE_BLUEPRINTS: Record<string, TemplateWidgetBlueprint[]> = {
   "healthcare:executive_summary": [
@@ -39,6 +55,434 @@ const TEMPLATE_BLUEPRINTS: Record<string, TemplateWidgetBlueprint[]> = {
     { type: "kpi", id: "occupancy-risk-kpi", position: { x: 3, y: 0, w: 3, h: 2 } },
     { type: "bar", id: "occupancy-pressure-bar", position: { x: 6, y: 0, w: 6, h: 3 } },
     { type: "line", id: "satisfaction-watch-line", position: { x: 0, y: 3, w: 12, h: 3 } },
+  ],
+  "tpl.healthcare.ed-throughput-command": [
+    {
+      type: "kpi",
+      id: "kpi_arrivals",
+      position: { x: 0, y: 0, w: 2, h: 2 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "monitoring",
+            encoding: {
+              value: {
+                field: "ed_arrivals_per_day",
+                format: "integer",
+              },
+            },
+            kpiConfig: {
+              deltaField: "ed_arrivals_wow_delta",
+              deltaLabel: "vs last week",
+              deltaFormat: "absolute",
+              deltaPositive: "bad",
+              suffix: "/day",
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "monthly_metrics",
+            filters: [{ field: "week_start", operator: "eq", value: "2026-03-23" }],
+            limit: 1,
+          },
+        ),
+      title: "ED Arrivals / Day",
+      subtitle: "Demand stayed elevated",
+    },
+    {
+      type: "kpi",
+      id: "kpi_dtp",
+      position: { x: 2, y: 0, w: 2, h: 2 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "anomaly",
+            encoding: {
+              value: {
+                field: "door_to_provider_minutes",
+                format: "decimal-1",
+              },
+            },
+            kpiConfig: {
+              deltaField: "door_to_provider_wow_delta",
+              deltaLabel: "vs last week",
+              deltaFormat: "absolute",
+              deltaPositive: "bad",
+              suffix: " min",
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "monthly_metrics",
+            filters: [{ field: "week_start", operator: "eq", value: "2026-03-23" }],
+            limit: 1,
+          },
+        ),
+      title: "Door To Provider",
+      subtitle: "Above target for six weeks",
+    },
+    {
+      type: "kpi",
+      id: "kpi_lwbs",
+      position: { x: 4, y: 0, w: 2, h: 2 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "anomaly",
+            encoding: {
+              value: {
+                field: "lwbs_rate",
+                format: "percent",
+              },
+            },
+            kpiConfig: {
+              deltaField: "lwbs_wow_delta",
+              deltaLabel: "vs last week",
+              deltaFormat: "absolute",
+              deltaPositive: "bad",
+              suffix: "%",
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "monthly_metrics",
+            filters: [{ field: "week_start", operator: "eq", value: "2026-03-23" }],
+            limit: 1,
+          },
+        ),
+      title: "LWBS Rate",
+      subtitle: "Access leakage is widening",
+    },
+    {
+      type: "kpi",
+      id: "kpi_boarding",
+      position: { x: 6, y: 0, w: 2, h: 2 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "anomaly",
+            encoding: {
+              value: {
+                field: "avg_boarding_hours",
+                format: "decimal-1",
+              },
+            },
+            kpiConfig: {
+              deltaField: "boarding_wow_delta",
+              deltaLabel: "vs last week",
+              deltaFormat: "absolute",
+              deltaPositive: "bad",
+              suffix: " hrs",
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "monthly_metrics",
+            filters: [{ field: "week_start", operator: "eq", value: "2026-03-23" }],
+            limit: 1,
+          },
+        ),
+      title: "Avg Boarding Hours",
+      subtitle: "Inpatient flow is the amplifier",
+    },
+    {
+      type: "kpi",
+      id: "kpi_discharge",
+      position: { x: 8, y: 0, w: 2, h: 2 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "target_vs_actual",
+            encoding: {
+              value: {
+                field: "discharge_before_noon_rate",
+                format: "percent",
+              },
+            },
+            kpiConfig: {
+              deltaField: "discharge_wow_delta",
+              deltaLabel: "vs last week",
+              deltaFormat: "absolute",
+              deltaPositive: "good",
+              suffix: "%",
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "monthly_metrics",
+            filters: [{ field: "week_start", operator: "eq", value: "2026-03-23" }],
+            limit: 1,
+          },
+        ),
+      title: "Discharge Before Noon",
+      subtitle: "Best immediate recovery lever",
+    },
+    {
+      type: "line",
+      id: "trend_dtp",
+      position: { x: 0, y: 2, w: 4, h: 3 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "trend",
+            encoding: {
+              x: { field: "week_start" },
+              y: { field: "door_to_provider_minutes" },
+            },
+            options: {
+              smooth: true,
+              showGrid: true,
+              showTooltip: true,
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "monthly_metrics",
+            columns: ["week_start", "door_to_provider_minutes"],
+            sortBy: {
+              field: "week_start",
+              direction: "asc",
+            },
+          },
+        ),
+      title: "Six-Week DTP Trend",
+      subtitle: "Persistent enterprise pressure",
+      caption:
+        "The system has stayed above the 45-minute target for the full six-week run.",
+      annotations: [
+        {
+          type: "reference_line",
+          label: "Target",
+          value: 45,
+          style: "dashed",
+        },
+      ],
+    },
+    {
+      type: "bar",
+      id: "facility_rank",
+      position: { x: 4, y: 2, w: 4, h: 3 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "ranking",
+            encoding: {
+              x: { field: "facility_name" },
+              y: { field: "door_to_provider_minutes" },
+            },
+            options: {
+              showGrid: true,
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "facility_summary",
+            columns: ["facility_name", "door_to_provider_minutes"],
+            filters: [{ field: "week_start", operator: "eq", value: "2026-03-23" }],
+            sortBy: {
+              field: "door_to_provider_minutes",
+              direction: "desc",
+            },
+          },
+        ),
+      title: "Facilities Driving Delay",
+      subtitle: "Metro Community and North Medical are the hotspots",
+      caption:
+        "Site concentration is more useful than an enterprise average when the room needs intervention decisions.",
+    },
+    {
+      type: "table",
+      id: "priority_table",
+      position: { x: 8, y: 2, w: 4, h: 3 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "comparison",
+            encoding: {
+              columns: [
+                { field: "priority_status", label: "Priority" },
+                { field: "facility_name", label: "Facility" },
+                { field: "door_to_provider_minutes", label: "DTP", format: "decimal-1" },
+                { field: "avg_boarding_hours", label: "Boarding", format: "decimal-1" },
+                {
+                  field: "discharge_before_noon_rate",
+                  label: "Discharge By Noon",
+                  format: "percent",
+                },
+              ],
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "facility_summary",
+            columns: [
+              "priority_status",
+              "facility_name",
+              "door_to_provider_minutes",
+              "avg_boarding_hours",
+              "discharge_before_noon_rate",
+              "risk_rank",
+            ],
+            filters: [{ field: "week_start", operator: "eq", value: "2026-03-23" }],
+            sortBy: {
+              field: "risk_rank",
+              direction: "asc",
+            },
+            limit: 6,
+          },
+        ),
+      title: "Priority Sites This Week",
+      subtitle: "Management language table",
+    },
+    {
+      type: "stacked_bar",
+      id: "service_line_driver",
+      position: { x: 0, y: 5, w: 6, h: 3 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "comparison",
+            encoding: {
+              x: { field: "service_line" },
+              y: { field: "avg_boarding_hours" },
+              series: { field: "facility_name" },
+            },
+            options: {
+              showLegend: true,
+              showGrid: true,
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "department_summary",
+            columns: [
+              "service_line",
+              "facility_name",
+              "avg_boarding_hours",
+              "discharge_before_noon_rate",
+            ],
+            filters: [
+              { field: "week_start", operator: "eq", value: "2026-03-23" },
+              {
+                field: "facility_id",
+                operator: "in",
+                value: ["metro_community", "north_medical"],
+              },
+            ],
+            sortBy: {
+              field: "avg_boarding_hours",
+              direction: "desc",
+            },
+          },
+        ),
+      title: "Boarding vs Discharge Flow",
+      subtitle: "Medicine and telemetry are the clearest bottlenecks",
+      caption:
+        "Focus on inpatient flow for the fastest intervention window in the two hotspot facilities.",
+    },
+    {
+      type: "bar",
+      id: "staffing_context",
+      position: { x: 6, y: 5, w: 6, h: 3 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "comparison",
+            encoding: {
+              x: { field: "shift" },
+              y: { field: "surge_gap_hours" },
+              series: { field: "facility_name" },
+            },
+            options: {
+              showLegend: true,
+              showGrid: true,
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "staffing_coverage",
+            columns: [
+              "shift",
+              "facility_name",
+              "surge_gap_hours",
+              "rn_fill_rate",
+              "provider_fill_rate",
+            ],
+            filters: [
+              {
+                field: "facility_id",
+                operator: "in",
+                value: ["metro_community", "north_medical", "saint_catherine"],
+              },
+            ],
+            sortBy: {
+              field: "surge_gap_hours",
+              direction: "desc",
+            },
+          },
+        ),
+      title: "Coverage Stress By Shift",
+      subtitle: "Evening and night strain matter",
+    },
+    {
+      type: "line",
+      id: "experience_consequence",
+      position: { x: 0, y: 8, w: 6, h: 3 },
+      patch: (widget) =>
+        edThroughputNarrativeChartPatch(
+          widget,
+          {
+            intent: "trend",
+            encoding: {
+              x: { field: "week_start" },
+              y: { field: "patient_satisfaction_score" },
+              series: { field: "facility_name" },
+            },
+            options: {
+              showGrid: true,
+              showLegend: true,
+              showTooltip: true,
+              smooth: true,
+            },
+          },
+          {
+            source: "dataset",
+            datasetId: "patient_experience",
+            columns: [
+              "week_start",
+              "facility_name",
+              "patient_satisfaction_score",
+              "lwbs_rate",
+              "diversion_hours",
+            ],
+            filters: [
+              {
+                field: "facility_id",
+                operator: "in",
+                value: ["metro_community", "north_medical", "saint_catherine"],
+              },
+            ],
+            sortBy: {
+              field: "week_start",
+              direction: "asc",
+            },
+          },
+        ),
+      title: "Throughput Consequences",
+      subtitle: "Satisfaction decline follows throughput pressure",
+      caption:
+        "Patient experience is now lagging the throughput movement by about one to two weeks.",
+    },
   ],
   "financial:executive_summary": [
     { type: "kpi", id: "aum-kpi", position: { x: 0, y: 0, w: 3, h: 2 } },
@@ -88,7 +532,13 @@ function cloneWidget(widget: WidgetSpec): WidgetSpec {
   return JSON.parse(JSON.stringify(widget)) as WidgetSpec;
 }
 
-function resolveBlueprintKey(packId: string, intent: string) {
+function resolveBlueprintKey(templateId: string, packId: string, intent: string) {
+  const templateSpecificBlueprint = TEMPLATE_BLUEPRINTS[templateId];
+
+  if (templateSpecificBlueprint) {
+    return templateId;
+  }
+
   return `${packId}:${intent}`;
 }
 
@@ -137,7 +587,7 @@ export function instantiateTemplateSpec(
   }
 
   const scenarioId = resolveScenarioId(template.scenarioIds, options.scenarioId);
-  const blueprintKey = resolveBlueprintKey(template.packId, template.intent);
+  const blueprintKey = resolveBlueprintKey(template.templateId, template.packId, template.intent);
   const blueprints = TEMPLATE_BLUEPRINTS[blueprintKey];
 
   if (!blueprints) {

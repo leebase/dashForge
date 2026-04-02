@@ -1,0 +1,272 @@
+{
+  "playbook_id": "ed_throughput_crunch_materialization_workflow",
+  "name": "ED throughput crunch materialization workflow",
+  "defaults": {
+    "worker": "codex_cli",
+    "retry_policy": {
+      "max_attempts": 2,
+      "strategy": "rerun_with_validation_feedback"
+    }
+  },
+  "run_policy": {
+    "on_step_failure": "halt",
+    "require_validation_pass_to_advance": true
+  },
+  "operational_paths": [
+    "artifacts/current/"
+  ],
+  "steps": [
+    {
+      "step_id": "materialization_contract_plan",
+      "name": "Materialization contract and plan",
+      "mission": "Read AGENTS.md, context.md, architecture.md, frontend/src/core/spec/dashboardSpec.ts, frontend/src/mock-data/mockScenarioTypes.ts, scenarios/healthcare/ed-throughput-crunch.md, scenarios/healthcare/ed-throughput-crunch-data-design.md, scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md, and scenarios/healthcare/ed-throughput-crunch-build-checklist.md. Define the bounded plan for materializing this scenario into real mock-data artifacts and a concrete DashboardSpec. Write the contract to scenarios/healthcare/ed-throughput-crunch-materialization-contract.md and the plan to plans/ed-throughput-crunch-materialization-plan.md.",
+      "inputs": [
+        "AGENTS.md",
+        "context.md",
+        "architecture.md",
+        "frontend/src/core/spec/dashboardSpec.ts",
+        "frontend/src/mock-data/mockScenarioTypes.ts",
+        "scenarios/healthcare/ed-throughput-crunch.md",
+        "scenarios/healthcare/ed-throughput-crunch-data-design.md",
+        "scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md",
+        "scenarios/healthcare/ed-throughput-crunch-build-checklist.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "plans/",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "README.md"
+      ],
+      "depends_on": [],
+      "outputs": {
+        "required": [
+          {
+            "path": "scenarios/healthcare/ed-throughput-crunch-materialization-contract.md",
+            "type": "markdown"
+          },
+          {
+            "path": "plans/ed-throughput-crunch-materialization-plan.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "scenarios/healthcare/ed-throughput-crunch-materialization-contract.md"
+          },
+          {
+            "type": "file_exists",
+            "path": "plans/ed-throughput-crunch-materialization-plan.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the materialization contract and plan so the scenario-to-artifact scope is explicit, bounded, and executable.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "materialize_data_and_spec",
+      "name": "Materialize data and DashboardSpec artifacts",
+      "mission": "Read AGENTS.md, skills/development-loop.md, scenarios/healthcare/ed-throughput-crunch-materialization-contract.md, plans/ed-throughput-crunch-materialization-plan.md, frontend/src/core/spec/dashboardSpec.ts, frontend/src/mock-data/mockScenarioTypes.ts, and the ED throughput scenario package docs. Create real materialized artifacts for the demo: scenarios/healthcare/ed-throughput-crunch-preview.sqlite as the canonical mock-data artifact, scenarios/healthcare/ed-throughput-crunch-preview-data.json as the nested frontend preview snapshot, scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json containing the first DashboardSpec for the command view, and scenarios/healthcare/ed-throughput-crunch-binding-map.md mapping widgets to datasets and presenter steps. Keep the artifacts aligned to the current DashForge mock/runtime shapes.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "scenarios/healthcare/ed-throughput-crunch-materialization-contract.md",
+        "plans/ed-throughput-crunch-materialization-plan.md",
+        "frontend/src/core/spec/dashboardSpec.ts",
+        "frontend/src/mock-data/mockScenarioTypes.ts",
+        "scenarios/healthcare/ed-throughput-crunch.md",
+        "scenarios/healthcare/ed-throughput-crunch-data-design.md",
+        "scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md",
+        "scenarios/healthcare/ed-throughput-crunch-build-checklist.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "plans/",
+        "code-reviews/",
+        "README.md",
+        "context.md",
+        "result-review.md"
+      ],
+      "depends_on": [
+        "materialization_contract_plan"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "scenarios/healthcare/ed-throughput-crunch-preview.sqlite",
+            "type": "binary"
+          },
+          {
+            "path": "scenarios/healthcare/ed-throughput-crunch-preview-data.json",
+            "type": "json"
+          },
+          {
+            "path": "scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json",
+            "type": "json"
+          },
+          {
+            "path": "scenarios/healthcare/ed-throughput-crunch-binding-map.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "scenarios/healthcare/ed-throughput-crunch-preview.sqlite"
+          },
+          {
+            "type": "file_exists",
+            "path": "scenarios/healthcare/ed-throughput-crunch-preview-data.json"
+          },
+          {
+            "type": "file_exists",
+            "path": "scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json"
+          },
+          {
+            "type": "file_exists",
+            "path": "scenarios/healthcare/ed-throughput-crunch-binding-map.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the ED throughput materialization so the SQLite artifact, JSON snapshot, DashboardSpec, and binding-map all exist and stay aligned to DashForge's current shapes.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "verify_materialized_demo",
+      "name": "Verify materialized demo artifacts",
+      "mission": "Read AGENTS.md, skills/test-as-lee.md, scenarios/healthcare/ed-throughput-crunch-materialization-contract.md, plans/ed-throughput-crunch-materialization-plan.md, scenarios/healthcare/ed-throughput-crunch-preview.sqlite, scenarios/healthcare/ed-throughput-crunch-preview-data.json, scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json, and scenarios/healthcare/ed-throughput-crunch-binding-map.md. Verify that the generated SQLite artifact and JSON snapshot tell the intended ED throughput story, that the spec is plausible against the current DashboardSpec contract, and that the binding map matches the dashboard blueprint. Record the findings in code-reviews/verify-ed-throughput-crunch-materialization.md.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/test-as-lee.md",
+        "scenarios/healthcare/ed-throughput-crunch-materialization-contract.md",
+        "plans/ed-throughput-crunch-materialization-plan.md",
+        "scenarios/healthcare/ed-throughput-crunch-preview.sqlite",
+        "scenarios/healthcare/ed-throughput-crunch-preview-data.json",
+        "scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json",
+        "scenarios/healthcare/ed-throughput-crunch-binding-map.md",
+        "scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "materialize_data_and_spec"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/verify-ed-throughput-crunch-materialization.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/verify-ed-throughput-crunch-materialization.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair verification so the ED throughput data/spec package is reviewed coherently against the current DashForge contract.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "repair_materialized_demo",
+      "name": "Repair materialized demo artifacts",
+      "mission": "Read AGENTS.md, skills/development-loop.md, code-reviews/verify-ed-throughput-crunch-materialization.md, scenarios/healthcare/ed-throughput-crunch-preview.sqlite, scenarios/healthcare/ed-throughput-crunch-preview-data.json, scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json, and scenarios/healthcare/ed-throughput-crunch-binding-map.md. Repair any issues found during verification and record the outcome in code-reviews/repair-ed-throughput-crunch-materialization.md.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "code-reviews/verify-ed-throughput-crunch-materialization.md",
+        "scenarios/healthcare/ed-throughput-crunch-preview.sqlite",
+        "scenarios/healthcare/ed-throughput-crunch-preview-data.json",
+        "scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json",
+        "scenarios/healthcare/ed-throughput-crunch-binding-map.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "verify_materialized_demo"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/repair-ed-throughput-crunch-materialization.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/repair-ed-throughput-crunch-materialization.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the ED throughput materialized package and record the repair outcome durably.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "review_handoff_materialized_demo",
+      "name": "Review and handoff materialized demo artifacts",
+      "mission": "Read AGENTS.md, skills/code-review.md, skills/documentation.md, scenarios/healthcare/ed-throughput-crunch-materialization-contract.md, plans/ed-throughput-crunch-materialization-plan.md, code-reviews/verify-ed-throughput-crunch-materialization.md, and code-reviews/repair-ed-throughput-crunch-materialization.md. Write the formal review to code-reviews/review-ed-throughput-crunch-materialization.md and update result-review.md so future operators can find the materialized scenario assets and the workflow that built them.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/code-review.md",
+        "skills/documentation.md",
+        "scenarios/healthcare/ed-throughput-crunch-materialization-contract.md",
+        "plans/ed-throughput-crunch-materialization-plan.md",
+        "code-reviews/verify-ed-throughput-crunch-materialization.md",
+        "code-reviews/repair-ed-throughput-crunch-materialization.md"
+      ],
+      "allowed_paths": [
+        "scenarios/healthcare/",
+        "code-reviews/",
+        "result-review.md"
+      ],
+      "depends_on": [
+        "repair_materialized_demo"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/review-ed-throughput-crunch-materialization.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/review-ed-throughput-crunch-materialization.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the review and handoff so the materialized ED throughput package is documented and discoverable.",
+        "after_retries_exhausted": "halt"
+      }
+    }
+  ]
+}

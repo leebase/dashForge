@@ -4,6 +4,7 @@ import type {
 } from "../core/spec/dashboardSpec";
 import { healthcareCostPressureScenario } from "./healthcareCostPressure";
 import { healthcareFluSeasonScenario } from "./healthcareFluSeason";
+import { healthcareEdThroughputCrunchScenario } from "./healthcareEdThroughputCrunch";
 import { financialAdvisorAttritionScenario } from "./financialAdvisorAttrition";
 import { financialGrowthQuarterScenario } from "./financialGrowthQuarter";
 import { financialMarketDownturnScenario } from "./financialMarketDownturn";
@@ -39,6 +40,13 @@ const scenarioCatalog = new Map<string, MockScenario>([
     {
       ...healthcareCostPressureScenario,
       datasets: healthcareCostPressureScenario.datasets,
+    },
+  ],
+  [
+    "healthcare:ed-throughput-crunch",
+    {
+      ...healthcareEdThroughputCrunchScenario,
+      datasets: healthcareEdThroughputCrunchScenario.datasets,
     },
   ],
   [
@@ -91,6 +99,14 @@ const PRIMARY_TREND_DATASET_BY_PACK: Record<string, string> = {
   saas: "monthly_summary",
 };
 
+function getPrimaryTrendDatasetIdForScenario(packId: string, scenarioId?: string): string {
+  if (packId === "healthcare" && scenarioId === "ed-throughput-crunch") {
+    return "monthly_metrics";
+  }
+
+  return PRIMARY_TREND_DATASET_BY_PACK[packId];
+}
+
 function scenarioKey(packId: string, scenarioId: string) {
   return `${packId}:${scenarioId}`;
 }
@@ -125,7 +141,7 @@ export function resolveScenarioDatasetMap(
 }
 
 export function getPrimaryTrendDatasetId(packId: string): string {
-  const datasetId = PRIMARY_TREND_DATASET_BY_PACK[packId];
+  const datasetId = getPrimaryTrendDatasetIdForScenario(packId);
 
   if (!datasetId) {
     throw new Error(`No primary trend dataset is registered for pack "${packId}".`);
@@ -160,6 +176,13 @@ export function listScenariosByPack(packId: string): Array<{
   scenarioId: string;
 }> {
   return listRegisteredScenarios().filter((scenario) => scenario.packId === packId);
+}
+
+export function getPrimaryTrendDatasetIdByScenario(
+  packId: string,
+  scenarioId: string,
+): string {
+  return getPrimaryTrendDatasetIdForScenario(packId, scenarioId);
 }
 
 export function getScenarioDefinition(

@@ -1,0 +1,488 @@
+{
+  "id": "dashforge-healthcare-ed-throughput-command-view",
+  "specVersion": "1.0",
+  "meta": {
+    "title": "ED Throughput Command View",
+    "description": "First materialized mock DashboardSpec for the ED throughput healthcare scenario, translated onto the current DashForge widget surface and aligned to the fully materialized six-week preview package.",
+    "author": "Codex",
+    "createdAt": "2026-04-01T00:00:00Z",
+    "updatedAt": "2026-04-01T00:20:00Z",
+    "tags": [
+      "healthcare",
+      "ed-throughput-crunch",
+      "risk-alert",
+      "client-demo",
+      "materialized"
+    ]
+  },
+  "intent": {
+    "type": "risk_alert",
+    "audience": "client_demo",
+    "industry": "healthcare",
+    "scenario": "ed-throughput-crunch"
+  },
+  "theme": {
+    "id": "light-professional"
+  },
+  "dataContext": {
+    "mode": "mock",
+    "mock": {
+      "packId": "healthcare",
+      "scenarioId": "ed-throughput-crunch",
+      "seed": 4127
+    },
+    "timeRange": {
+      "start": "2026-02-16",
+      "end": "2026-03-30",
+      "granularity": "week"
+    }
+  },
+  "layout": {
+    "columns": 12,
+    "rowHeight": 88,
+    "breakpoints": {
+      "lg": 1200,
+      "md": 996,
+      "sm": 768
+    },
+    "compaction": "vertical"
+  },
+  "widgets": [
+    {
+      "id": "kpi_arrivals",
+      "position": { "x": 0, "y": 0, "w": 2, "h": 2 },
+      "title": "ED Arrivals / Day",
+      "subtitle": "Demand stayed elevated",
+      "chart": {
+        "type": "kpi",
+        "intent": "monitoring",
+        "encoding": {
+          "value": {
+            "field": "ed_arrivals_per_day",
+            "format": "integer"
+          }
+        },
+        "kpiConfig": {
+          "deltaField": "ed_arrivals_wow_delta",
+          "deltaLabel": "vs last week",
+          "deltaFormat": "absolute",
+          "deltaPositive": "bad"
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "monthly_metrics",
+        "filters": [
+          { "field": "week_start", "operator": "eq", "value": "2026-03-23" }
+        ],
+        "limit": 1
+      }
+    },
+    {
+      "id": "kpi_dtp",
+      "position": { "x": 2, "y": 0, "w": 2, "h": 2 },
+      "title": "Door To Provider",
+      "subtitle": "Above target for six weeks",
+      "chart": {
+        "type": "kpi",
+        "intent": "anomaly",
+        "encoding": {
+          "value": {
+            "field": "door_to_provider_minutes",
+            "format": "decimal-1"
+          }
+        },
+        "kpiConfig": {
+          "deltaField": "door_to_provider_wow_delta",
+          "deltaLabel": "vs last week",
+          "deltaFormat": "absolute",
+          "deltaPositive": "bad",
+          "suffix": " min"
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "monthly_metrics",
+        "filters": [
+          { "field": "week_start", "operator": "eq", "value": "2026-03-23" }
+        ],
+        "limit": 1
+      }
+    },
+    {
+      "id": "kpi_lwbs",
+      "position": { "x": 4, "y": 0, "w": 2, "h": 2 },
+      "title": "LWBS Rate",
+      "subtitle": "Access leakage is widening",
+      "chart": {
+        "type": "kpi",
+        "intent": "anomaly",
+        "encoding": {
+          "value": {
+            "field": "lwbs_rate",
+            "format": "percent"
+          }
+        },
+        "kpiConfig": {
+          "deltaField": "lwbs_wow_delta",
+          "deltaLabel": "vs last week",
+          "deltaFormat": "absolute",
+          "deltaPositive": "bad",
+          "suffix": "%"
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "monthly_metrics",
+        "filters": [
+          { "field": "week_start", "operator": "eq", "value": "2026-03-23" }
+        ],
+        "limit": 1
+      }
+    },
+    {
+      "id": "kpi_boarding",
+      "position": { "x": 6, "y": 0, "w": 2, "h": 2 },
+      "title": "Avg Boarding Hours",
+      "subtitle": "Inpatient flow is the amplifier",
+      "chart": {
+        "type": "kpi",
+        "intent": "anomaly",
+        "encoding": {
+          "value": {
+            "field": "avg_boarding_hours",
+            "format": "decimal-1"
+          }
+        },
+        "kpiConfig": {
+          "deltaField": "boarding_wow_delta",
+          "deltaLabel": "vs last week",
+          "deltaFormat": "absolute",
+          "deltaPositive": "bad",
+          "suffix": " hrs"
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "monthly_metrics",
+        "filters": [
+          { "field": "week_start", "operator": "eq", "value": "2026-03-23" }
+        ],
+        "limit": 1
+      }
+    },
+    {
+      "id": "kpi_discharge",
+      "position": { "x": 8, "y": 0, "w": 2, "h": 2 },
+      "title": "Discharge Before Noon",
+      "subtitle": "Best immediate recovery lever",
+      "chart": {
+        "type": "kpi",
+        "intent": "target_vs_actual",
+        "encoding": {
+          "value": {
+            "field": "discharge_before_noon_rate",
+            "format": "percent"
+          }
+        },
+        "kpiConfig": {
+          "deltaField": "discharge_wow_delta",
+          "deltaLabel": "vs last week",
+          "deltaFormat": "absolute",
+          "deltaPositive": "good",
+          "suffix": "%"
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "monthly_metrics",
+        "filters": [
+          { "field": "week_start", "operator": "eq", "value": "2026-03-23" }
+        ],
+        "limit": 1
+      }
+    },
+    {
+      "id": "trend_dtp",
+      "position": { "x": 0, "y": 2, "w": 4, "h": 3 },
+      "title": "Six-Week Door-To-Provider Trend",
+      "subtitle": "Persistent enterprise pressure",
+      "caption": "The system has stayed above the 45-minute target for the full six-week run.",
+      "annotations": [
+        {
+          "type": "reference_line",
+          "label": "Target",
+          "value": 45,
+          "style": "dashed"
+        }
+      ],
+      "chart": {
+        "type": "line",
+        "intent": "trend",
+        "encoding": {
+          "x": { "field": "week_start" },
+          "y": { "field": "door_to_provider_minutes" }
+        },
+        "options": {
+          "smooth": true,
+          "showTooltip": true,
+          "showGrid": true
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "monthly_metrics",
+        "columns": [
+          "week_start",
+          "door_to_provider_minutes"
+        ],
+        "sortBy": {
+          "field": "week_start",
+          "direction": "asc"
+        }
+      }
+    },
+    {
+      "id": "facility_rank",
+      "position": { "x": 4, "y": 2, "w": 4, "h": 3 },
+      "title": "Facilities Driving Delay",
+      "subtitle": "Metro Community and North Medical are the hotspots",
+      "caption": "Site concentration is more useful than an enterprise average when the room needs intervention decisions.",
+      "chart": {
+        "type": "bar",
+        "intent": "ranking",
+        "encoding": {
+          "x": { "field": "facility_name" },
+          "y": { "field": "door_to_provider_minutes" }
+        },
+        "options": {
+          "showGrid": true
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "facility_summary",
+        "columns": [
+          "facility_name",
+          "door_to_provider_minutes"
+        ],
+        "filters": [
+          { "field": "week_start", "operator": "eq", "value": "2026-03-23" }
+        ],
+        "sortBy": {
+          "field": "door_to_provider_minutes",
+          "direction": "desc"
+        }
+      }
+    },
+    {
+      "id": "priority_table",
+      "position": { "x": 8, "y": 2, "w": 4, "h": 3 },
+      "title": "Priority Sites This Week",
+      "subtitle": "Management-language site readout",
+      "chart": {
+        "type": "table",
+        "intent": "comparison",
+        "encoding": {
+          "columns": [
+            { "field": "priority_status", "label": "Priority" },
+            { "field": "facility_name", "label": "Facility" },
+            { "field": "door_to_provider_minutes", "label": "DTP", "format": "decimal-1" },
+            { "field": "avg_boarding_hours", "label": "Boarding", "format": "decimal-1" },
+            { "field": "discharge_before_noon_rate", "label": "Discharge By Noon", "format": "percent" }
+          ]
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "facility_summary",
+        "columns": [
+          "priority_status",
+          "facility_name",
+          "door_to_provider_minutes",
+          "avg_boarding_hours",
+          "discharge_before_noon_rate",
+          "risk_rank"
+        ],
+        "filters": [
+          { "field": "week_start", "operator": "eq", "value": "2026-03-23" }
+        ],
+        "sortBy": {
+          "field": "risk_rank",
+          "direction": "asc"
+        },
+        "limit": 6
+      }
+    },
+    {
+      "id": "service_line_driver",
+      "position": { "x": 0, "y": 5, "w": 6, "h": 3 },
+      "title": "Boarding vs Discharge Flow",
+      "subtitle": "Medicine and telemetry are the clearest inpatient bottlenecks",
+      "caption": "The chart stays on boarding hours; the subtitle and presenter narrative carry the discharge comparison.",
+      "chart": {
+        "type": "stacked_bar",
+        "intent": "comparison",
+        "encoding": {
+          "x": { "field": "service_line" },
+          "y": { "field": "avg_boarding_hours" },
+          "series": { "field": "facility_name" }
+        },
+        "options": {
+          "showLegend": true,
+          "showGrid": true
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "department_summary",
+        "columns": [
+          "service_line",
+          "facility_name",
+          "avg_boarding_hours",
+          "discharge_before_noon_rate"
+        ],
+        "filters": [
+          { "field": "week_start", "operator": "eq", "value": "2026-03-23" },
+          {
+            "field": "facility_id",
+            "operator": "in",
+            "value": ["metro_community", "north_medical"]
+          }
+        ],
+        "sortBy": {
+          "field": "avg_boarding_hours",
+          "direction": "desc"
+        }
+      }
+    },
+    {
+      "id": "staffing_context",
+      "position": { "x": 6, "y": 5, "w": 6, "h": 3 },
+      "title": "Coverage Stress By Shift",
+      "subtitle": "Evening and night strain matter, but they are not the whole story",
+      "chart": {
+        "type": "bar",
+        "intent": "comparison",
+        "encoding": {
+          "x": { "field": "shift" },
+          "y": { "field": "surge_gap_hours" },
+          "series": { "field": "facility_name" }
+        },
+        "options": {
+          "showLegend": true,
+          "showGrid": true
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "staffing_coverage",
+        "columns": [
+          "shift",
+          "facility_name",
+          "surge_gap_hours",
+          "rn_fill_rate",
+          "provider_fill_rate"
+        ],
+        "filters": [
+          {
+            "field": "facility_id",
+            "operator": "in",
+            "value": ["metro_community", "north_medical", "saint_catherine"]
+          }
+        ],
+        "sortBy": {
+          "field": "surge_gap_hours",
+          "direction": "desc"
+        }
+      }
+    },
+    {
+      "id": "experience_consequence",
+      "position": { "x": 0, "y": 8, "w": 6, "h": 3 },
+      "title": "Throughput Consequences",
+      "subtitle": "Satisfaction decline is now following the access deterioration",
+      "caption": "Patient experience is lagging the throughput signal by one to two weeks, especially in the two hotspot sites.",
+      "chart": {
+        "type": "line",
+        "intent": "trend",
+        "encoding": {
+          "x": { "field": "week_start" },
+          "y": { "field": "patient_satisfaction_score" },
+          "series": { "field": "facility_name" }
+        },
+        "options": {
+          "showLegend": true,
+          "smooth": true,
+          "showTooltip": true,
+          "showGrid": true
+        }
+      },
+      "data": {
+        "source": "dataset",
+        "datasetId": "patient_experience",
+        "columns": [
+          "week_start",
+          "facility_name",
+          "patient_satisfaction_score",
+          "lwbs_rate",
+          "diversion_hours"
+        ],
+        "filters": [
+          {
+            "field": "facility_id",
+            "operator": "in",
+            "value": ["metro_community", "north_medical", "saint_catherine"]
+          }
+        ],
+        "sortBy": {
+          "field": "week_start",
+          "direction": "asc"
+        }
+      }
+    }
+  ],
+  "narrative": {
+    "storyArc": {
+      "hook": {
+        "headline": "System Pressure",
+        "commentary": "Lead with the KPI band and the six-week trend: waits, LWBS, and boarding have all moved above the operating comfort band together, while arrivals stayed elevated rather than spiking once and falling back.",
+        "widgetIds": ["kpi_dtp", "kpi_lwbs", "kpi_boarding", "trend_dtp"],
+        "transitionText": "With the enterprise pressure established, move to the sites creating most of the burden."
+      },
+      "context": {
+        "headline": "Where It Is Concentrated",
+        "commentary": "The facility ranking and priority table make the problem concrete. Metro Community and North Medical are clearly separated from the stable comparison sites and should be named explicitly in the readout.",
+        "widgetIds": ["facility_rank", "priority_table"],
+        "transitionText": "Once the sites are clear, explain why the front door is not the whole story."
+      },
+      "tension": {
+        "headline": "What Is Driving It",
+        "commentary": "Use the service-line driver view to show that medicine and telemetry discharge friction are amplifying boarding, then use staffing as supporting context rather than the headline explanation.",
+        "widgetIds": ["service_line_driver", "staffing_context"],
+        "transitionText": "From root cause, step into the downstream consequences already showing up in access and experience."
+      },
+      "resolution": {
+        "headline": "What It Is Causing",
+        "commentary": "Patient satisfaction is now sliding in the same facilities where LWBS and diversion kept worsening. This turns the throughput issue from an operational nuisance into a patient-facing leadership problem.",
+        "widgetIds": ["experience_consequence"],
+        "transitionText": "Close with the specific operating actions the room should prioritize this week."
+      },
+      "callToAction": {
+        "headline": "What We Do Next",
+        "commentary": "Focus discharge flow, telemetry bed release, and evening surge coverage at Metro Community and North Medical this week. The ask is narrow on purpose: a few site-specific operating levers should relieve the largest portion of the burden first.",
+        "widgetIds": ["priority_table", "service_line_driver", "staffing_context"],
+        "transitionText": "End by reinforcing that this is a reusable dashboard artifact, not a one-time workshop screenshot."
+      }
+    },
+    "executiveSummary": "ED throughput pressure has persisted for six weeks, Metro Community and North Medical now drive most of the delay, inpatient flow is the main amplifier, and action this week should target discharge throughput, telemetry release, and evening surge coverage.",
+    "presenterNotes": [
+      "1. System Pressure: open with the risk trio of Door To Provider, LWBS Rate, and Avg Boarding Hours, then use the six-week line to prove persistence.",
+      "2. Where It Is Concentrated: move immediately to facility accountability and name Metro Community and North Medical before reading additional numbers.",
+      "3. What Is Driving It: explain that medicine and telemetry discharge flow are the primary drivers, with staffing strain as a secondary amplifier on evening and night shifts.",
+      "4. What It Is Causing: connect the satisfaction slide to the earlier throughput and diversion movement rather than presenting experience as an isolated quality issue.",
+      "5. What We Do Next: close on a bounded operating response and note that the same DashboardSpec can remain mock-backed or later move selected views toward the existing live or hybrid path."
+    ]
+  },
+  "filters": []
+}

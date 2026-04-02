@@ -10,6 +10,7 @@ import { listRegisteredScenarios } from "./scenarioCatalog";
 
 describe("templateCatalog", () => {
   it("lists shared templates per pack", () => {
+    expect(listTemplatesByPack("healthcare")).toHaveLength(4);
     expect(listTemplatesByPack("financial")).toHaveLength(3);
     expect(listTemplatesByPack("saas")).toHaveLength(3);
   });
@@ -27,9 +28,15 @@ describe("templateCatalog", () => {
     });
 
     const saasTemplates = listTemplatesByScenario("saas", "churn-crisis");
-    const ids = saasTemplates.map((template) => template.templateId);
+    const saasIds = saasTemplates.map((template) => template.templateId);
+    const healthcareTemplates = listTemplatesByScenario(
+      "healthcare",
+      "ed-throughput-crunch",
+    );
+    const healthcareIds = healthcareTemplates.map((template) => template.templateId);
 
-    expect(ids).toContain("tpl.saas.risk-alert");
+    expect(saasIds).toContain("tpl.saas.risk-alert");
+    expect(healthcareIds).toContain("tpl.healthcare.ed-throughput-command");
   });
 
   it("supports intent and audience filtering", () => {

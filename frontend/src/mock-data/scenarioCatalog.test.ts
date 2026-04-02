@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getPrimaryTrendDatasetIdByScenario,
   getPrimaryTrendDatasetId,
   listRegisteredScenarios,
   resolveScenarioDatasetMap,
@@ -12,6 +13,7 @@ describe("scenarioCatalog", () => {
       { packId: "healthcare", scenarioId: "flu-season" },
       { packId: "healthcare", scenarioId: "quality-improvement" },
       { packId: "healthcare", scenarioId: "cost-pressure" },
+      { packId: "healthcare", scenarioId: "ed-throughput-crunch" },
       { packId: "financial", scenarioId: "market-downturn" },
       { packId: "financial", scenarioId: "advisor-attrition" },
       { packId: "financial", scenarioId: "growth-quarter" },
@@ -35,6 +37,7 @@ describe("scenarioCatalog", () => {
       ["healthcare", "flu-season"],
       ["healthcare", "quality-improvement"],
       ["healthcare", "cost-pressure"],
+      ["healthcare", "ed-throughput-crunch"],
       ["financial", "market-downturn"],
       ["financial", "advisor-attrition"],
       ["financial", "growth-quarter"],
@@ -57,12 +60,24 @@ describe("scenarioCatalog", () => {
       });
 
       expect(Object.keys(datasets)).toEqual(
-        expect.arrayContaining(["executive_summary"]),
+        expect.arrayContaining([
+          packId === "healthcare" && scenarioId === "ed-throughput-crunch"
+            ? "monthly_metrics"
+            : "executive_summary",
+        ]),
       );
-      expect(datasets.executive_summary.length).toBeGreaterThanOrEqual(5);
-      expect(
-        datasets[getPrimaryTrendDatasetId(packId)]?.length ?? 0,
-      ).toBeGreaterThan(0);
+      const benchmarkDataset =
+        packId === "healthcare" && scenarioId === "ed-throughput-crunch"
+          ? "monthly_metrics"
+          : "executive_summary";
+
+      expect(datasets[benchmarkDataset]?.length).toBeGreaterThanOrEqual(5);
+      const primaryTrendDataset = getPrimaryTrendDatasetIdByScenario(
+        packId,
+        scenarioId,
+      );
+
+      expect(datasets[primaryTrendDataset]?.length).toBeGreaterThan(0);
     }
   });
 
