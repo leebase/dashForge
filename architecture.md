@@ -2,10 +2,22 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.3  
-**Date:** March 31, 2026  
+**Version:** 1.4  
+**Date:** April 2, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.3 records the Sprint 3 SQLite generation foundation and the SQLite-derived snapshot bridge used by the current frontend runtime.
+**Revision notes:** v1.4 records ED throughput scenario runtime registration and the app-visible starter path for a reusable command-view package workflow.
+
+---
+
+## 2026-04-02 — ED Throughput Scenario Is App-Visible Through Registered Starter Contracts
+
+**Decision:** The ED throughput crunch scenario is now treated as a runtime-visible scenario with a dedicated starter template (`tpl.healthcare.ed-throughput-command`) and scenario-specific blueprint (`ed-throughput-command`) so it can be instantiated from the in-app starter flow and bound to the existing `monthly_metrics` dataset contract.
+
+**Rationale:** The demo package had previously existed as external scenario artifacts (`scenarios/healthcare/ed-throughput-crunch-*`) plus a materialization workflow. Registering it in the runtime scenario/template catalogs turns that package into the same governed in-app assembly path used by other templates and prevents a separate ad hoc "demo code path."
+
+**Alternatives rejected:** Keeping the scenario as disconnected package artifacts only, which would have left operators with two parallel assembly methods and no single place for contract checks.
+
+**Consequences:** The product now has one bounded end-to-end path for this scenario type: package source + contract + runtime registration + template blueprint. Future packaged demos can follow the same pattern without introducing a new rendering mode.
 
 ---
 

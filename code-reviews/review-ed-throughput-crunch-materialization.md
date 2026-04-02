@@ -42,7 +42,8 @@ None. The only verification finding was repaired inside the governed flow.
 
 - Register the scenario and starter path in the frontend runtime under a new
   bounded integration slice if these materialized assets need to become
-  app-visible instead of remaining package artifacts under `scenarios/`.
+  app-visible instead of remaining package artifacts under `scenarios/`. This
+  integration is now complete.
 
 ## Patch Suggestions
 
@@ -51,9 +52,9 @@ further changes in this review step.
 
 ## Test Additions Recommended
 
-- [ ] Add a future seam-level test when these artifacts are promoted into the
-      frontend runtime so the registered scenario, starter resolution, and
-      adapter lookup stay aligned to the materialized asset contract.
+- [ ] Add a future seam-level test when these artifacts are next promoted into a
+      reusable cross-industry scenario-building workflow surface so registered
+      scenarios, starter resolution, and adapter lookup stay aligned.
 
 ## Verdict
 
@@ -71,7 +72,5 @@ The governed workflow that produced them is:
 - `playbooks/ed_throughput_crunch_materialization_workflow.yaml`
 
 Within the bounded scope defined by the materialization contract and plan, no
-blocking or medium-severity issues remain after repair. The only carry-forward
-work is the already-known separate integration decision: whether to register
-these assets into the live frontend scenario catalog under a new explicit
-slice.
+blocking or medium-severity issues remain after repair. The integration has since
+been completed as an in-app scenario starter and template registration.

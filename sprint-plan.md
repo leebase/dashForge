@@ -26,6 +26,9 @@ Sprint 9 is now formally closed in the repo.
 - The implementation landed one shared adapter-resolution seam for `mock`,
   `live`, and `hybrid` specs, plus a bounded read-only REST adapter and hybrid
   composition under `frontend/src/core/data/`.
+- `healthcare:ed-throughput-crunch` and its dedicated template/blueprint
+  are now registered in the runtime scenario+template catalogs as an in-app
+  starter path.
 - The builder property rail now exposes dataset-aware binding controls, mode
   switching, and per-dataset REST metadata editing without forking the shared
   preview/presenter/export runtime.
@@ -106,12 +109,22 @@ sandbox denies localhost port binding.
       `127.0.0.1:5173` or preview binding
 - [ ] Decide the next bounded roadmap slice beyond the now-closed governed
       Sprint 1-9 ladder
-- [ ] Define a bounded scenario-building slice that turns the ED throughput
+- [x] Define a bounded scenario-building slice that turns the ED throughput
       workflow pattern into a reusable DashForge scenario-building agent
       surface
 - [ ] Specify the first scenario-building skill set under `skills/` so future
       scenario work can consistently produce the scenario brief, data design,
       dashboard blueprint, operator script, and SQLite-plus-JSON mock package
+
+The current scenario-building docs and workflow set now includes:
+
+- `scenarios/healthcare/ed-throughput-crunch-contract.md`
+- `plans/ed-throughput-crunch-demo-plan.md`
+- `scenarios/healthcare/ed-throughput-crunch-data-design.md`
+- `scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md`
+- `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`
+- `playbooks/ed_throughput_crunch_demo_workflow.yaml`
+- `code-reviews/review-ed-throughput-crunch-demo-workflow.md`
 
 ## Next Slice Candidate
 

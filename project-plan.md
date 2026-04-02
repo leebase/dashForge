@@ -149,6 +149,10 @@ Sprint 9 delivered the first Phase 4 slice: one shared adapter-resolution path
 for `mock`, `live`, and `hybrid` dashboards; a bounded read-only REST live
 adapter; hybrid composition; builder-integrated dataset binding controls; and
 safe serialization that strips live header overrides from durable artifacts.
+On top of this, the `healthcare:ed-throughput-crunch` scenario was also
+promoted from package-only work into the app runtime as a registered starter
+through a dedicated template (`tpl.healthcare.ed-throughput-command`) and
+scenario-specific blueprint.
 The governed Sprint 1-9 ladder is now closed in-repo, and the remaining
 near-term follow-up is one host-environment browser smoke plus choosing the
 next bounded roadmap slice explicitly.
@@ -160,6 +164,9 @@ next bounded roadmap slice explicitly.
   top of the closed Sprint 8 prompt-to-spec baseline
 - multi-user collaboration and review workflows
 - external productization if consulting value is proven
+- reusable scenario-building package path that standardizes a package contract,
+  in-app registration, and one-click starter instantiation for future healthcare
+  and non-healthcare demo scenarios
 
 *Not required for the now-closed Sprint 1-9 program.*
 

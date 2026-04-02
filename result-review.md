@@ -35,6 +35,42 @@ npm --prefix frontend run build
 
 Expect the new scenario/template tests to pass, and the build to remain green.
 
+## 2026-04-02 — Canon and Planning Documents Realigned Around ED Scenario Runtime Feature
+
+### What Was Built
+
+The project documentation set was synchronized so that planning, architecture,
+product definition, and sprint planning all reflect the newly in-app ED
+throughput feature path.
+
+Updated docs now state that `healthcare:ed-throughput-crunch` is registered in the
+front-end runtime via `tpl.healthcare.ed-throughput-command`, that materialized
+scenario package artifacts are discoverable from README and roadmap docs, and that
+the next slice now tracks reusable scenario-building docs and workflow patterns.
+
+### Why It Matters
+
+This removes operational ambiguity for future operators who start from docs first:
+the same source of truth now contains the feature state, the in-app registration
+decision, and the scenario-building follow-on work backlog.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+sed -n '1,140p' README.md
+sed -n '130,230p' project-plan.md
+sed -n '1,130p' architecture.md
+sed -n '1,120p' product-definition.md
+sed -n '1,170p' sprint-plan.md
+sed -n '1,140p' code-reviews/review-ed-throughput-crunch-materialization.md
+sed -n '1,260p' code-reviews/review-ed-throughput-crunch-demo-workflow.md
+```
+
+Expect those files to reference `healthcare:ed-throughput-crunch`, `tpl.healthcare.ed-throughput-command`,
+the scenario-package workflow set, and the remaining follow-on scenario-building
+tasks.
+
 ## 2026-04-01 — ED Throughput Materialization Review And Workflow Handoff Closed
 
 ### What Was Built

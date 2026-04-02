@@ -30,6 +30,8 @@ DashForge has now closed the governed Sprint 1-9 program in the repo.
 - Sprint 7 added narrative authoring, presenter mode, bounded annotation support, and browser-local proposal artifact export on top of the shared builder/runtime path
 - Sprint 8 added bounded AI-assisted prompt-to-spec generation, staged candidate review/apply/discard, and request-time guardrails on top of the shared builder/presenter/export path
 - Sprint 9 added shared adapter resolution for `mock`/`live`/`hybrid`, a bounded REST live adapter, builder-integrated dataset binding controls, and safe live/hybrid spec serialization
+- healthcare’s `ed-throughput-crunch` scenario is now also registered as an in-app runtime starter
+- the dedicated starter template `tpl.healthcare.ed-throughput-command` and blueprint flow now ship as reusable demo assembly contracts
 - Sprint 9 closeout is complete with formal review in `code-reviews/review-sprint-09.md`
 - The stable operator dashboard for the governed ladder is `artifacts/current/dashboard.html`
 
@@ -55,6 +57,15 @@ The repo now contains:
 - export to spec JSON and browser-local printable proposal artifacts
 - bounded AI-assisted prompt-to-spec generation with staged candidate apply/discard
 - bounded production binding through REST-backed live and hybrid dataset adapters
+- one healthcare ED throughput scenario registered in the app runtime with dedicated command-view starter wiring (`healthcare:ed-throughput-crunch`, `tpl.healthcare.ed-throughput-command`)
+
+The ED throughput runtime package assets are discoverable at:
+
+- `scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json`
+- `scenarios/healthcare/ed-throughput-crunch-preview-data.json`
+- `scenarios/healthcare/ed-throughput-crunch-preview.sqlite`
+- `scenarios/healthcare/ed-throughput-crunch-binding-map.md`
+- `scenarios/healthcare/ed-throughput-crunch-contract.md`
 
 ## Near-Term Follow-Up
 
@@ -187,6 +198,9 @@ closed Sprint 9 live-binding builder/preview/presenter/export workflow.
 - `project-plan.md`: strategic roadmap
 - `sprint-plan.md`: tactical execution for the closed Sprint 9 window
 - `result-review.md`: completed work log
+- `scenarios/healthcare/ed-throughput-crunch-contract.md`: ED throughput scenario contract
+- `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`: ED throughput execution runbook
+- `playbooks/ed_throughput_crunch_demo_workflow.yaml`: scenario package governance workflow
 
 ## Repository Note
 

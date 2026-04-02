@@ -2,8 +2,8 @@
 ## Anblicks Value Accelerator for Enterprise Dashboard Delivery
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.0  
-**Date:** March 30, 2026  
+**Version:** 1.1  
+**Date:** April 2, 2026  
 **Status:** Draft for review with Kumar Raman
 
 ---
@@ -47,6 +47,7 @@ It is not a BI platform. It is not a SaaS product (yet). It is a delivery weapon
 - **In workshops:** Generate a prototype dashboard during the meeting using industry packs and AI-assisted layout. Show the client what their data *could* look like.
 - **In proposals:** Include interactive dashboard mockups with realistic data as proposal artifacts. Differentiate from competitors showing static slides.
 - **In delivery:** Hand the dashboard spec to the engineering team. They bind it to real data sources. The prototype becomes the production starting point.
+- **In repeatable scenario delivery:** Build a prepared scenario package and launch it in-app through a registered scenario starter and template blueprint, so workshop prep is faster and more deterministic.
 
 ### Secondary users: Anblicks engineering teams
 
@@ -123,6 +124,7 @@ The MVP is the minimum set of capabilities that lets an Anblicks consultant walk
 7. **Dashboard spec** — save/load as JSON, human-readable, version-stamped
 8. **Presenter mode** — step through dashboard sections with commentary and widget highlighting
 9. **Export** — save spec JSON, export dashboard as static PNG/PDF for proposals
+10. **Scenario-to-runtime registration path** for repeatable demo prep: a scenario can be materialized as a documented package and then instantiated in-app through registered starter contracts (e.g., `healthcare:ed-throughput-crunch` + `tpl.healthcare.ed-throughput-command`)
 
 ### MVP explicitly excludes:
 - AI spec generation (Phase 2)
@@ -201,6 +203,7 @@ The MVP is the minimum set of capabilities that lets an Anblicks consultant walk
 | **Mock data doesn't look real enough** | Medium | High | Test each industry pack with a domain expert before using in a workshop; allow manual data point overrides |
 | **Clients want Tableau/Power BI, not React code** | Medium | Medium | DashForge produces the *spec*; the spec can inform a Tableau build if that's what the client wants; the value is in the workshop, not the output format |
 | **AI-generated specs aren't good enough to skip** | Low | Low | AI generation is Phase 2; manual template selection is fine for MVP |
+| **Scenario package diverges from runtime contract** | Medium | High | Keep each scenario package linked to runtime registration and contract docs (scenario + blueprint + template catalog entries) before using it for client-facing work |
 | **Scope creep into full platform** | High | High | This document is the scope boundary; anything not listed here is post-MVP |
 
 ---
