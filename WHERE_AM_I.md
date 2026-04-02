@@ -41,6 +41,7 @@
 | Deliver the first bounded production-binding path | ✅ Done | Sprint 9 closed with shared adapter resolution, REST live binding, hybrid composition, builder-integrated binding controls, and safe spec serialization |
 | Close the governed Agent-Orch sprint ladder | ✅ Done | The governed Sprint 1-9 program is now closed through `code-reviews/review-sprint-09.md` |
 | Register ED throughput command-view scenario in runtime | ✅ Done | `healthcare:ed-throughput-crunch` and `tpl.healthcare.ed-throughput-command` now instantiate in-app with dedicated blueprint wiring |
+| Close the ED throughput demo governance loop | ✅ Done | `playbooks/ed_throughput_crunch_demo_workflow.yaml` run completed through contract, plan, verify, repair, and review/handoff |
 | Run one host-environment browser smoke of the live-binding workflow | 🟡 Planned | Still blocked in this sandbox by localhost `listen EPERM`; remains a manual host-only follow-up |
 
 ---

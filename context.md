@@ -53,6 +53,13 @@ The only remaining near-term gap is still outside this sandbox:
 `listen EPERM`, so one host-environment browser smoke of the live-binding
 workflow remains queued as manual follow-up rather than governed closeout work.
 
+The most recent healthcare scenario package workflow (`0700a8a5990b`) has now
+closed end-to-end: contract, plan, verify, repair, and review/handoff were
+executed through
+`playbooks/ed_throughput_crunch_demo_workflow.yaml`, and the review path now
+points to the current handoff run folder under
+`result-review.md`.
+
 The ED throughput demo package candidate next slice has now advanced beyond
 contract/plan definition. Its concrete build materials exist under
 `scenarios/healthcare/` as a data design, dashboard blueprint, and operator
@@ -97,6 +104,7 @@ contract (`monthly_metrics`) and widget taxonomy.
   `facility_summary.priority_status`, aligning the priority-table widget spec,
   updating operator label guidance, and recording the outcome in
   `code-reviews/repair-ed-throughput-crunch-demo-workflow.md`
+- ✅ Ran and closed a complete ED throughput demo automation cycle (`0700a8a5990b`) including final review-handoff documentation.
 - ✅ Defined a bounded ED throughput scenario-to-demo-package workflow in `scenarios/healthcare/ed-throughput-crunch-contract.md` and `plans/ed-throughput-crunch-demo-plan.md`
 - ✅ Registered the ED throughput scenario and dedicated command-view template in the
   frontend scenario/template catalogs, including scenario-specific blueprint

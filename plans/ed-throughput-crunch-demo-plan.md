@@ -1,222 +1,138 @@
-# ED Throughput Crunch Demo Plan
+# ED Throughput Crunch Demo Execution Plan
 
-## Goal
+## Objective
 
-Execute a bounded workflow that turns the existing emergency department
-throughput scenario into a workshop-ready dashboard demo build package. The
-package should let a consultant frame the problem, show a credible first-pass
-dashboard, adapt the story live in the room, and close with a structured
-handoff path that reinforces DashForge's mock-to-production value.
+Execute one bounded run that converts the registered
+`healthcare:ed-throughput-crunch` scenario into a workshop-ready dashboard demo
+package using the existing template-instantiation path and current DashForge
+runtime.
 
-## Planning Assumptions
+## Governance and Scratch Space
 
-- The governed Sprint 1-9 product baseline is closed and should be reused as
-  is.
-- `scenarios/healthcare/ed-throughput-crunch.md` is the scenario canon for the
-  business problem, audience, KPIs, cuts, and story arc.
-- `scenarios/healthcare/client-presentation-script.md` is the presentation
-  canon for the client-facing talk track.
-- The package is a scenario-specific demo assembly slice, not new platform
-  development.
-- Existing DashForge capabilities already cover the needed story surface:
-  builder mode, AI-assisted drafting, presenter mode, export, and bounded
-  `mock` / `live` / `hybrid` positioning.
-- Any final browser walkthrough still requires a host-capable environment
-  because sandbox localhost binding remains unavailable here.
+- Repo root: `/Users/lee/projects/dashForge`
+- Scratch directory for temporary notes and rehearsal notes:
+  `/Users/lee/projects/dashForge/.agent-orch-scratch/0700a8a5990b/scenario_contract_plan/attempt-1`
+- Do not treat scratch files as governed outputs.
 
-## Package Definition
+## Preconditions
 
-The ED throughput demo package should ultimately contain:
+1. `scenarios/healthcare/ed-throughput-crunch-contract.md` is current.
+2. Required scenario package artifacts exist:
+   - `scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json`
+   - `scenarios/healthcare/ed-throughput-crunch-binding-map.md`
+   - `scenarios/healthcare/ed-throughput-crunch-preview-data.json`
+   - `scenarios/healthcare/ed-throughput-crunch-preview.sqlite`
+3. Runtime registration exists for:
+   - `healthcare:ed-throughput-crunch` scenario in `scenarioCatalog.ts`.
+   - `tpl.healthcare.ed-throughput-command` template in `templateCatalog.ts` and
+     `templateInstantiation.ts`.
+4. Presenter and deck-flow references are unchanged:
+   - `scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md`
+   - `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`
+   - `scenarios/healthcare/client-presentation-script.md`
 
-- one primary dashboard artifact aligned to the scenario
-- one presenter sequence tied to the scenario narrative arc
-- one short builder-edit sequence that demonstrates live adaptation in the room
-- one explicit handoff/export explanation showing the structured artifact path
-- one concise operator checklist for running the demo consistently
+## Stage 1 — Source Alignment (30 minutes)
 
-## Scope Summary
+Owner: Package operator
 
-### Deliver In This Workflow
+1. Open and confirm the contract and source docs.
+2. Confirm the business question, audience, and five-step story arc remain:
+   `System Pressure`, `Where It Is Concentrated`,
+   `What Is Driving It`, `What It Is Causing`, `What We Do Next`.
+3. Confirm the data contract minimum rows and required fields from
+   `ed-throughput-crunch-data-design.md`.
 
-- a clear scenario-to-dashboard mapping
-- a bounded build sequence for the dashboard package
-- a presenter walkthrough plan
-- a builder-edit plan
-- a handoff and export plan
-- readiness criteria for later implementation/demo rehearsal
+Exit gate: Scenario-narrative and data-contract source alignment signed off.
 
-### Do Not Deliver In This Workflow
+## Stage 2 — Materialized Input Verification (30 minutes)
 
-- new frontend features or runtime changes
-- new healthcare data-model design outside the current scenario needs
-- warehouse or backend integration
-- cross-industry packaging
-- broad product roadmap changes
+Owner: Package operator
 
-## Ordered Work
+1. Verify that these files load and are internally coherent.
+2. Confirm row counts and key fields:
+   - `monthly_metrics` `6`
+   - `facility_summary` `36`
+   - `department_summary` `144`
+   - `ed_flow` `324`
+   - `staffing_coverage` `18`
+   - `patient_experience` `36`
+3. Validate latest-week hotspot logic (Metro Community and North Medical) in
+   `facility_summary` and `patient_experience` lag behavior.
 
-### 1. Lock Scenario Intent And Demo Outcome
+Exit gate: Data-mapping gate passes and no manual patch is required.
 
-Objective:
-Anchor the package on a single management story so later dashboard assembly
-does not drift into a generic healthcare overview.
+## Stage 3 — Demo Package Assembly (45 minutes)
 
-Inputs:
+Owner: Package operator
 
-- `scenarios/healthcare/ed-throughput-crunch.md`
-- `scenarios/healthcare/client-presentation-script.md`
-- `product-definition.md`
+1. Open the in-app scenario/template path and instantiate:
+   - pack `healthcare`
+   - scenario `ed-throughput-crunch`
+   - template `tpl.healthcare.ed-throughput-command`
+2. Verify blueprint widgets exist and map correctly to the datasets in the
+   data design.
+3. Validate narrative copy alignment:
+   - executive-level urgency in Band 1,
+   - concentration proof in Band 2,
+   - operational drivers in Band 3,
+   - consequences/action in Band 4.
+4. Ensure `ed-throughput-crunch-dashboard-spec.json` reflects the same layout intent
+   and dataset binding path.
 
-Done when:
+Exit gate: Blueprint-mapping gate passes.
 
-- the primary audience is fixed
-- the business question is fixed
-- the demo outcome is expressed in client-facing terms
-- the storyline is clearly bounded to ED throughput deterioration and
-  intervention focus
+## Stage 4 — Rehearsal and Optional AI Assist (45 minutes)
 
-### 2. Translate The Scenario Into A Dashboard Information Architecture
+Owner: Package operator
 
-Objective:
-Define what the dashboard must show, in what order, and why each element
-exists in the story.
+1. Run the five-step presenter sequence from the script.
+2. Execute two bounded builder edits only:
+   - update call-to-action wording to:
+     `This Week's Recovery Priorities`
+   - rebalance attention toward concentration signals over trend-only framing.
+3. Optional AI assist:
+   - open prompt entry,
+   - generate candidate,
+   - keep one of: apply or discard,
+   - only proceed if narrative quality improves or time to first answer shortens.
+4. Confirm no dependency changes or unplanned feature demonstrations are introduced.
 
-Recommended structure:
+Exit gate: Rehearsal gate passes.
 
-- top row: system pressure KPIs
-- middle row: facility concentration and trend views
-- lower row: operational drivers, staffing/discharge signals, and patient
-  experience consequences
+## Stage 5 — Continuity and Handoff (20 minutes)
 
-Expected content:
+Owner: Package operator
 
-- system-level ED arrivals, door-to-provider time, LWBS, boarding hours
-- facility comparison for the worst-performing hospitals
-- discharge-before-noon and staffing coverage context
-- patient satisfaction and diversion impact
+1. Rehearse close language:
+   - the output is a structured `DashboardSpec` family artifact,
+   - same artifact supports builder, presenter, and export,
+   - live/hybrid framing remains bounded and non-promissory.
+2. Complete final checks in:
+   `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`.
+3. Record go/no-go in scratch notes with:
+   - gate status,
+   - blockers (if any),
+   - required fix list (if blocked).
 
-Done when:
+Exit gate: Continuity gate passes.
 
-- each major widget or section has a narrative purpose
-- the dashboard supports both executive-summary and operational-detail reading
-- the content maps cleanly to the scenario's listed datasets and cuts
+## Completion Criteria
 
-### 3. Define The Builder Demo Moment
+Package is complete when the operator executes all stages on a host-capable
+environment and records:
 
-Objective:
-Show that the dashboard is editable during a workshop without turning the demo
-into an unfocused product tour.
+- all five contract gates completed,
+- no skipped checklist items,
+- one reproducible close script run from framing through handoff.
 
-Recommended edits:
+## Risk Register
 
-- reframe one title or narrative callout around intervention priority
-- switch one view from system rollup to facility comparison
-- adjust emphasis from executive summary toward operational detail
-
-Guardrails:
-
-- keep the edit sequence to one or two meaningful changes
-- avoid edits that require new product behavior
-- ensure the changes strengthen the client story instead of showing random UI
-  flexibility
-
-Done when:
-
-- the package includes a short, repeatable builder-edit script
-- the edit sequence clearly answers a plausible client request in the room
-
-### 4. Define The AI-Assisted Drafting Moment
-
-Objective:
-Decide how AI appears in the demo without making it the center of the story.
-
-Approach:
-
-- treat AI as optional acceleration for the first draft
-- keep the scenario, intent, and healthcare framing explicit
-- show candidate review/apply behavior only if it supports the workshop story
-
-Done when:
-
-- the package states whether AI is included, optional, or skipped
-- the AI moment remains bounded and review-driven
-
-### 5. Define The Presenter Walkthrough
-
-Objective:
-Convert the dashboard into a guided executive readout that mirrors the scenario
-arc.
-
-Recommended sequence:
-
-1. System-wide throughput pressure is above target.
-2. Metro Community and North Medical drive most deterioration.
-3. Boarding and discharge velocity explain more than arrivals alone.
-4. Patient experience and LWBS are now degrading with throughput.
-5. Immediate intervention should focus on discharge flow, telemetry capacity,
-   and surge coverage.
-
-Done when:
-
-- the presenter sequence has a clear beginning, middle, and close
-- each step maps to a dashboard section or emphasis action
-- the script reinforces an operator/executive decision story rather than a
-  chart tour
-
-### 6. Define The Handoff And Export Story
-
-Objective:
-Close the demo by proving the artifact survives beyond the workshop.
-
-Required message:
-
-- the dashboard is stored as structured spec, not as a screenshot
-- the same artifact can stay mock-backed for storytelling
-- the delivery team can later move toward Sprint 9's bounded `live` or
-  `hybrid` path without discarding the design
-
-Done when:
-
-- the package includes a concrete closeout script
-- the mock-to-live story stays bounded and accurate to the current product
-
-### 7. Package Readiness Review
-
-Objective:
-Set the minimum proof required before the demo package is used with clients.
-
-Checklist:
-
-- scenario brief, dashboard story, and presenter script agree
-- dashboard artifact supports the required KPIs and cuts
-- builder-edit sequence is short and repeatable
-- handoff/export explanation is explicit
-- one browser rehearsal runs in a host environment when available
-
-Done when:
-
-- the package has a clear go/no-go checklist
-- remaining gaps are listed as package-prep items rather than hidden scope
-
-## Verification Matrix
-
-| Area | Proof |
-|------|-------|
-| Scenario alignment | Dashboard story matches the business question, audience, KPIs, and narrative arc in the scenario brief |
-| Dashboard architecture | Planned sections cover system pressure, facility concentration, operational drivers, and consequences |
-| Builder demo | One or two edits can be shown as credible in-room adaptation |
-| AI positioning | AI stays bounded, assistive, and review-driven if included |
-| Presenter story | The walkthrough supports a leadership decision narrative rather than a chart catalog |
-| Handoff story | The package clearly explains spec export and bounded progression from mock toward live/hybrid |
-| Demo readiness | A later operator can rehearse and run the package consistently |
-
-## Risks And Controls
-
-| Risk | Control |
-|------|---------|
-| The package becomes a generic healthcare dashboard instead of a specific throughput story | Keep every artifact tied to the ED throughput business question and intervention narrative |
-| The demo overemphasizes product capability instead of client value | Lead with the operating problem, then use product features only to reinforce the story |
-| Builder edits feel random | Limit the edit moment to a plausible stakeholder request and one or two meaningful changes |
-| AI distracts from the workshop narrative | Treat AI as optional acceleration, not the main event |
-| Production-binding talk overpromises current readiness | Keep the close strictly aligned to Sprint 9's bounded `mock` / `live` / `hybrid` path |
-| Browser rehearsal is skipped because of sandbox limits | Require one host-environment rehearsal before client use |
+- **Feature-drift risk:** operator defaults to feature tour.
+  - *Control:* enforce the five-step script before any other UI path.
+- **Narrative drift risk:** staffing treated as the dominant driver.
+  - *Control:* maintain boarding/discharge causal path in sequence.
+- **Over-claim risk:** exceeding bounded sprint-9 handoff language.
+  - *Control:* use explicit bounded wording only.
+- **Host-environment miss risk:** inability to complete browser run in the given
+  environment.
+  - *Control:* do not close plan without a complete host-environment rehearsal.

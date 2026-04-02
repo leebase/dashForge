@@ -4,6 +4,33 @@
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
 
+## 2026-04-02 — ED Throughput Demo Workflow Handoff Path Recorded
+
+### What Was Built
+
+The scenario automation handoff path for ED throughput demo replays is now discoverable in the running review log:
+
+- [review_handoff_demo_artifacts/attempt-1](/Users/lee/projects/dashForge/.agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1)
+
+The formal review file was updated to include this path as part of the demo workflow closeout evidence:
+
+- [review-ed-throughput-crunch-demo-workflow.md](/Users/lee/projects/dashForge/code-reviews/review-ed-throughput-crunch-demo-workflow.md#L1)
+
+### Why It Matters
+
+Future demo operators can start from the same governed review scratch location and avoid recreating the automation handoff path for each run.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+test -d .agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1
+ls -la .agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1
+sed -n '1,260p' code-reviews/review-ed-throughput-crunch-demo-workflow.md
+```
+
+Expect the path to exist and the review file to include this review-handoff path in its outcome section.
+
 ## 2026-04-02 — ED Throughput Scenario Wired Into Frontend Runtime
 
 ### What Was Built

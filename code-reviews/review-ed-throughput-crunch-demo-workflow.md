@@ -8,6 +8,8 @@ This workflow packages one healthcare scenario into a reusable DashForge demo bu
 |---------|--------|
 | `python3 -m src.agent_orch.main validate-playbook /Users/lee/projects/dashForge/playbooks/ed_throughput_crunch_demo_workflow.yaml` | ✅ Pass |
 | `test -f scenarios/healthcare/ed-throughput-crunch-contract.md && test -f plans/ed-throughput-crunch-demo-plan.md && test -f scenarios/healthcare/ed-throughput-crunch-data-design.md && test -f scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md && test -f scenarios/healthcare/ed-throughput-crunch-build-checklist.md && test -f code-reviews/verify-ed-throughput-crunch-demo-workflow.md && test -f code-reviews/repair-ed-throughput-crunch-demo-workflow.md` | ✅ Pass |
+| `test -d /Users/lee/projects/dashForge/.agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1` | ✅ Pass |
+| `test -f /Users/lee/projects/dashForge/.agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1/attempt-1-notes.txt` | ✅ Pass |
 
 ## Findings
 
@@ -48,4 +50,8 @@ the verify and repair trail is complete in
 [verify-ed-throughput-crunch-demo-workflow.md](/Users/lee/projects/dashForge/code-reviews/verify-ed-throughput-crunch-demo-workflow.md#L1)
 and
 [repair-ed-throughput-crunch-demo-workflow.md](/Users/lee/projects/dashForge/code-reviews/repair-ed-throughput-crunch-demo-workflow.md#L1),
-and the only remaining readiness gate is the already-known host-capable browser rehearsal.
+the only remaining readiness gate is the already-known host-capable browser rehearsal.
+For future demo handoff replays, the staging path is:
+
+- [/Users/lee/projects/dashForge/.agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1](/Users/lee/projects/dashForge/.agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1)
+- [/Users/lee/projects/dashForge/.agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1/attempt-1-notes.txt](/Users/lee/projects/dashForge/.agent-orch-scratch/0700a8a5990b/review_handoff_demo_artifacts/attempt-1/attempt-1-notes.txt)

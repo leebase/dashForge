@@ -107,6 +107,8 @@ sandbox denies localhost port binding.
 
 - [ ] Run one local browser smoke in a host environment that permits
       `127.0.0.1:5173` or preview binding
+- [x] Execute and close a full healthcare package governance run
+      (`ed_throughput_crunch_demo_workflow.yaml`)
 - [ ] Decide the next bounded roadmap slice beyond the now-closed governed
       Sprint 1-9 ladder
 - [x] Define a bounded scenario-building slice that turns the ED throughput

@@ -1,188 +1,129 @@
-# ED Throughput Crunch Contract - Scenario To Dashboard Demo Build Package
+# ED Throughput Crunch Contract — Scenario-to-Dashboard Demo Package
 
-## Objective
+## Purpose
 
-Turn the existing `ed-throughput-crunch` healthcare scenario into a bounded
-dashboard demo build package that a consultant can open, present, and hand off
-without inventing new product capabilities. The package should prove the full
-DashForge story already available after Sprint 9:
+Define a bounded workflow that turns `ed-throughput-crunch` into a reusable,
+workshop-ready DashForge demo package with no runtime or schema changes.
 
-- start from a realistic healthcare operating scenario,
-- show an executive-ready first-pass dashboard,
-- demonstrate one or two live edits in builder mode,
-- optionally reference the existing `mock`, `live`, and `hybrid` data modes as
-  a delivery bridge, and
-- leave behind a structured artifact set that can be reused in a workshop or
-  governed follow-on run.
+This package must produce the same visible outcome every time:
 
-This contract is intentionally about packaging one scenario into a strong demo
-experience. It is not a new roadmap sprint, new industry-pack expansion, or a
-request to widen the product beyond the closed Sprint 1-9 baseline.
+- scenario-framed healthcare operations narrative,
+- stable dashboard structure from existing runtime artifacts,
+- rehearsable builder and presenter flow,
+- structured handoff continuity into mock/live/hybrid-ready workflow assumptions.
 
-## Canon Sources
+## Canon Alignment
 
-This contract must stay aligned with:
+This contract is bound to:
 
+- `AGENTS.md`
 - `product-definition.md`
 - `architecture.md`
 - `context.md`
-- `sprint-plan.md`
 - `scenarios/healthcare/ed-throughput-crunch.md`
+- `scenarios/healthcare/ed-throughput-crunch-data-design.md`
+- `scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md`
+- `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`
 - `scenarios/healthcare/client-presentation-script.md`
+- `frontend/src/mock-data/scenarioCatalog.ts`
+- `frontend/src/mock-data/templateCatalog.ts`
+- `frontend/src/features/builder/templateInstantiation.ts`
 
-If those documents and this contract diverge, the canon docs win and this
-contract should be corrected.
+If any source document changes, this contract must be refreshed before the next
+demo package run.
 
-## Starting Baseline
-
-DashForge already has the product surface this demo package should rely on:
-
-- the governed Sprint 1-9 ladder is closed in-repo,
-- builder, presenter, export, AI-assisted generation, and bounded production
-  binding already exist,
-- healthcare mock data and scenario-backed storytelling already exist as a
-  product concept,
-- Sprint 9 already proved the bounded `mock`, `live`, and `hybrid`
-  `DashboardSpec` path, and
-- the current remaining gap is choosing the next bounded slice, not reopening
-  closed runtime work.
-
-The specific content baseline for this package already exists too:
-
-- `scenarios/healthcare/ed-throughput-crunch.md` defines the business problem,
-  audience, KPIs, cuts, narrative arc, and dataset expectations.
-- `scenarios/healthcare/client-presentation-script.md` defines the intended
-  client-facing talk track from scenario framing through handoff.
-
-This workflow should package those materials into an execution-ready demo
-bundle rather than rewriting the product architecture.
-
-## Scope
+## Boundaries
 
 ### In Scope
 
-#### 1. Scenario-To-Demo Packaging Definition
+- Use existing ED-throughput runtime registration and template instantiation to
+  build a demo package for `healthcare:ed-throughput-crunch`.
+- Use existing assets and runtime paths:
+  - `scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json`
+  - `scenarios/healthcare/ed-throughput-crunch-preview.sqlite`
+  - `scenarios/healthcare/ed-throughput-crunch-preview-data.json`
+  - `scenarios/healthcare/ed-throughput-crunch-binding-map.md`
+- Deliver a bounded rehearsal run using:
+  - one initial executive first-pass presentation,
+  - two bounded builder edits max,
+  - five-step presenter sequence,
+  - structured close.
+- Keep production-transition framing limited to existing Sprint 9 capability statements
+  (`mock` primary, bounded live/hybrid language).
 
-- Define the exact artifact set that counts as the ED throughput demo package.
-- Keep the package centered on one credible healthcare leadership story:
-  throughput deterioration, facility concentration, operational drivers, and
-  intervention focus.
-- Map the scenario brief and presentation script onto an explicit dashboard
-  build sequence instead of leaving the package as loose narrative notes.
+### Explicitly Out of Scope
 
-#### 2. Dashboard Demo Artifact Expectations
+- New chart types, adapters, schema changes, or runtime capabilities.
+- New scenario-generation logic.
+- Additional scenario packs.
+- External warehouse/backend integration.
+- Full proposal-deck or pricing deliverables.
 
-- Require one primary dashboard shape aligned to the scenario's executive and
-  operational storyline.
-- Require a bounded presenter walkthrough that matches the stated narrative arc
-  and business question.
-- Require a workshop-ready edit path that shows how the dashboard can be
-  adjusted live without rebuilding from scratch.
-- Define how the package should reference existing DashForge capabilities such
-  as builder mode, AI-assisted drafting, presenter mode, export, and the
-  Sprint 9 production-binding bridge.
+## Source of Truth Requirements
 
-#### 3. Build Package Boundaries
+1. Scenario framing and business question come from
+   `ed-throughput-crunch.md`.
+2. Data contract and widget mapping come from
+   `ed-throughput-crunch-data-design.md`.
+3. Dashboard sequence and widget intent come from
+   `ed-throughput-crunch-dashboard-blueprint.md`.
+4. Rehearsal and close conditions come from
+   `ed-throughput-crunch-build-checklist.md`.
+5. Default template and scenario route must remain:
+   `tpl.healthcare.ed-throughput-command` for `healthcare:ed-throughput-crunch`.
 
-- Keep the package feasible on the existing DashForge baseline.
-- Prefer reuse of existing healthcare datasets and scenario-backed data seams
-  over inventing new adapter or schema work.
-- Treat live or hybrid binding references as optional demonstration extensions
-  built on Sprint 9's bounded path, not as required new implementation work for
-  this package.
+## Bounded Output Set
 
-#### 4. Execution Workflow Definition
+The package must include and keep these files coherent:
 
-- Sequence the work from scenario alignment through dashboard assembly,
-  storytelling, packaging, and verification.
-- Define decision gates so the package can be built under Agent-Orch or manual
-  execution without ambiguous scope.
-- State the minimum proof needed before the package is called ready for a
-  client-facing demo.
-
-### Explicitly Out Of Scope
-
-- New frontend runtime primitives, adapters, or product features
-- New external dependencies
-- New healthcare scenario generation logic beyond what the package strictly
-  needs
-- Reopening Sprint 8 or Sprint 9 architecture decisions
-- Warehouse/native backend integration, credential brokering, or live-service
-  platform work
-- Full multi-scenario packaging across all healthcare scenarios
-- Broad documentation cleanup outside this scenario package
-- Commit/release work or sprint-closeout documentation for a new governed build
-
-## Constraints
-
-- The package must use the existing DashForge product story: realistic
-  scenario, editable dashboard, presenter walkthrough, structured artifact.
-- The scenario remains healthcare-operations focused and must stay legible to a
-  COO, CNO, hospital president, or ED operations leader.
-- The primary demo must fit the MVP/product-definition posture of a workshop
-  accelerator, not a full BI platform.
-- The workflow should assume the shared `DashboardSpec` artifact remains the
-  canonical output for builder, presenter, export, and follow-on delivery.
-- If the package references production binding, it must do so using the bounded
-  Sprint 9 `mock` / `live` / `hybrid` framing rather than implying broad
-  backend readiness.
-- The package should be executable even if the remaining host-only browser
-  smoke must happen outside this sandbox.
-
-## Required Outputs
-
+- `scenarios/healthcare/ed-throughput-crunch-dashboard-spec.json`
+- `scenarios/healthcare/ed-throughput-crunch-binding-map.md`
+- `scenarios/healthcare/ed-throughput-crunch-preview-data.json`
+- `scenarios/healthcare/ed-throughput-crunch-preview.sqlite`
 - `scenarios/healthcare/ed-throughput-crunch-contract.md`
 - `plans/ed-throughput-crunch-demo-plan.md`
 
-The defined workflow should also target a future demo package artifact set that
-includes:
+No other file-family additions are required in this workflow.
 
-- one scenario-aligned dashboard spec or starter template
-- one presenter-ready narrative sequence
-- one concise workshop edit script
-- one clear handoff/export story for client conversations
+## Workflow Gates
 
-## Ordered Work
+All five gates must pass in order for package readiness:
 
-1. Confirm the scenario canon, dashboard intent, and demo objective from the
-   existing healthcare scenario brief and client presentation script.
-2. Define the bounded artifact set that will constitute the ED throughput demo
-   package.
-3. Translate the scenario story into a dashboard build sequence with explicit
-   KPI, chart, and narrative expectations.
-4. Define how builder edits, presenter flow, AI assistance, and the
-   mock-to-live handoff should appear in the demo without widening scope.
-5. Set verification expectations for the package, including artifact review and
-   one host-capable browser smoke when available.
+1. **Scenario-Narrative Gate**
+   - Scenario narrative, audience, and business question match the source.
+   - No broad healthcare-generalization that drops the operational problem.
+2. **Data Contract Gate**
+   - `monthly_metrics` row count = 6.
+   - `facility_summary` row count = 36.
+   - `department_summary` row count = 144.
+   - `ed_flow` row count = 324.
+   - `staffing_coverage` row count = 18.
+   - `patient_experience` row count = 36.
+   - Latest week shows Metro Community and North Medical as top throughput hotspots.
+3. **Blueprint Mapping Gate**
+   - At least the nine canonical widgets exist with correct dataset sources.
+   - Facility concentration and driver/consequence logic is present.
+   - `priority_status` values are constrained to:
+     `Act Now`, `Watch Closely`, `Stable Monitor`.
+4. **Rehearsal Gate**
+   - Presenter sequence can be completed in five steps.
+   - Exactly two bounded builder edits are exercised.
+   - AI workflow, if used, is apply/discard and non-blocking.
+5. **Continuity Gate**
+   - Handoff explicitly states: structured artifact persists across builder,
+     presenter, and export.
+   - No claims beyond bounded mock/live/hybrid support.
 
-## Acceptance Criteria
+If any gate fails, execution pauses until the blocker is fixed and all subsequent
+gates are rerun.
 
-1. The ED throughput scenario is translated into a clear, bounded dashboard
-   demo package workflow rather than remaining only a narrative brief.
-2. The package scope is explicit about what will be built, shown, and handed
-   off in a client-facing demo.
-3. The workflow reuses the closed Sprint 9 DashForge baseline instead of
-   implying new platform development.
-4. The plan defines a coherent dashboard story from system-wide pressure to
-   facility concentration, operational drivers, and intervention focus.
-5. The package includes a builder-edit moment, a presenter-story moment, and a
-   structured-artifact handoff moment.
-6. Any production-binding mention stays bounded to Sprint 9's existing
-   `mock` / `live` / `hybrid` positioning.
-7. The package can be executed later under a governed workflow or manual build
-   pass without reopening scope questions.
+## Acceptance Standard
 
-## Verification Expectations
+`ed-throughput-crunch` is demo-ready when an operator can run the flow on a
+host-capable environment from the same package inputs and complete all gates,
+ending with:
 
-- Re-read this contract and `plans/ed-throughput-crunch-demo-plan.md` before
-  starting implementation work for the package.
-- Review the planned artifact set against:
-  - `scenarios/healthcare/ed-throughput-crunch.md`
-  - `scenarios/healthcare/client-presentation-script.md`
-  - `product-definition.md`
-  - `architecture.md`
-- Confirm the workflow stays inside the current DashForge product/runtime
-  baseline.
-- When the package is later built, prefer one host-environment browser smoke of
-  the final dashboard walkthrough because browser startup remains sandbox
-  constrained here.
+- a structured dashboard handoff (spec, presenter, export continuity),
+- no unplanned runtime changes,
+- one coherent recommendation frame: concentration, causes, consequences, and
+  intervention priorities.
