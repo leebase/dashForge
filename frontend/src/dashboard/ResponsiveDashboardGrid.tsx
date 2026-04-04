@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 import type {
   DashboardBreakpoints,
@@ -161,9 +161,7 @@ export function ResponsiveDashboardGrid({
     }
 
     const updateWidth = () => {
-      startTransition(() => {
-        setContainerWidth(node.clientWidth);
-      });
+      setContainerWidth(node.clientWidth);
     };
 
     updateWidth();

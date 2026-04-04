@@ -14,9 +14,15 @@ interface PresenterModeProps {
   adapter: DataAdapter;
   dashboardStageRef?: Ref<HTMLDivElement>;
   spec: DashboardSpec;
+  showNarrativePanel?: boolean;
 }
 
-export function PresenterMode({ adapter, dashboardStageRef, spec }: PresenterModeProps) {
+export function PresenterMode({
+  adapter,
+  dashboardStageRef,
+  spec,
+  showNarrativePanel = true,
+}: PresenterModeProps) {
   const normalizedSpec = syncPresenterDraft(spec);
   const [activeSectionKey, setActiveSectionKey] = useState<StoryArcSectionKey>("hook");
   const narrative = normalizedSpec.narrative;
@@ -35,7 +41,9 @@ export function PresenterMode({ adapter, dashboardStageRef, spec }: PresenterMod
   const activeSection = narrative.storyArc[activeSectionKey];
 
   return (
-    <section className="presenter-mode">
+    <section
+      className={showNarrativePanel ? "presenter-mode" : "presenter-mode presenter-mode--client"}
+    >
       <div className="presenter-mode__stage" ref={dashboardStageRef}>
         <DashboardRenderer
           adapter={adapter}
@@ -48,82 +56,84 @@ export function PresenterMode({ adapter, dashboardStageRef, spec }: PresenterMod
         />
       </div>
 
-      <aside className="presenter-mode__panel">
-        <p className="eyebrow">Presenter Mode</p>
-        <h2>{activeSection.headline}</h2>
+      {showNarrativePanel ? (
+        <aside className="presenter-mode__panel">
+          <p className="eyebrow">Presenter Mode</p>
+          <h2>{activeSection.headline}</h2>
 
-        {narrative.executiveSummary ? (
-          <p className="presenter-mode__summary">{narrative.executiveSummary}</p>
-        ) : null}
+          {narrative.executiveSummary ? (
+            <p className="presenter-mode__summary">{narrative.executiveSummary}</p>
+          ) : null}
 
-        <div className="presenter-mode__controls">
-          <button
-            className="button button--ghost"
-            disabled={activeSectionIndex === 0}
-            onClick={() => setActiveSectionKey(STORY_ARC_SECTION_KEYS[activeSectionIndex - 1])}
-            type="button"
-          >
-            Previous
-          </button>
-          <button
-            className="button button--secondary"
-            disabled={activeSectionIndex === STORY_ARC_SECTION_KEYS.length - 1}
-            onClick={() => setActiveSectionKey(STORY_ARC_SECTION_KEYS[activeSectionIndex + 1])}
-            type="button"
-          >
-            Next
-          </button>
-        </div>
-
-        <div className="presenter-mode__section-list" role="tablist" aria-label="Story sections">
-          {STORY_ARC_SECTION_KEYS.map((sectionKey) => (
+          <div className="presenter-mode__controls">
             <button
-              aria-selected={sectionKey === activeSectionKey}
-              className={
-                sectionKey === activeSectionKey
-                  ? "presenter-mode__section-button presenter-mode__section-button--active"
-                  : "presenter-mode__section-button"
-              }
-              key={sectionKey}
-              onClick={() => setActiveSectionKey(sectionKey)}
-              role="tab"
+              className="button button--ghost"
+              disabled={activeSectionIndex === 0}
+              onClick={() => setActiveSectionKey(STORY_ARC_SECTION_KEYS[activeSectionIndex - 1])}
               type="button"
             >
-              {STORY_ARC_SECTION_LABELS[sectionKey]}
+              Previous
             </button>
-          ))}
-        </div>
+            <button
+              className="button button--secondary"
+              disabled={activeSectionIndex === STORY_ARC_SECTION_KEYS.length - 1}
+              onClick={() => setActiveSectionKey(STORY_ARC_SECTION_KEYS[activeSectionIndex + 1])}
+              type="button"
+            >
+              Next
+            </button>
+          </div>
 
-        <div className="presenter-mode__copy">
-          <section>
-            <h3>Commentary</h3>
-            <p>{activeSection.commentary}</p>
-          </section>
+          <div className="presenter-mode__section-list" role="tablist" aria-label="Story sections">
+            {STORY_ARC_SECTION_KEYS.map((sectionKey) => (
+              <button
+                aria-selected={sectionKey === activeSectionKey}
+                className={
+                  sectionKey === activeSectionKey
+                    ? "presenter-mode__section-button presenter-mode__section-button--active"
+                    : "presenter-mode__section-button"
+                }
+                key={sectionKey}
+                onClick={() => setActiveSectionKey(sectionKey)}
+                role="tab"
+                type="button"
+              >
+                {STORY_ARC_SECTION_LABELS[sectionKey]}
+              </button>
+            ))}
+          </div>
 
-          {activeSection.transitionText ? (
+          <div className="presenter-mode__copy">
             <section>
-              <h3>Transition</h3>
-              <p>{activeSection.transitionText}</p>
+              <h3>Commentary</h3>
+              <p>{activeSection.commentary}</p>
             </section>
-          ) : null}
 
-          <section>
-            <h3>Active Widgets</h3>
-            <p>{activeSection.widgetIds.join(", ")}</p>
-          </section>
+            {activeSection.transitionText ? (
+              <section>
+                <h3>Transition</h3>
+                <p>{activeSection.transitionText}</p>
+              </section>
+            ) : null}
 
-          {(narrative.presenterNotes ?? []).length > 0 ? (
             <section>
-              <h3>Presenter Notes</h3>
-              <ul className="presenter-mode__notes">
-                {(narrative.presenterNotes ?? []).map((note) => (
-                  <li key={note}>{note}</li>
-                ))}
-              </ul>
+              <h3>Active Widgets</h3>
+              <p>{activeSection.widgetIds.join(", ")}</p>
             </section>
-          ) : null}
-        </div>
-      </aside>
+
+            {(narrative.presenterNotes ?? []).length > 0 ? (
+              <section>
+                <h3>Presenter Notes</h3>
+                <ul className="presenter-mode__notes">
+                  {(narrative.presenterNotes ?? []).map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </div>
+        </aside>
+      ) : null}
     </section>
   );
 }

@@ -78,6 +78,18 @@ function buildInitialDraft() {
   return syncPresenterDraft(createFreshDraftForScenario("saas", "scaling-success"));
 }
 
+function getDraftContextSelection(spec: DashboardSpec) {
+  return {
+    packId: spec.dataContext.mock?.packId ?? spec.intent.industry,
+    scenarioId: spec.dataContext.mock?.scenarioId ?? spec.intent.scenario ?? "",
+  };
+}
+
+function resolveInitialTemplateId(spec: DashboardSpec) {
+  const { packId, scenarioId } = getDraftContextSelection(spec);
+  return getDefaultTemplateForScenario(packId, scenarioId)?.templateId;
+}
+
 function clampSelectedWidgetId(spec: DashboardSpec, selectedWidgetId: string | null) {
   if (!selectedWidgetId) {
     return spec.widgets[0]?.id ?? null;
@@ -90,10 +102,13 @@ function clampSelectedWidgetId(spec: DashboardSpec, selectedWidgetId: string | n
 
 interface BuilderShellProps {
   aiClient?: AiGenerationClient;
+  initialDraft?: DashboardSpec;
 }
 
-export function BuilderShell({ aiClient }: BuilderShellProps = {}) {
-  const [initialDraft] = useState<DashboardSpec>(() => buildInitialDraft());
+export function BuilderShell({ aiClient, initialDraft: initialDraftProp }: BuilderShellProps = {}) {
+  const [initialDraft] = useState<DashboardSpec>(
+    () => syncPresenterDraft(initialDraftProp ?? buildInitialDraft()),
+  );
   const [generationClient] = useState<AiGenerationClient>(
     () => aiClient ?? createDefaultAiGenerationClient(),
   );
@@ -112,8 +127,9 @@ export function BuilderShell({ aiClient }: BuilderShellProps = {}) {
   const [selectedWidgetId, setSelectedWidgetId] = useState<string | null>(
     initialDraft.widgets[0]?.id ?? null,
   );
+  const [isClientView, setIsClientView] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>(
-    getDefaultTemplateForScenario("saas", "scaling-success")?.templateId,
+    () => resolveInitialTemplateId(initialDraft),
   );
   const [showTemplates, setShowTemplates] = useState(true);
   const [showSpecIo, setShowSpecIo] = useState(false);
@@ -124,8 +140,7 @@ export function BuilderShell({ aiClient }: BuilderShellProps = {}) {
 
   const deferredDraft = useDeferredValue(draft);
   const validation = validateDashboardSpec(draft);
-  const currentPackId = draft.dataContext.mock?.packId ?? draft.intent.industry;
-  const currentScenarioId = draft.dataContext.mock?.scenarioId ?? draft.intent.scenario ?? "";
+  const { packId: currentPackId, scenarioId: currentScenarioId } = getDraftContextSelection(draft);
   const availableScenarioIds = scenarioOptions(currentPackId);
   const availableTemplates = listTemplateCatalog({ packId: currentPackId });
   const theme = resolveDashboardTheme(deferredDraft.theme);
@@ -353,6 +368,65 @@ export function BuilderShell({ aiClient }: BuilderShellProps = {}) {
     });
   }
 
+  const inClientView = isClientView && viewMode !== "build";
+
+  function renderDashboardOnlyMode() {
+    if (!adapterResult.ok) {
+      return <div className="builder-empty-state">Resolve dataset bindings to render the demo.</div>;
+    }
+
+    if (viewMode === "presenter") {
+      return (
+        <PresenterMode
+          adapter={adapterResult.adapter}
+          dashboardStageRef={exportStageRef}
+          spec={deferredDraft}
+          showNarrativePanel={false}
+        />
+      );
+    }
+
+    if (viewMode === "preview") {
+      return (
+        <section className="client-only-stage">
+          <div ref={exportStageRef}>
+            <DashboardRenderer
+              adapter={adapterResult.adapter}
+              presentation={{ showAnnotationLayer: true }}
+              spec={deferredDraft}
+            />
+          </div>
+        </section>
+      );
+    }
+
+    return null;
+  }
+
+  function handleToggleClientView() {
+    setViewMode((currentMode) => (currentMode === "build" ? "preview" : currentMode));
+    setIsClientView(true);
+  }
+
+  function handleExitClientView() {
+    setIsClientView(false);
+  }
+
+  if (inClientView) {
+    return (
+      <main className="app-shell app-shell--client-only" style={theme.cssVariables}>
+        <button
+          className="builder-toolbar__client-back button button--ghost"
+          onClick={handleExitClientView}
+          type="button"
+        >
+          Builder View
+        </button>
+        <section className="builder-client-shell">{renderDashboardOnlyMode()}</section>
+      </main>
+    );
+  }
+
   return (
     <main className="app-shell" style={theme.cssVariables}>
       <header className="hero hero--builder">
@@ -363,7 +437,6 @@ export function BuilderShell({ aiClient }: BuilderShellProps = {}) {
           path, then keep refining through the same build, preview, presenter, and export runtime.
         </p>
       </header>
-
       <section className="builder-shell">
         <BuilderToolbar
           canExportDashboard={viewMode !== "build"}
@@ -378,6 +451,8 @@ export function BuilderShell({ aiClient }: BuilderShellProps = {}) {
           onChangeTheme={changeTheme}
           onExportDashboard={exportCurrentDashboard}
           onExportSpec={exportCurrentSpec}
+          isClientView={isClientView}
+          onToggleClientView={handleToggleClientView}
           onChangeViewMode={setViewMode}
           onCreateDraft={() => createFreshDraft(currentPackId, currentScenarioId)}
           onResetDraft={resetToBaseline}

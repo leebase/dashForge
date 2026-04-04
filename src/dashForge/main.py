@@ -7,7 +7,6 @@ from .generate import (
     generate_saas_database,
 )
 
-
 GENERATORS = {
     "healthcare": generate_healthcare_database,
     "financial": generate_financial_database,
@@ -76,7 +75,9 @@ def main(argv: list[str] | None = None) -> int:
 
     output_path = Path(args.output)
     snapshot_path = Path(args.snapshot_output) if args.snapshot_output else None
-    existing_paths = [path for path in [output_path, snapshot_path] if path and path.exists()]
+    existing_paths = [
+        path for path in [output_path, snapshot_path] if path and path.exists()
+    ]
     if existing_paths and not args.force:
         parser.error(
             "Output path already exists. Pass --force to overwrite: "

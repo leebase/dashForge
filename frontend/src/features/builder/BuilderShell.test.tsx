@@ -112,6 +112,19 @@ describe("BuilderShell", () => {
     expect(await screen.findByText("Presenter Mode")).toBeInTheDocument();
   });
 
+  it("switches to full-screen client mode from build mode without showing builder shell", async () => {
+    render(<BuilderShell />);
+
+    expect(screen.getByText("Prompt The Dashboard, Then Refine The Story")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "New Draft" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Client View" }));
+
+    expect(await screen.findByRole("button", { name: "Builder View" })).toBeInTheDocument();
+    expect(screen.queryByText("Prompt The Dashboard, Then Refine The Story")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "New Draft" })).not.toBeInTheDocument();
+  });
+
   it("blocks improve-current generation until the active draft validates cleanly", async () => {
     const aiClient = {
       availability: {

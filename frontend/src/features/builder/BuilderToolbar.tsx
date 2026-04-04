@@ -17,6 +17,8 @@ interface BuilderToolbarProps {
   onChangeTheme: (themeId: string) => void;
   onExportDashboard: () => void;
   onExportSpec: () => void;
+  isClientView: boolean;
+  onToggleClientView: () => void;
   onToggleSpecIo: () => void;
   onToggleTemplates: () => void;
   onChangeViewMode: (mode: "build" | "preview" | "presenter") => void;
@@ -41,6 +43,8 @@ export function BuilderToolbar({
   onChangeTheme,
   onExportDashboard,
   onExportSpec,
+  isClientView,
+  onToggleClientView,
   onToggleSpecIo,
   onToggleTemplates,
   onChangeViewMode,
@@ -147,6 +151,13 @@ export function BuilderToolbar({
           type="button"
         >
           Present
+        </button>
+        <button
+          className={isClientView ? "button button--secondary" : "button button--ghost"}
+          onClick={onToggleClientView}
+          type="button"
+        >
+          {isClientView ? "Builder View" : "Client View"}
         </button>
       </div>
     </section>

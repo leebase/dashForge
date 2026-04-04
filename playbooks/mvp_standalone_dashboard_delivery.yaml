@@ -1,0 +1,295 @@
+{
+  "playbook_id": "mvp_standalone_dashboard_delivery",
+  "name": "DashForge MVP standalone dashboard delivery",
+  "defaults": {
+    "worker": "codex_cli",
+    "retry_policy": {
+      "max_attempts": 2,
+      "strategy": "rerun_with_validation_feedback"
+    }
+  },
+  "run_policy": {
+    "on_step_failure": "halt",
+    "require_validation_pass_to_advance": true
+  },
+  "operational_paths": [
+    "artifacts/current/"
+  ],
+  "steps": [
+    {
+      "step_id": "mvp_contract_and_plan",
+      "name": "Define the standalone MVP contract and plan",
+      "mission": "Read AGENTS.md, context.md, sprint-plan.md, WHERE_AM_I.md, product-definition.md, architecture.md, and README.md. Reconcile the next bounded slice to the clarified MVP: define a scenario, generate the data, and deliver a free-standing dashboard that is not wrapped in the DashForge builder UX. Write the contract to docs/mvp-standalone-dashboard-contract.md and the execution plan to plans/mvp-standalone-dashboard-plan.md.",
+      "inputs": [
+        "AGENTS.md",
+        "context.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "product-definition.md",
+        "architecture.md",
+        "README.md"
+      ],
+      "allowed_paths": [
+        "docs/",
+        "plans/"
+      ],
+      "depends_on": [],
+      "outputs": {
+        "required": [
+          {
+            "path": "docs/mvp-standalone-dashboard-contract.md",
+            "type": "markdown"
+          },
+          {
+            "path": "plans/mvp-standalone-dashboard-plan.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "docs/mvp-standalone-dashboard-contract.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "docs/mvp-standalone-dashboard-contract.md",
+            "headings": [
+              "Overview",
+              "In Scope",
+              "Out of Scope",
+              "Required Outputs",
+              "Acceptance Checks",
+              "Constraints"
+            ]
+          },
+          {
+            "type": "file_exists",
+            "path": "plans/mvp-standalone-dashboard-plan.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "plans/mvp-standalone-dashboard-plan.md",
+            "headings": [
+              "Implementation Strategy",
+              "Standalone Runtime Plan",
+              "Verification",
+              "Risks",
+              "Open Questions"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the contract and plan so the MVP is clearly de-scoped to scenario definition, data generation, and a standalone dashboard deliverable.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "implement_standalone_mvp_runtime",
+      "name": "Implement the standalone MVP runtime",
+      "mission": "Read AGENTS.md, skills/development-loop.md, product-definition.md, architecture.md, docs/mvp-standalone-dashboard-contract.md, plans/mvp-standalone-dashboard-plan.md, and the current frontend runtime. Implement the standalone MVP path so the primary app experience is a free-standing scenario dashboard rather than the builder shell. Keep the builder available only as an explicit secondary mode, preserve the existing scenario and template contracts, and add focused automated coverage for the standalone runtime behavior.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "product-definition.md",
+        "architecture.md",
+        "docs/mvp-standalone-dashboard-contract.md",
+        "plans/mvp-standalone-dashboard-plan.md",
+        "frontend/package.json"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "tests/"
+      ],
+      "depends_on": [
+        "mvp_contract_and_plan"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "frontend/src/App.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/features/runtime/StandaloneDashboardApp.tsx",
+            "type": "text"
+          },
+          {
+            "path": "frontend/src/App.test.tsx",
+            "type": "text"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "frontend/src/features/runtime/StandaloneDashboardApp.tsx"
+          },
+          {
+            "type": "file_exists",
+            "path": "frontend/src/App.test.tsx"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the standalone runtime so the default surface is the free-standing dashboard and the builder is no longer the wrapper around the MVP experience.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "verify_standalone_mvp_runtime",
+      "name": "Verify the standalone MVP runtime",
+      "mission": "Read AGENTS.md, skills/test-as-lee.md, docs/mvp-standalone-dashboard-contract.md, plans/mvp-standalone-dashboard-plan.md, and the standalone runtime implementation. Verify the real MVP path as a user would: the default experience must be a free-standing dashboard, the builder must remain reachable only when explicitly requested, and the frontend checks must pass. Write code-reviews/verify-mvp-standalone-dashboard.md using these exact section headings: Scope Verified, Commands Run, User-Flow Checks, Findings, Outcome.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/test-as-lee.md",
+        "docs/mvp-standalone-dashboard-contract.md",
+        "plans/mvp-standalone-dashboard-plan.md",
+        "frontend/src/App.tsx",
+        "frontend/src/features/runtime/StandaloneDashboardApp.tsx",
+        "frontend/src/App.test.tsx"
+      ],
+      "allowed_paths": [
+        "code-reviews/",
+        "frontend/"
+      ],
+      "depends_on": [
+        "implement_standalone_mvp_runtime"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/verify-mvp-standalone-dashboard.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/verify-mvp-standalone-dashboard.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "code-reviews/verify-mvp-standalone-dashboard.md",
+            "headings": [
+              "Scope Verified",
+              "Commands Run",
+              "User-Flow Checks",
+              "Findings",
+              "Outcome"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair verification so code-reviews/verify-mvp-standalone-dashboard.md uses the exact required headings Scope Verified, Commands Run, User-Flow Checks, Findings, and Outcome while documenting whether the standalone MVP path actually works for a human operator.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "repair_standalone_mvp_runtime",
+      "name": "Repair any standalone MVP findings",
+      "mission": "Read AGENTS.md, skills/development-loop.md, code-reviews/verify-mvp-standalone-dashboard.md, docs/mvp-standalone-dashboard-contract.md, and the current frontend implementation. Repair the standalone MVP runtime issues found during verification and record the repair actions and rerun evidence in code-reviews/repair-mvp-standalone-dashboard.md. In this repair step, stay strictly inside frontend/, tests/, and code-reviews/. Do not update context.md, result-review.md, sprint-plan.md, WHERE_AM_I.md, README.md, product-definition.md, or architecture.md here; durable doc updates belong only in the final review_and_handoff_standalone_mvp step.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/development-loop.md",
+        "code-reviews/verify-mvp-standalone-dashboard.md",
+        "docs/mvp-standalone-dashboard-contract.md",
+        "frontend/src/App.tsx",
+        "frontend/src/features/runtime/StandaloneDashboardApp.tsx"
+      ],
+      "allowed_paths": [
+        "frontend/",
+        "tests/",
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "verify_standalone_mvp_runtime"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/repair-mvp-standalone-dashboard.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/repair-mvp-standalone-dashboard.md"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the standalone MVP runtime findings while staying strictly inside frontend/, tests/, and code-reviews/. Do not update context.md or result-review.md during this step; record repair evidence only in code-reviews/repair-mvp-standalone-dashboard.md.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "review_and_handoff_standalone_mvp",
+      "name": "Review and hand off the standalone MVP slice",
+      "mission": "Read AGENTS.md, skills/code-review.md, skills/documentation.md, product-definition.md, architecture.md, docs/mvp-standalone-dashboard-contract.md, plans/mvp-standalone-dashboard-plan.md, code-reviews/verify-mvp-standalone-dashboard.md, and code-reviews/repair-mvp-standalone-dashboard.md. Write the formal review to code-reviews/review-mvp-standalone-dashboard.md and update README.md, context.md, result-review.md, sprint-plan.md, WHERE_AM_I.md, product-definition.md, and architecture.md so the repo canon and durable memory reflect that the MVP is scenario definition, data generation, and a standalone dashboard deliverable.",
+      "inputs": [
+        "AGENTS.md",
+        "skills/code-review.md",
+        "skills/documentation.md",
+        "product-definition.md",
+        "architecture.md",
+        "docs/mvp-standalone-dashboard-contract.md",
+        "plans/mvp-standalone-dashboard-plan.md",
+        "code-reviews/verify-mvp-standalone-dashboard.md",
+        "code-reviews/repair-mvp-standalone-dashboard.md"
+      ],
+      "allowed_paths": [
+        "code-reviews/",
+        "README.md",
+        "context.md",
+        "result-review.md",
+        "sprint-plan.md",
+        "WHERE_AM_I.md",
+        "product-definition.md",
+        "architecture.md"
+      ],
+      "depends_on": [
+        "repair_standalone_mvp_runtime"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/review-mvp-standalone-dashboard.md",
+            "type": "markdown"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "file_exists",
+            "path": "code-reviews/review-mvp-standalone-dashboard.md"
+          },
+          {
+            "type": "markdown_headings_present",
+            "path": "code-reviews/review-mvp-standalone-dashboard.md",
+            "headings": [
+              "Summary",
+              "What Changed",
+              "Verification",
+              "Remaining Work"
+            ]
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair the review and durable docs so future operators understand the standalone MVP direction immediately.",
+        "after_retries_exhausted": "halt"
+      }
+    }
+  ]
+}

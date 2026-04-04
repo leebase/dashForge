@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { DataAdapter } from "../core/data/DataAdapter";
 import {
@@ -94,7 +94,7 @@ export function WidgetRenderer({
         if (isKpiWidget(widget)) {
           const data = await resolveKpiWidgetData(adapter, widget);
           if (!isCancelled) {
-            startTransition(() => setState({ status: "kpi", data }));
+            setState({ status: "kpi", data });
           }
           return;
         }
@@ -102,7 +102,7 @@ export function WidgetRenderer({
         if (isLineWidget(widget)) {
           const data = await resolveLineWidgetData(adapter, widget);
           if (!isCancelled) {
-            startTransition(() => setState({ status: "line", data }));
+            setState({ status: "line", data });
           }
           return;
         }
@@ -110,7 +110,7 @@ export function WidgetRenderer({
         if (isBarWidget(widget)) {
           const data = await resolveBarWidgetData(adapter, widget);
           if (!isCancelled) {
-            startTransition(() => setState({ status: "bar", data }));
+            setState({ status: "bar", data });
           }
           return;
         }
@@ -118,7 +118,7 @@ export function WidgetRenderer({
         if (isStackedBarWidget(widget)) {
           const data = await resolveStackedBarWidgetData(adapter, widget);
           if (!isCancelled) {
-            startTransition(() => setState({ status: "stacked_bar", data }));
+            setState({ status: "stacked_bar", data });
           }
           return;
         }
@@ -126,7 +126,7 @@ export function WidgetRenderer({
         if (isDonutWidget(widget)) {
           const data = await resolveDonutWidgetData(adapter, widget);
           if (!isCancelled) {
-            startTransition(() => setState({ status: "donut", data }));
+            setState({ status: "donut", data });
           }
           return;
         }
@@ -134,7 +134,7 @@ export function WidgetRenderer({
         if (isTableWidget(widget)) {
           const data = await resolveTableWidgetData(adapter, widget);
           if (!isCancelled) {
-            startTransition(() => setState({ status: "table", data }));
+            setState({ status: "table", data });
           }
           return;
         }
@@ -142,7 +142,7 @@ export function WidgetRenderer({
         if (isSparklineWidget(widget)) {
           const data = await resolveSparklineWidgetData(adapter, widget);
           if (!isCancelled) {
-            startTransition(() => setState({ status: "sparkline", data }));
+            setState({ status: "sparkline", data });
           }
           return;
         }
@@ -150,7 +150,7 @@ export function WidgetRenderer({
         if (isGaugeWidget(widget)) {
           const data = await resolveGaugeWidgetData(adapter, widget);
           if (!isCancelled) {
-            startTransition(() => setState({ status: "gauge", data }));
+            setState({ status: "gauge", data });
           }
           return;
         }
