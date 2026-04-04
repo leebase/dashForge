@@ -2,7 +2,7 @@
 ## Anblicks Value Accelerator for Enterprise Dashboard Delivery
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.1  
+**Version:** 1.2  
 **Date:** April 2, 2026  
 **Status:** Draft for review with Kumar Raman
 
@@ -10,7 +10,23 @@
 
 ## 1. What This Is
 
-DashForge is an internal consulting accelerator that lets Anblicks consultants walk into a client workshop, generate a realistic industry-specific dashboard prototype in under an hour, and then convert that prototype into production-ready React code bound to the client's actual data infrastructure — without throwing the prototype away and without locking the client into a BI vendor subscription.
+DashForge is an internal consulting accelerator that lets Anblicks consultants
+define a believable business scenario, generate realistic industry-specific
+data for that scenario, and open directly into a standalone dashboard
+deliverable during a client workshop.
+
+The current product boundary is now split across the workspace: DashForge owns
+the scenario package, runtime registration, dashboard runtime, and standalone
+deliverable, while sibling project `dataForge` owns the deterministic
+mock-data-generation implementation used to create the scenario artifacts.
+
+The current MVP proof is intentionally narrower than the full long-term
+platform vision. The first success bar is not "every authoring tool at once."
+It is proving that one scenario package can move cleanly from scenario
+definition to data generation to a free-standing dashboard experience without
+throwing the work away. Converting that prototype into production-ready React
+code bound to a client's real data infrastructure remains a later payoff, not
+the MVP gate.
 
 It is not a BI platform. It is not a SaaS product (yet). It is a delivery weapon that makes Anblicks faster and more impressive than competitors who show up with wireframes, static mockups, or empty Tableau shells.
 
@@ -44,10 +60,10 @@ It is not a BI platform. It is not a SaaS product (yet). It is a delivery weapon
 
 ### Primary users: Anblicks consultants and delivery leads
 
-- **In workshops:** Generate a prototype dashboard during the meeting using industry packs and AI-assisted layout. Show the client what their data *could* look like.
+- **In workshops:** Launch a prepared standalone scenario dashboard during the meeting so the client immediately sees what their data *could* look like.
 - **In proposals:** Include interactive dashboard mockups with realistic data as proposal artifacts. Differentiate from competitors showing static slides.
-- **In delivery:** Hand the dashboard spec to the engineering team. They bind it to real data sources. The prototype becomes the production starting point.
-- **In repeatable scenario delivery:** Build a prepared scenario package and launch it in-app through a registered scenario starter and template blueprint, so workshop prep is faster and more deterministic.
+- **In delivery:** Hand the scenario package and dashboard spec to the engineering team. They bind it to real data sources later. The prototype becomes the production starting point.
+- **In repeatable scenario delivery:** Build a prepared scenario package and launch it in-app through a registered scenario starter and template blueprint so workshop prep is faster and more deterministic.
 
 ### Secondary users: Anblicks engineering teams
 
@@ -66,16 +82,16 @@ It is not a BI platform. It is not a SaaS product (yet). It is a delivery weapon
 Ranked by commercial impact, not technical elegance:
 
 ### Rank 1: Industry Mock Data Engine
-**Why first:** This is what makes a workshop feel real. A consultant who can show a healthcare CFO a dashboard with believable readmission rates, cost-per-case trends with seasonal flu spikes, and facility-level variance immediately has credibility that a competitor with empty charts does not. The mock data engine is the single highest-value component because it works even without the rest of the platform — you can pipe it into any charting tool.
+**Why first:** This is what makes a workshop feel real. A consultant who can show a healthcare CFO a dashboard with believable readmission rates, cost-per-case trends with seasonal flu spikes, and facility-level variance immediately has credibility that a competitor with empty charts does not. The mock data engine is the single highest-value component because it works even without the rest of the platform. In the current workspace shape, that engine now lives in `dataForge`, not DashForge.
 
-### Rank 2: Dashboard Spec Schema + Primitive Library
-**Why second:** The spec is what makes prototypes *not* throwaway. Without a canonical spec, every prototype is a one-off. With a spec, the prototype is a structured artifact that engineering can bind to real data. The primitive library (KPI cards, line charts, bar charts, etc.) gives the spec something to render.
+### Rank 2: Scenario Definition + DashboardSpec Contract
+**Why second:** Realistic data still becomes throwaway work unless the scenario is defined as a reusable package. The scenario brief, data design, dashboard blueprint, and `DashboardSpec` are what make the dashboard repeatable by operators and reusable by engineering.
 
-### Rank 3: Workshop Presenter Mode
-**Why third:** The ability to walk through a dashboard as a guided narrative — dimming other widgets, showing commentary, stepping through a story arc — is what differentiates a DashForge demo from "look at this dashboard I made." This is the consulting theater that wins deals.
+### Rank 3: Standalone Dashboard Deliverable
+**Why third:** The consultant needs something that opens directly into a believable dashboard, not a builder shell that requires setup before the client sees value. A standalone deliverable is the first product proof the client experiences.
 
-### Rank 4: AI Spec Generation
-**Why fourth:** Useful, but not essential for MVP. A consultant who knows the industry can manually compose a dashboard from templates faster than prompt-engineering an AI to do it right. AI generation is a speed multiplier, not a capability enabler. Build it after the manual workflow is proven.
+### Rank 4: Builder, Presenter, and AI Authoring Accelerators
+**Why fourth:** These are useful speed and rehearsal multipliers after the core scenario-package and standalone-deliverable flow is proven. They strengthen the operator experience, but they are not the first MVP gate.
 
 ### Rank 5: Production Data Binding
 **Why fifth:** This is the payoff of the whole system — converting mock to production. But it's only valuable after you've won the deal and started delivery. The workshop tool and the production binding tool don't need to ship simultaneously.
@@ -112,25 +128,33 @@ Ranked by commercial impact, not technical elegance:
 
 ## 7. MVP Definition — "Workshop-Ready"
 
-The MVP is the minimum set of capabilities that lets an Anblicks consultant walk into a client workshop and produce a credible, data-populated dashboard prototype during the meeting.
+The MVP is the minimum set of capabilities that proves DashForge can take one
+believable business scenario from definition to data generation to a
+free-standing dashboard deliverable that an Anblicks consultant can use in a
+client workshop.
 
 ### MVP includes:
-1. **3 industry mock data packs** (Healthcare, Financial Services, SaaS/Technology) with 2-3 scenarios each
-2. **8 chart primitives** rendered via ECharts (KPI card, line, bar, stacked bar, donut, table, sparkline, gauge)
-3. **DashboardBox container** with title, loading/empty/error states, resize, responsive behavior
-4. **Grid layout** via react-grid-layout with drag/drop composition
-5. **3 pre-built dashboard templates** per industry pack (executive summary, operational detail, risk/alert)
-6. **Theme system** with 2 themes (light professional, dark executive)
-7. **Dashboard spec** — save/load as JSON, human-readable, version-stamped
-8. **Presenter mode** — step through dashboard sections with commentary and widget highlighting
-9. **Export** — save spec JSON, export dashboard as static PNG/PDF for proposals
-10. **Scenario-to-runtime registration path** for repeatable demo prep: a scenario can be materialized as a documented package and then instantiated in-app through registered starter contracts (e.g., `healthcare:ed-throughput-crunch` + `tpl.healthcare.ed-throughput-command`)
+1. **Scenario definition package** for at least one client-ready use case, including the story, data contract, dashboard blueprint, and operator notes
+2. **Generated mock-data package** for that scenario, with SQLite as the canonical artifact and a JSON runtime bridge where needed; generation may be fulfilled by sibling project `dataForge`
+3. **Shared `DashboardSpec` + primitive runtime** that can render the packaged scenario through the `DataAdapter` seam
+4. **Scenario-to-runtime registration path** so a documented scenario package can be instantiated in-app through registered starter contracts
+5. **Standalone app surface** that opens directly into the packaged dashboard instead of builder-first chrome
+6. **Durable governance trail** proving contract, plan, verify, repair, and review/handoff for the scenario package and standalone dashboard slice
+
+The current canonical MVP proof is:
+
+- `healthcare:ed-throughput-crunch`
+- `tpl.healthcare.ed-throughput-command`
 
 ### MVP explicitly excludes:
-- AI spec generation (Phase 2)
+- in-repo ownership of the mock-data generator implementation now that `dataForge` exists
+- Builder mode as a required MVP entry experience
+- Presenter mode as a required MVP gate
+- AI spec generation as a required MVP gate
 - Real data binding / production conversion (Phase 3)
 - Collaboration / multi-user editing (Phase 4)
 - Custom chart type builder (Phase 4)
+- Multi-scenario launchers or pack browsers as part of the first MVP proof
 - SaaS deployment / auth / billing (future)
 
 ---
@@ -179,7 +203,8 @@ The MVP is the minimum set of capabilities that lets an Anblicks consultant walk
 
 ### MVP success (3 months post-launch):
 - Used in at least 3 real client workshops
-- At least 1 workshop produces a prototype that the client approves without major revisions
+- At least 1 workshop uses a prepared scenario package that opens directly into a believable standalone dashboard without major revisions
+- At least 1 scenario package is reused without rebuilding the story, data design, and dashboard layout from scratch
 - Positive feedback from at least 2 Anblicks consultants who aren't Lee
 
 ### Accelerator success (6 months post-launch):

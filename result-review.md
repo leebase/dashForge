@@ -4,6 +4,221 @@
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
 
+## 2026-04-03 — DashForge Canon Docs Were Realigned To The dataForge Split
+
+### What Was Built
+
+The living DashForge docs now consistently describe the post-split ownership
+boundary: dashForge owns the dashboard runtime, scenario packaging, and
+standalone MVP experience, while `dataForge` owns mock-data generation.
+
+The canon sweep updated:
+
+- [README.md](/Users/lee/projects/dashForge/README.md#L1)
+- [architecture.md](/Users/lee/projects/dashForge/architecture.md#L1)
+- [product-definition.md](/Users/lee/projects/dashForge/product-definition.md#L1)
+- [project-plan.md](/Users/lee/projects/dashForge/project-plan.md#L1)
+- [context.md](/Users/lee/projects/dashForge/context.md#L1)
+- [WHERE_AM_I.md](/Users/lee/projects/dashForge/WHERE_AM_I.md#L1)
+- [sprint-plan.md](/Users/lee/projects/dashForge/sprint-plan.md#L1)
+
+### Why It Matters
+
+The repo had already been split mechanically, but several durable docs still
+described the generator as if it were an in-repo DashForge implementation
+surface. This alignment makes the current ownership boundary explicit for the
+next operator without rewriting the historical sprint artifacts.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+sed -n '1,220p' README.md
+sed -n '1,260p' architecture.md
+sed -n '1,260p' product-definition.md
+sed -n '1,260p' project-plan.md
+sed -n '1,220p' context.md
+sed -n '1,220p' WHERE_AM_I.md
+sed -n '1,220p' sprint-plan.md
+```
+
+Expect those files to describe `dataForge` as the canonical generator home,
+DashForge as the standalone-dashboard/runtime repo, and the Python surface here
+as compatibility-only.
+
+## 2026-04-03 — Mock-Data Creation Was Split Into dataForge
+
+### What Was Built
+
+The deterministic generator that previously lived inside dashForge now has a
+real sibling home in `/Users/lee/projects/dataForge`.
+
+`dataForge` now owns:
+
+- `src/dataForge/generate.py`
+- `src/dataForge/main.py`
+- `src/dataForge/packs/*.json`
+- `tests/test_generate.py`
+
+dashForge now keeps only a compatibility layer at:
+
+- [main.py](/Users/lee/projects/dashForge/src/dashForge/main.py#L1)
+- [generate.py](/Users/lee/projects/dashForge/src/dashForge/generate.py#L1)
+- [_dataforge_compat.py](/Users/lee/projects/dashForge/src/dashForge/_dataforge_compat.py#L1)
+
+### Why It Matters
+
+This separates data creation from the dashboard runtime repo without breaking
+the existing dashForge CLI/test workflows. Future generator changes can land
+in `dataForge`, while dashForge can focus on the standalone dashboard,
+builder, presenter, and runtime surfaces.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dataForge
+python3 -m pytest -q
+PYTHONPATH=src python3 -m dataForge.main generate --scenario flu-season --seed 3101 --output /tmp/dataforge-flu.sqlite --snapshot-output /tmp/dataforge-flu.snapshot.json --force
+
+cd /Users/lee/projects/dashForge
+python3 -m pytest tests/test_generate.py -q
+python3 -m pytest -q
+PYTHONPATH=src python3 -m dashForge.main generate --scenario flu-season --seed 3101 --output /tmp/dashforge-compat-flu.sqlite --snapshot-output /tmp/dashforge-compat-flu.snapshot.json --force
+PYTHONPATH=src python3 -m dashForge.main generate --scenario not-a-real-scenario --output /tmp/dashforge-invalid.sqlite
+```
+
+Expect both pytest runs to pass, both happy-path CLI commands to emit generated
+SQLite plus snapshot paths, and the unhappy-path dashForge command to fail with
+code `2` and a clear `Unknown healthcare scenario` message.
+
+## 2026-04-02 — Standalone MVP Review/Handoff Closed And Canon Was Realigned
+
+### What Was Built
+
+The formal standalone MVP closeout review now exists at:
+
+- [review-mvp-standalone-dashboard.md](/Users/lee/projects/dashForge/code-reviews/review-mvp-standalone-dashboard.md#L1)
+
+The durable docs were also refreshed so the repo now states one consistent MVP
+definition: scenario definition, data generation, and a standalone dashboard
+deliverable. `README.md`, `context.md`, `sprint-plan.md`, `WHERE_AM_I.md`,
+`product-definition.md`, and `architecture.md` now all point to the same
+canonical proof path:
+`healthcare:ed-throughput-crunch` +
+`tpl.healthcare.ed-throughput-command`.
+
+### Why It Matters
+
+The repo already had more capability than the first product proof needed.
+Without this handoff, future operators could easily mistake builder,
+presenter, AI authoring, or live binding breadth for the MVP itself. The canon
+now makes the product bar explicit and keeps future roadmap work from
+accidentally redefining the MVP in docs only.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+sed -n '1,220p' code-reviews/review-mvp-standalone-dashboard.md
+sed -n '1,220p' README.md
+sed -n '1,260p' product-definition.md
+sed -n '1,240p' architecture.md
+sed -n '1,240p' sprint-plan.md
+python3 -m pytest -q
+npm --prefix frontend test
+npm --prefix frontend run build
+```
+
+Expect the review file to exist, the canon docs to describe the MVP as
+scenario definition plus data generation plus a standalone dashboard
+deliverable, and the repo checks to pass. In this sandbox,
+`npm --prefix frontend run dev -- --host 127.0.0.1` still fails with
+`listen EPERM`, so the one real browser smoke remains a host-only follow-up.
+
+## 2026-04-02 — Standalone MVP Repair Closed The Shared-Runtime Teardown Flake
+
+### What Was Built
+
+The standalone MVP repair now closes the actual shared-runtime teardown issue,
+not just the earlier app-level watch item.
+
+`frontend/src/features/runtime/StandaloneDashboardApp.test.tsx` now verifies
+the standalone contract at the `DashboardRenderer` seam instead of mounting
+the full async widget runtime, while
+`frontend/src/components/WidgetRenderer.tsx` and
+`frontend/src/dashboard/ResponsiveDashboardGrid.tsx` now commit initial
+read-only runtime hydration synchronously instead of via deferred
+`startTransition(...)` work.
+
+The governed repair record now exists at:
+
+- [repair-mvp-standalone-dashboard.md](/Users/lee/projects/dashForge/code-reviews/repair-mvp-standalone-dashboard.md#L1)
+
+### Why It Matters
+
+Repeated full-suite reruns proved the original `window is not defined`
+teardown signal was broader than `App.test.tsx`; it could still surface from
+the standalone and presenter runtime tests. This repair fixes the shared
+runtime seam that those paths have in common while keeping the standalone MVP
+surface and behavior unchanged.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+npm --prefix frontend test -- src/features/runtime/StandaloneDashboardApp.test.tsx src/features/presenter/PresenterMode.test.tsx
+npm --prefix frontend test -- src/App.test.tsx src/features/runtime/StandaloneDashboardApp.test.tsx
+npm --prefix frontend test
+npm --prefix frontend run build
+```
+
+Expect the targeted presenter and standalone tests, the app-plus-standalone
+tests, the repeated full frontend suite reruns, and the build to pass. The
+formal repair file records the five consecutive green full-suite passes used
+to close the teardown issue.
+
+## 2026-04-02 — Standalone MVP Dashboard Became The Default App Surface
+
+### What Was Built
+
+`frontend/src/App.tsx` now boots into a dedicated standalone runtime instead of
+opening the builder shell first. The new entry component,
+`frontend/src/features/runtime/StandaloneDashboardApp.tsx`, instantiates the
+registered `healthcare:ed-throughput-crunch` scenario through the existing
+template/runtime path and renders `ED Throughput Command View` directly through
+the shared `DashboardSpec` plus `DataAdapter` seams.
+
+The builder remains available only as an explicit secondary mode. `BuilderShell`
+now accepts an initial draft so the operator path can still open on the same ED
+throughput starter instead of resetting to the old SaaS default when launched
+from the standalone surface.
+
+Focused automated coverage was added in:
+
+- [App.test.tsx](/Users/lee/projects/dashForge/frontend/src/App.test.tsx#L1)
+- [StandaloneDashboardApp.test.tsx](/Users/lee/projects/dashForge/frontend/src/features/runtime/StandaloneDashboardApp.test.tsx#L1)
+
+### Why It Matters
+
+This corrects the product surface to match the clarified MVP. A consultant or
+client now lands directly on a believable scenario dashboard backed by the
+existing generated ED throughput data package, while the builder remains
+available as an explicit operator tool instead of the app's default wrapper.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+npm --prefix frontend test
+npm --prefix frontend run build
+npm --prefix frontend run dev -- --host 127.0.0.1
+```
+
+Expect the full frontend suite and build to pass. In this sandbox, the dev
+server still fails at startup with `listen EPERM: operation not permitted
+127.0.0.1:5173`, which is the same existing host restriction noted elsewhere in
+the repo rather than a standalone-runtime regression.
+
 ## 2026-04-02 — ED Throughput Demo Workflow Handoff Path Recorded
 
 ### What Was Built

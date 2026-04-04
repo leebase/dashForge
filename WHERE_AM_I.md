@@ -13,8 +13,8 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / Future |
-| **Overall Status** | 🟢 Sprint 9 production binding is now formally closed in-repo, and the governed Sprint 1-9 program is complete |
-| **Last Updated** | 2026-04-02 |
+| **Overall Status** | 🟢 Sprint 9 is closed, the standalone MVP review/handoff is closed, and dashForge now treats mock-data generation as a sibling-project concern while keeping the standalone dashboard MVP intact |
+| **Last Updated** | 2026-04-03 |
 
 ---
 
@@ -26,23 +26,24 @@
 
 | Criterion | Status | Notes |
 |-----------|--------|-------|
-| Industry mock data engine | ✅ Sprint 4 closed | All three MVP industry packs now exist in-repo with deterministic healthcare, financial, and saas generation paths plus shared template metadata |
-| Dashboard spec + primitive runtime | ✅ Sprint 6 closed | Shared validation, theming, persistence, responsive runtime, the full primitive set, and the first manual builder workflow now exist behind the same adapter seam as a formally closed baseline |
-| Presenter mode | ✅ Sprint 7 closed | Narrative authoring, presenter stepping, widget emphasis, bounded annotations, and browser-local export flows are now closed in-repo |
-| Workshop-ready authoring flow | ✅ Sprint 8 closed | AI-assisted prompt-to-spec generation, staged candidate review/apply/discard, and the shared preview/presenter/export path are formally closed |
-| Planning and canon docs | ✅ Done | Product, architecture, planning, and handoff docs now agree on the closed Sprint 1-9 governed baseline |
+| Scenario definition package | ✅ Done | The ED throughput scenario now has contract, data design, dashboard blueprint, build checklist, binding map, and governed review/handoff docs |
+| Generated mock data package | ✅ Done | Canonical SQLite and JSON preview artifacts exist for the ED throughput scenario and stay aligned to the runtime contract |
+| Standalone dashboard deliverable | ✅ Done | `frontend/src/App.tsx` now opens directly into the ED throughput command-view dashboard instead of builder-first chrome |
+| Shared DashboardSpec runtime | ✅ Done | The standalone path, builder, presenter, export, and live-binding surfaces all stay on the same `DashboardSpec` plus `DataAdapter` seams |
+| Planning and canon docs | ✅ Done | Product, architecture, planning, and handoff docs now agree on the narrower standalone MVP definition |
 
 ### Current Phase Goals
 
 | Goal | Status | Notes |
 |------|--------|-------|
 | Establish implementation-ready planning docs | ✅ Done | Planning/state docs match canon |
-| Deliver the workshop-ready MVP baseline | ✅ Done | The closed Sprint 8 baseline satisfies the bounded workshop-ready authoring target in-repo |
-| Deliver the first bounded production-binding path | ✅ Done | Sprint 9 closed with shared adapter resolution, REST live binding, hybrid composition, builder-integrated binding controls, and safe spec serialization |
-| Close the governed Agent-Orch sprint ladder | ✅ Done | The governed Sprint 1-9 program is now closed through `code-reviews/review-sprint-09.md` |
-| Register ED throughput command-view scenario in runtime | ✅ Done | `healthcare:ed-throughput-crunch` and `tpl.healthcare.ed-throughput-command` now instantiate in-app with dedicated blueprint wiring |
-| Close the ED throughput demo governance loop | ✅ Done | `playbooks/ed_throughput_crunch_demo_workflow.yaml` run completed through contract, plan, verify, repair, and review/handoff |
-| Run one host-environment browser smoke of the live-binding workflow | 🟡 Planned | Still blocked in this sandbox by localhost `listen EPERM`; remains a manual host-only follow-up |
+| Define the canonical standalone MVP scope | ✅ Done | Product and architecture docs now state that the MVP is scenario definition, data generation, and a standalone dashboard deliverable |
+| Deliver the canonical scenario package and generated data | ✅ Done | ED throughput now has the full bounded package and materialized mock-data artifacts in-repo |
+| Deliver the standalone default dashboard surface | ✅ Done | The app opens directly into the packaged ED throughput scenario via the shared runtime contracts |
+| Preserve advanced builder/presenter/AI/live-binding work as secondary surfaces | ✅ Done | Those capabilities remain available in-repo without redefining the MVP success bar |
+| Break mock-data creation into its own workspace project | ✅ Done | `dataForge` now owns generator code, pack assets, and tests; dashForge keeps compatibility wrappers only |
+| Run one host-environment browser smoke of the standalone/live-binding workflow | 🟡 Planned | Still blocked in this sandbox by localhost `listen EPERM`; remains a manual host-only follow-up |
+| Choose the next bounded scenario-building slice | 🟡 Planned | The next slice should package the ED throughput pattern into reusable skills/workflows rather than widen the MVP informally |
 
 ---
 
@@ -66,10 +67,11 @@
 
 | Risk/Blocker | Impact | Status |
 |-------------|--------|--------|
-| One real host-environment live-binding builder/presenter/export smoke is still missing | The Sprint 9 UI is implemented and reviewed in-repo, but sandbox port denial still prevents a true browser run here | 🟡 Planned |
+| One real host-environment standalone/live-binding smoke is still missing | The default MVP surface and Sprint 9 UI are implemented and reviewed in-repo, but sandbox port denial still prevents a true browser run here | 🟡 Planned |
 | SQLite is still snapshot-backed in the frontend runtime | The generator path is real, but later work must decide when to add direct browser SQLite | 🟡 Planned |
-| Repo still reflects bootstrap Python scaffold | Temporary dual structure could confuse future contributors until a cleanup slice lands | 🟡 Planned |
+| Legacy Python compatibility wrappers remain in dashForge after the dataForge split | Generator ownership is clearer now, but future cleanup should decide how long the compatibility path stays in-repo | 🟡 Planned |
 | Broader live-binding work beyond REST could sprawl without a new contract | Sprint 9 is intentionally bounded; later adapters or brokering work should start under a new roadmap slice | 🟡 Planned |
+| The broader in-repo feature set could still obscure the narrower MVP if future docs drift | Builder, presenter, AI, and live-binding features exist, but they are no longer the MVP definition | 🟡 Planned |
 
 ---
 
@@ -81,7 +83,7 @@ Decisions that affect product direction:
 |----------|-----------|------|
 | `product-definition.md` is the product canon | Prevents product drift during early implementation | 2026-03-31 |
 | `architecture.md` is the technical canon | Establishes the React/Vite/TypeScript + DashboardSpec target | 2026-03-31 |
-| Workshop-ready MVP is the first success bar | Keeps the scope focused on consulting value rather than platform breadth | 2026-03-31 |
+| Scenario definition, data generation, and a standalone dashboard deliverable are the first success bar | Keeps the scope focused on the first believable consulting proof instead of platform breadth | 2026-03-31 |
 | Transitional implementation lives in `frontend/` | Lets Sprint 1 prove the architecture without destructive repo churn | 2026-03-31 |
 | Scenario-backed mock references are enough to close Sprint 1 | Proves the adapter seam without forcing SQLite into the foundation slice | 2026-03-31 |
 | Sprint 2 proves the SQLite seam without adding the runtime dependency yet | Keeps the seam explicit while staying within current guardrails | 2026-03-31 |
@@ -101,13 +103,15 @@ Decisions that affect product direction:
 | Serialized DashboardSpec artifacts omit live header overrides | Preserves safe product artifacts without discarding the rest of the live-binding metadata | 2026-04-01 |
 | `code-reviews/review-sprint-09.md` is the formal Sprint 9 closeout review artifact | Completes the governed handoff requirement for the Sprint 1-9 delivery program | 2026-04-01 |
 | The durable DashForge playbooks now use Agent-Orch `operational_paths` for `artifacts/current/`, and restart playbooks are archived under `playbooks/backups/` | Keeps future governed runs aligned with the actual Agent-Orch feature set instead of the temporary recovery scaffolding used during delivery | 2026-04-01 |
+| The canonical MVP is scenario definition, data generation, and a standalone dashboard deliverable | Keeps the repo's first proof of value explicit despite the broader operator surfaces already present in-repo | 2026-04-02 |
+| Mock-data creation now lives in sibling project `dataForge`, with dashForge retaining compatibility wrappers for historical generator entrypoints | Clarifies repo ownership while preserving the existing CLI/test surface during transition | 2026-04-03 |
 
 ---
 
 ## What "Done" Looks Like
 
-- [x] An Anblicks consultant can build a believable prototype during a workshop in under an hour
-- [x] The prototype is captured as DashboardSpec and reusable by delivery engineering
+- [x] An Anblicks consultant can open a believable standalone scenario dashboard during a workshop without first entering builder chrome
+- [x] The packaged scenario is captured as reusable docs, generated data artifacts, and a `DashboardSpec` runtime contract
 - [x] Mock data feels industry-realistic enough to support client-facing storytelling
 - [ ] DashForge is used successfully in at least 3 real client workshops
 - [ ] At least 2 consultants beyond Lee confirm the workflow is valuable

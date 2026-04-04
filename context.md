@@ -10,7 +10,7 @@
 |-----------|-------|
 | **Phase** | Phase 4 — Advanced / Future |
 | **Mode** | 2 (Implementation with approval) |
-| **Last Updated** | 2026-04-02 |
+| **Last Updated** | 2026-04-03 |
 
 ### Sprint Status
 
@@ -40,18 +40,53 @@ of the closed Sprint 8 authoring flow: `mock`, `live`, and `hybrid`
 REST adapter and explicit hybrid composition instead of a second renderer or
 widget-level branching path.
 
-The builder shell still owns the single active `DashboardSpec` draft, but it
-now exposes dataset-aware live-binding controls inside the existing property
-rail and keeps preview, presenter, and export on the same resolved adapter
-path. Sprint 9's verify, repair, and review artifacts now exist under
-`code-reviews/`, the durable handoff docs are aligned to that closed state, and
-fresh closeout reruns on 2026-04-01 passed again for `python3 -m pytest -q`,
-`npm --prefix frontend test`, and `npm --prefix frontend run build`.
+A formal standalone-MVP review/handoff is now also closed in-repo.
+`code-reviews/review-mvp-standalone-dashboard.md` records a clean post-repair
+review pass, and the repo canon now explicitly defines the MVP as:
+
+- one bounded scenario definition,
+- data generation for that scenario, and
+- a standalone dashboard deliverable that opens directly into the scenario.
+
+A bounded post-Sprint-9 product-surface correction is now also landed:
+`frontend/src/App.tsx` no longer opens into the builder shell by default.
+Instead, the app now boots into a dedicated standalone runtime under
+`frontend/src/features/runtime/StandaloneDashboardApp.tsx` for the canonical
+ED throughput scenario (`healthcare:ed-throughput-crunch`) and its registered
+starter template (`tpl.healthcare.ed-throughput-command`).
+
+The builder shell remains available as an explicit secondary mode for operators
+and still owns the active editable `DashboardSpec` draft after it is opened,
+but the default MVP experience is now the free-standing scenario dashboard
+rather than builder-first chrome. That standalone path stays on the existing
+`DashboardSpec` + `DataAdapter` contracts, reuses the registered
+scenario/template seam, and carries focused app/runtime coverage in
+`frontend/src/App.test.tsx` and `frontend/src/features/runtime/StandaloneDashboardApp.test.tsx`.
+
+Mock-data creation has now also been broken out of dashForge into the sibling
+`/Users/lee/projects/dataForge` project. dashForge keeps thin compatibility
+wrappers at `src/dashForge/main.py`, `src/dashForge/generate.py`, and
+`src/dashForge/_dataforge_compat.py` so the historical CLI/tests still resolve,
+but new generator ownership now lives in `dataForge`.
+
+Fresh standalone closeout verification passed in sandbox on 2026-04-02:
+`python3 -m pytest -q`, `npm --prefix frontend test`, and
+`npm --prefix frontend run build`.
+
+The standalone repair follow-up is now closed at the shared-runtime seam:
+`frontend/src/features/runtime/StandaloneDashboardApp.test.tsx` now verifies
+the standalone contract through a mocked `DashboardRenderer` seam, and the
+read-only runtime path in `frontend/src/components/WidgetRenderer.tsx` and
+`frontend/src/dashboard/ResponsiveDashboardGrid.tsx` no longer leaves deferred
+initial-hydration work alive during teardown. The repaired outcome and repeated
+green rerun evidence now live in
+`code-reviews/repair-mvp-standalone-dashboard.md`.
 
 The only remaining near-term gap is still outside this sandbox:
 `npm --prefix frontend run dev -- --host 127.0.0.1` fails here with
-`listen EPERM`, so one host-environment browser smoke of the live-binding
-workflow remains queued as manual follow-up rather than governed closeout work.
+`listen EPERM`, so one host-environment browser smoke of the standalone
+default path plus the still-available live-binding workflow remains queued as
+manual follow-up rather than governed closeout work.
 
 The most recent healthcare scenario package workflow (`0700a8a5990b`) has now
 closed end-to-end: contract, plan, verify, repair, and review/handoff were
@@ -91,6 +126,33 @@ contract (`monthly_metrics`) and widget taxonomy.
 
 ### Recently Completed
 
+- ✅ Broke mock-data creation out into `/Users/lee/projects/dataForge`, moving
+  the real generator CLI, pack assets, and generator tests there while keeping
+  dashForge compatibility wrappers for the old Python entrypoints
+- ✅ Realigned the living dashForge canon docs so README, architecture,
+  product-definition, project-plan, and the active memory files all describe
+  `dataForge` as the generator owner and dashForge as the dashboard/runtime owner
+- ✅ Shifted the default app surface from `BuilderShell` to the standalone ED
+  throughput runtime in `frontend/src/App.tsx` and
+  `frontend/src/features/runtime/StandaloneDashboardApp.tsx`
+- ✅ Wrote the formal standalone MVP closeout review in
+  `code-reviews/review-mvp-standalone-dashboard.md`
+- ✅ Realigned `README.md`, `context.md`, `result-review.md`, `sprint-plan.md`,
+  `WHERE_AM_I.md`, `product-definition.md`, and `architecture.md` so the repo
+  canon now defines the MVP as scenario definition, data generation, and a
+  standalone dashboard deliverable
+- ✅ Kept the builder available only as explicit secondary operator mode while
+  preserving the current scenario/template and shared adapter contracts
+- ✅ Added focused standalone coverage in `frontend/src/App.test.tsx` and
+  `frontend/src/features/runtime/StandaloneDashboardApp.test.tsx`
+- ✅ Fresh standalone closeout verification passed in sandbox on 2026-04-02:
+  `python3 -m pytest -q`, `npm --prefix frontend test`, and
+  `npm --prefix frontend run build`
+- ✅ Closed the standalone MVP repair follow-up by narrowing
+  `StandaloneDashboardApp.test.tsx` to the renderer seam, removing deferred
+  initial-hydration transitions from the shared read-only runtime path, and
+  recording repeated rerun evidence in
+  `code-reviews/repair-mvp-standalone-dashboard.md`
 - ✅ Added the practical ED throughput demo build artifacts:
   `scenarios/healthcare/ed-throughput-crunch-data-design.md`,
   `scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md`, and
@@ -212,11 +274,15 @@ contract (`monthly_metrics`) and widget taxonomy.
 
 ### In Progress
 
-- ⏳ Browser preview still needs one real local run outside this sandbox because localhost port binding is denied here (`listen EPERM`)
-- ⏳ One host-environment smoke is still needed for the closed Sprint 9 live-binding workflow
-- ⏳ The next work now needs to be executed as a new bounded roadmap slice rather than extending the closed Sprint 1-9 governed ladder in place
-- ⏳ One host-capable rehearsal run is still required to validate the ED
-  throughput command-view path end-to-end in a non-restricted browser environment
+- ⏳ One host-capable browser smoke is still required to validate the
+  standalone ED throughput default path and the still-available Sprint 9
+  live-binding workflow end to end in a non-restricted browser environment
+- ⏳ The next work after the standalone MVP correction still needs to be chosen
+  as a new bounded roadmap slice rather than extending the closed Sprint 1-9
+  governed ladder in place
+- ⏳ The first reusable scenario-building skill set still needs to be specified
+  so future scenario packages can follow the same contract/design/materialize/
+  standalone-deliverable pattern consistently
 
 ---
 
@@ -249,6 +315,8 @@ contract (`monthly_metrics`) and widget taxonomy.
 | Sprint 9 resolves `mock`, `live`, and `hybrid` specs through one adapter factory instead of view-specific branching | Preserves the existing renderer/presenter/export path while allowing live bindings to stay behind the `DataAdapter` seam | 2026-04-01 |
 | Serialized DashboardSpec artifacts must strip live header overrides before export or storage | Keeps live-binding metadata portable without persisting durable secrets in product artifacts | 2026-04-01 |
 | `code-reviews/review-sprint-09.md` is the formal Sprint 9 closeout artifact | Completes the governed handoff requirement for the Sprint 1-9 delivery ladder | 2026-04-01 |
+| The standalone MVP entry point now opens directly into the ED throughput dashboard and keeps builder mode opt-in | Aligns the default app experience with the clarified MVP without introducing a second renderer or breaking the existing authoring surface | 2026-04-02 |
+| The product canon now defines the MVP as scenario definition, generated data, and a standalone dashboard deliverable | Prevents advanced builder/presenter/AI/live-binding breadth from obscuring the product's first proof of value | 2026-04-02 |
 
 ---
 
@@ -261,7 +329,7 @@ contract (`monthly_metrics`) and widget taxonomy.
 | `product-definition.md` | Product vision, constraints, MVP | ✅ Canon |
 | `architecture.md` | Technical architecture, stack, design rules | ✅ Canon |
 | `project-plan.md` | Strategic roadmap, phases, success metrics | ✅ Phase 4 entry and the closed Sprint 1-9 governed program are recorded |
-| `sprint-plan.md` | Tactical execution | ✅ Sprint 9 is recorded as formally closed; host-only follow-up remains noted |
+| `sprint-plan.md` | Tactical execution | ✅ Sprint 9 plus the standalone MVP closeout are recorded; host-only follow-up remains noted |
 | `AGENTS.md` | AI agent guide, conventions, operational modes | ✅ Active |
 
 ### Session Memory (Dynamic)
@@ -283,7 +351,7 @@ contract (`monthly_metrics`) and widget taxonomy.
 
 ## Open Questions
 
-1. How much host-environment visual polish or usability adjustment will be needed after the first real browser smoke of the Sprint 9 live-binding builder/preview/presenter workflow?
+1. How much host-environment visual polish or usability adjustment will be needed after the first real browser smoke of the standalone default dashboard plus Sprint 9 live-binding workflow?
 2. Is the browser-native print export path sufficient for proposal use, or does later roadmap work need a dependency-backed PNG capture path?
 3. Should a later slice add a host-local credential helper for live bindings, or is safe metadata-only export plus manual local overrides sufficient?
 
@@ -293,9 +361,9 @@ contract (`monthly_metrics`) and widget taxonomy.
 
 | Rank | Action | Owner | Done When |
 |------|--------|-------|----------|
-| 1 | Run one local browser smoke of the Sprint 9 binding workflow outside this sandbox | Human+AI | Dev or preview startup succeeds in a port-binding-capable environment and live/hybrid mode switching, binding edits, preview, presenter, and export affordances are clickable |
-| 2 | Decide the next bounded roadmap slice beyond the closed Sprint 1-9 governed ladder | Human+AI | A new contract/plan exists for the next slice instead of reopening Sprint 9 informally |
-| 3 | Revisit direct browser SQLite runtime and broader Python cleanup only at their planned later slices | Human+AI | Follow-on storage/runtime work is sequenced without destabilizing the current generator path |
+| 1 | Run one local browser smoke of the standalone default dashboard and Sprint 9 binding workflow outside this sandbox | Human+AI | Dev or preview startup succeeds in a port-binding-capable environment and the standalone default, builder handoff, live/hybrid mode switching, preview, presenter, and export affordances are clickable |
+| 2 | Decide the next bounded roadmap slice beyond the closed standalone MVP proof and Sprint 1-9 governed ladder | Human+AI | A new contract/plan exists for the next slice instead of widening the current MVP informally |
+| 3 | Specify the first reusable scenario-building skill set under `skills/` | Human+AI | Future scenario work has a durable skill path for scenario brief, data design, blueprint, build checklist, and SQLite-plus-JSON package generation |
 
 ---
 

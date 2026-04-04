@@ -11,11 +11,11 @@
 | Field | Value |
 |------|-------|
 | **Sprint** | Sprint 9 — Production binding |
-| **Status** | COMPLETE — governed verify, repair, review, and handoff are now closed in-repo |
+| **Status** | COMPLETE — Sprint 9 and the bounded standalone MVP review/handoff are now closed in-repo |
 | **Start Date** | 2026-04-01 |
 | **Execution Model** | Agent-Orch governed program complete; future reruns should use the canonical durable workflow |
 | **Workflow** | `playbooks/project_sprint_program.yaml` |
-| **Goal** | Lock a bounded production-binding slice on top of the closed Sprint 8 AI-assisted authoring baseline without widening the product into backend credential brokering, live SaaS platform work, or unrelated repo cleanup. |
+| **Goal** | Lock a bounded production-binding slice on top of the closed Sprint 8 AI-assisted authoring baseline, then close the clarified standalone MVP correction on top of that baseline without widening the product into backend credential brokering, live SaaS platform work, or unrelated repo cleanup. |
 
 ## Sprint Outcome
 
@@ -35,6 +35,10 @@ Sprint 9 is now formally closed in the repo.
 - JSON import/export now accepts valid live and hybrid specs, and durable spec
   serialization strips `connection.headers` so product artifacts do not persist
   secrets.
+- The bounded standalone MVP closeout is now also complete: the repo canon,
+  review trail, and default app surface all agree that the current product
+  proof is one scenario definition, data generation, and a standalone
+  dashboard deliverable for `healthcare:ed-throughput-crunch`.
 - Governed verification found one field-map readiness gap (`V901`), the repair
   closed it, and the formal review artifact now records a clean post-repair
   closeout state in `code-reviews/review-sprint-09.md`.
@@ -58,6 +62,24 @@ Recovery-specific restart workflows used during delivery are now archived under
 `playbooks/backups/`. Future recovery should prefer Agent-Orch `resume-run`
 against the canonical workflow rather than creating new restart playbooks.
 
+## Standalone MVP Closeout Trail
+
+The bounded standalone MVP artifact set now exists under:
+
+- `docs/mvp-standalone-dashboard-contract.md`
+- `plans/mvp-standalone-dashboard-plan.md`
+- `code-reviews/verify-mvp-standalone-dashboard.md`
+- `code-reviews/repair-mvp-standalone-dashboard.md`
+- `code-reviews/review-mvp-standalone-dashboard.md`
+
+This trail closes the product-surface correction that turned the repo's
+clarified MVP into the default app experience and synchronized the canon
+documents around the narrower MVP definition.
+
+The current canon also treats mock-data creation as a sibling-project concern:
+`dataForge` now owns the generator implementation and pack assets, while
+dashForge keeps compatibility wrappers only for historical CLI/test paths.
+
 ## Governed Exit Criteria
 
 - [x] `docs/sprint-09-contract.md` exists
@@ -72,7 +94,7 @@ against the canonical workflow rather than creating new restart playbooks.
 
 ## Remaining Host-Only Follow-Up
 
-- [ ] Run one host-environment browser smoke of the Sprint 9 binding workflow
+- [ ] Run one host-environment browser smoke of the standalone default path and the Sprint 9 binding workflow
 
 This item remains outside governed closeout because localhost binding is denied
 in this sandbox. `npm --prefix frontend run dev -- --host 127.0.0.1` still
@@ -103,10 +125,32 @@ The only unchanged manual gap is local browser startup. `npm --prefix frontend
 run dev -- --host 127.0.0.1` still fails here with `listen EPERM` because this
 sandbox denies localhost port binding.
 
+A bounded post-closeout product-surface correction is now also landed on top of
+that baseline:
+
+- `frontend/src/App.tsx` now defaults to a standalone ED throughput dashboard
+  instead of the builder shell
+- `frontend/src/features/runtime/StandaloneDashboardApp.tsx` renders the
+  registered ED throughput starter through the existing `DashboardSpec` +
+  `DataAdapter` path
+- `BuilderShell.tsx` remains available only as explicit secondary mode for
+  operators, using the same ED starter draft when opened from the app surface
+- Focused standalone coverage now exists in `frontend/src/App.test.tsx` and
+  `frontend/src/features/runtime/StandaloneDashboardApp.test.tsx`
+- mock-data creation now lives in sibling project `/Users/lee/projects/dataForge`,
+  while dashForge keeps compatibility wrappers at `src/dashForge/main.py` and
+  `src/dashForge/generate.py` for historical generator workflows
+
 ## Current Follow-up
 
 - [ ] Run one local browser smoke in a host environment that permits
       `127.0.0.1:5173` or preview binding
+- [x] Write the formal standalone MVP review/handoff and align repo canon
+      around scenario definition, generated data, and a standalone dashboard
+      deliverable
+- [x] Implement the standalone MVP runtime so the default app surface opens
+      directly into the ED throughput command view while keeping builder mode
+      opt-in
 - [x] Execute and close a full healthcare package governance run
       (`ed_throughput_crunch_demo_workflow.yaml`)
 - [ ] Decide the next bounded roadmap slice beyond the now-closed governed
@@ -122,6 +166,9 @@ The current scenario-building docs and workflow set now includes:
 
 - `scenarios/healthcare/ed-throughput-crunch-contract.md`
 - `plans/ed-throughput-crunch-demo-plan.md`
+- `docs/mvp-standalone-dashboard-contract.md`
+- `plans/mvp-standalone-dashboard-plan.md`
+- `code-reviews/review-mvp-standalone-dashboard.md`
 - `scenarios/healthcare/ed-throughput-crunch-data-design.md`
 - `scenarios/healthcare/ed-throughput-crunch-dashboard-blueprint.md`
 - `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`
@@ -174,9 +221,11 @@ repeatable DashForge capability:
 
 ## Definition Of Success For This Window
 
-This sprint window is successful because Sprint 9 is now both landed and
-formally closed: the builder can author live/hybrid dataset bindings, one
-shared adapter path resolves `mock`, `live`, and `hybrid` specs through the
-existing renderer/presenter/export seams, serialization omits durable secrets,
-the automated checks stay green, and the governed verify/repair/review trail
-is complete.
+This sprint window is successful because the repo now has both a closed Sprint
+9 baseline and a closed standalone MVP proof: the builder can still author
+live/hybrid dataset bindings on the shared runtime, but the canon now makes it
+explicit that the current MVP is one scenario definition, generated data
+generation, and a standalone dashboard deliverable backed by the same
+`DashboardSpec` and `DataAdapter` seams. The automated checks are green, the
+governed verify/repair/review trail is complete, and the only remaining gap is
+the host-only browser smoke.

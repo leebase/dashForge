@@ -2,10 +2,83 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.4  
-**Date:** April 2, 2026  
+**Version:** 1.7  
+**Date:** April 3, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.4 records ED throughput scenario runtime registration and the app-visible starter path for a reusable command-view package workflow.
+**Revision notes:** v1.7 records the repo-boundary shift that moves mock-data generation ownership into sibling project `dataForge` while keeping dashForge focused on scenario packaging and the dashboard runtime.
+
+---
+
+## 2026-04-03 — Mock-Data Generation Ownership Moved To dataForge
+
+**Decision:** DashForge no longer treats in-repo Python generation code as a
+primary product surface. Deterministic mock-data generation now lives in
+sibling project `/Users/lee/projects/dataForge`, while dashForge keeps only
+thin compatibility wrappers for historical CLI and test entrypoints.
+
+**Rationale:** The workspace now has two distinct concerns: generating bounded
+scenario data and rendering/authoring dashboard experiences. Separating the
+generator into `dataForge` clarifies ownership, reduces future coupling, and
+lets dashForge stay centered on `DashboardSpec`, `DataAdapter`, and the
+standalone dashboard/runtime story.
+
+**Alternatives rejected:** Keeping generator implementation as a first-class
+DashForge surface would continue the repo-boundary ambiguity. Removing the old
+entrypoints immediately would create more migration friction than value while
+historical workflows still reference them.
+
+**Consequences:** DashForge still consumes generated SQLite/JSON artifacts and
+may temporarily expose compatibility wrappers, but new generator changes should
+land in `dataForge` first. Canon docs in this repo must describe generation as
+a sibling-project concern rather than a core in-repo implementation slice.
+
+## 2026-04-02 — Canonical MVP Is A Scenario Package Plus Standalone Dashboard Deliverable
+
+**Decision:** The repo canon now defines the MVP as one bounded flow:
+scenario definition, data generation, runtime registration, and a standalone
+dashboard deliverable. Builder, presenter, AI authoring, and live-binding
+surfaces remain important product capabilities, but they are no longer the
+definition of the MVP success bar.
+
+**Rationale:** The codebase already contains more surface area than the first
+proof of value requires. Without an explicit canonical statement, future
+operators could treat builder breadth or post-MVP runtime features as the MVP
+itself and start making scope decisions against the wrong target.
+
+**Alternatives rejected:** Treating the builder shell as the MVP would keep the
+first client experience anchored to authoring chrome. Treating the entire
+Sprint 1-9 feature set as the MVP would blur the difference between the first
+deliverable and later operator accelerators.
+
+**Consequences:** The product story is now sharper. Scenario contracts,
+generated SQLite/JSON artifacts, runtime registration, and the standalone app
+entry are the canonical MVP proof. More advanced surfaces must be described as
+supporting or post-MVP capabilities layered on the same runtime.
+
+---
+
+## 2026-04-02 — Standalone MVP Entry Uses The Existing Runtime Contracts
+
+**Decision:** `frontend/src/App.tsx` now defaults to a dedicated standalone
+runtime (`frontend/src/features/runtime/StandaloneDashboardApp.tsx`) for the
+registered ED throughput command view instead of mounting `BuilderShell`
+directly on first load.
+
+**Rationale:** The clarified MVP is a believable, free-standing dashboard
+experience backed by generated scenario data, not a builder-first shell. The
+repo already had the right scenario, template, and adapter contracts in place;
+the missing proof was making that scenario dashboard the primary app surface.
+
+**Alternatives rejected:** Reusing the builder shell as the default wrapper
+would have kept the MVP visually anchored to authoring chrome. Hard-coding a
+separate standalone widget path would have fragmented the runtime and bypassed
+the current `DashboardSpec` + `DataAdapter` seams.
+
+**Consequences:** The default app path now instantiates the registered
+`healthcare:ed-throughput-crunch` starter through the existing template/runtime
+contracts, while builder mode remains available only after explicit user action
+and continues to operate on the same starter draft when opened from the app
+surface.
 
 ---
 
@@ -133,11 +206,11 @@ would have introduced new dependency and packaging work into the same sprint.
 Leaving the frontend on a pure delegation seam would not have delivered a real
 adapter-facing data path for generated healthcare data.
 
-**Consequences:** The repo now has a bounded Python CLI for deterministic SQLite
-generation plus optional snapshot export. The frontend can validate and consume
-SQLite-backed datasets through the snapshot bridge today, and a later sprint
-can replace that bridge with a direct browser SQLite engine without changing
-widget code.
+**Consequences:** The product now has a bounded deterministic SQLite generation
+path plus optional snapshot export, but generator ownership has since moved to
+`dataForge`. The frontend can validate and consume SQLite-backed datasets
+through the snapshot bridge today, and a later sprint can replace that bridge
+with a direct browser SQLite engine without changing widget code.
 
 ---
 
@@ -147,7 +220,7 @@ These principles are ordered by priority. When they conflict, higher-ranked prin
 
 1. **Value delivery order, not technical dependency order.** Components ship in the sequence that creates consulting value fastest, even if that means temporary scaffolding that gets replaced later.
 
-2. **The spec is the product.** The DashboardSpec JSON schema is the core IP. Everything else — rendering, editing, data generation — serves the spec. If we had to throw away everything except the spec and the mock data engine, we'd still have an accelerator.
+2. **The spec is the product.** The DashboardSpec JSON schema is the core IP. Everything else — rendering, editing, and data integration — serves the spec. If we had to throw away everything except the spec, the scenario package, and the bounded mock-data capability that supports it, we'd still have an accelerator.
 
 3. **Components never know where data comes from.** Every chart component, every widget, every narrative generator consumes data through a `DataAdapter` interface. Mock data, SQLite queries, REST APIs, Snowflake — all behind the same adapter contract. This is not optional architectural hygiene; it is what makes Phase 6 (production binding) possible without rewriting the UI. If a component ever imports from the mock data engine directly, that is a bug.
 
@@ -155,9 +228,11 @@ These principles are ordered by priority. When they conflict, higher-ranked prin
 
 5. **AI generates structured data, never raw code.** AI produces DashboardSpec JSON, NarrativeSpec JSON, and IndustryPack definitions. The platform validates and renders. AI never writes React components or ECharts configurations directly.
 
-6. **Borrow the commodity, own the differentiation.** Use react-grid-layout for drag/drop, Apache ECharts for rendering, Faker.js for base data generation. Build the spec schema, industry packs, narrative engine, and binding adapters ourselves.
+6. **Borrow the commodity, own the differentiation.** Use react-grid-layout for drag/drop and Apache ECharts for rendering. Own the spec schema, scenario packages, narrative engine, and binding adapters ourselves, while letting sibling tooling such as `dataForge` own bounded mock-data generation.
 
 7. **Build for one user first.** The MVP user is an Anblicks consultant in a client workshop on a laptop with a projector. Not a SaaS platform with multi-tenancy. Not an enterprise deployment with SSO. A consultant, a laptop, a room full of executives.
+
+8. **The first deliverable is a standalone dashboard, not authoring chrome.** The default product proof opens directly into a believable scenario dashboard backed by generated data. Builder, presenter, AI, and live-binding tools are secondary surfaces on the same runtime, not the first thing the client should see.
 
 ---
 
@@ -169,8 +244,8 @@ These principles are ordered by priority. When they conflict, higher-ranked prin
 │                     (React 19 + Vite)                        │
 │                                                              │
 │  ┌─────────────┐  ┌─────────────┐  ┌──────────────────┐    │
-│  │   Builder    │  │  Presenter  │  │   Spec Editor    │    │
-│  │   Mode       │  │  Mode       │  │   (JSON)         │    │
+│  │ Standalone  │  │   Builder   │  │ Presenter / AI / │    │
+│  │ Runtime     │  │   Mode      │  │ Export Surfaces  │    │
 │  └──────┬──────┘  └──────┬──────┘  └────────┬─────────┘    │
 │         │                │                   │               │
 │  ┌──────┴────────────────┴───────────────────┴──────────┐   │
@@ -197,6 +272,14 @@ These principles are ordered by priority. When they conflict, higher-ranked prin
 │  └──────────────┘  └──────────────┘  └─────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+The canonical MVP flow starts before the app boots. Scenario definition docs
+and generated SQLite/JSON artifacts under `scenarios/` define the package;
+those artifacts may be produced by sibling project `dataForge`. Runtime
+registration under `frontend/src/mock-data/` exposes that package to the app,
+and `frontend/src/App.tsx` boots the standalone dashboard from that registered
+path. Builder, presenter, export, AI authoring, and live binding all remain
+secondary surfaces layered on the same shared runtime.
 
 ---
 

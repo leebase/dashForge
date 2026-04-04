@@ -18,46 +18,46 @@ The rest of the repository should stay aligned to those two files.
 
 DashForge has now closed the governed Sprint 1-9 program in the repo.
 
-- Product direction is defined
-- Technical architecture is defined
-- Tactical planning and handoff docs are aligned
-- A real frontend foundation exists in `frontend/`
-- Sprint 2 hardened the runtime with shared DashboardSpec validation, concrete themes, persistence helpers, and the browser-side SQLite seam
-- Sprint 3 added a deterministic SQLite healthcare generator CLI, a SQLite-derived snapshot bridge for the frontend adapter path, and the full canon healthcare scenario set
-- Sprint 4 added the Financial Services and SaaS packs, shared template catalog metadata, and multi-pack generator dispatch
-- Sprint 5 broadened the runtime to the full eight-primitive MVP set with shared chart/theme compilers and a responsive read-only grid
-- Sprint 6 added the bounded manual-authoring builder shell with editable composition, widget palette, property editing, template starters, and JSON spec I/O
-- Sprint 7 added narrative authoring, presenter mode, bounded annotation support, and browser-local proposal artifact export on top of the shared builder/runtime path
-- Sprint 8 added bounded AI-assisted prompt-to-spec generation, staged candidate review/apply/discard, and request-time guardrails on top of the shared builder/presenter/export path
-- Sprint 9 added shared adapter resolution for `mock`/`live`/`hybrid`, a bounded REST live adapter, builder-integrated dataset binding controls, and safe live/hybrid spec serialization
-- healthcare’s `ed-throughput-crunch` scenario is now also registered as an in-app runtime starter
-- the dedicated starter template `tpl.healthcare.ed-throughput-command` and blueprint flow now ship as reusable demo assembly contracts
-- Sprint 9 closeout is complete with formal review in `code-reviews/review-sprint-09.md`
-- The stable operator dashboard for the governed ladder is `artifacts/current/dashboard.html`
+- The repo canon now defines the MVP as one bounded outcome:
+  scenario definition, data generation, and a standalone dashboard deliverable
+- The default app surface in `frontend/` opens directly into the ED throughput
+  command-view dashboard, not the builder shell
+- The canonical MVP proof path is
+  `healthcare:ed-throughput-crunch` +
+  `tpl.healthcare.ed-throughput-command`
+- The ED throughput package already exists as scenario docs, generated SQLite +
+  JSON artifacts, runtime registration, focused verification/repair docs, and a
+  formal review in `code-reviews/review-mvp-standalone-dashboard.md`
+- Builder, presenter, AI authoring, and bounded live binding remain in-repo as
+  secondary/operator capabilities on the same shared runtime
+- The stable operator dashboard for the governed Sprint 1-9 ladder remains
+  `artifacts/current/dashboard.html`
 
-The repository still contains some bootstrap-era Python structure, but the
-Python package now has one bounded product role: generating deterministic
-SQLite mock-data artifacts for healthcare, financial, and saas scenarios. The
-primary application runtime remains the React 19 + Vite + TypeScript app in
-`frontend/`, with DashboardSpec as the core artifact and the Sprint 9
-builder-plus-live-binding-plus-presenter/export flow as the current
-workshop-to-production-binding baseline.
+Mock-data creation now lives in the sibling
+`/Users/lee/projects/dataForge` project. dashForge keeps thin compatibility
+wrappers for the historical Python entrypoints, but the primary product
+surface here is the React 19 + Vite + TypeScript runtime in `frontend/`, with
+DashboardSpec as the core artifact and the standalone scenario-first runtime
+as the current MVP proof.
 
 ## Implemented Capabilities
 
 The repo now contains:
 
-- 3 industry mock data packs: Healthcare, Financial Services, SaaS/Technology
+- scenario-package documentation and materialization patterns, with ED
+  throughput as the canonical packaged scenario
+- a versioned `DashboardSpec` JSON format and shared `DataAdapter` runtime
 - 8 dashboard primitives rendered with ECharts
-- a `DashboardBox` container with resilient states and responsive behavior
-- grid-based dashboard composition with drag/drop and resize
-- dashboard templates by industry and scenario
-- a versioned DashboardSpec JSON format
-- presenter mode for guided workshop storytelling
-- export to spec JSON and browser-local printable proposal artifacts
-- bounded AI-assisted prompt-to-spec generation with staged candidate apply/discard
-- bounded production binding through REST-backed live and hybrid dataset adapters
-- one healthcare ED throughput scenario registered in the app runtime with dedicated command-view starter wiring (`healthcare:ed-throughput-crunch`, `tpl.healthcare.ed-throughput-command`)
+- a standalone default app entry that opens directly into the ED throughput
+  dashboard deliverable
+- builder, presenter, export, AI authoring, and bounded live/hybrid binding as
+  supporting or post-MVP operator surfaces on the same runtime
+- one healthcare ED throughput scenario registered in the app runtime with
+  dedicated command-view starter wiring
+  (`healthcare:ed-throughput-crunch`,
+  `tpl.healthcare.ed-throughput-command`)
+- compatibility with deterministic SQLite/JSON mock artifacts generated by
+  `dataForge`
 
 The ED throughput runtime package assets are discoverable at:
 
@@ -71,11 +71,12 @@ The ED throughput runtime package assets are discoverable at:
 
 The governed program is closed. The remaining near-term follow-up is:
 
-- run one host-environment browser smoke of the Sprint 9 binding workflow
-- choose the next bounded roadmap slice explicitly before adding more scope
-- keep backend brokering, broader live adapters, Python cleanup, and direct
-  browser SQLite work in later slices unless a concrete post-Sprint-9 defect
-  requires more
+- run one host-environment browser smoke of the standalone default dashboard
+  path and the still-available Sprint 9 binding workflow
+- choose the next bounded roadmap slice explicitly before widening the now-closed
+  standalone MVP proof
+- package the successful ED throughput pattern into reusable scenario-building
+  skills/workflows instead of adding broader product scope informally
 
 ## Governed Workflow
 
@@ -153,6 +154,14 @@ Sprint 9 closeout artifacts live in:
 - `code-reviews/repair-sprint-09.md`
 - `code-reviews/review-sprint-09.md`
 
+Standalone MVP closeout artifacts live in:
+
+- `docs/mvp-standalone-dashboard-contract.md`
+- `plans/mvp-standalone-dashboard-plan.md`
+- `code-reviews/verify-mvp-standalone-dashboard.md`
+- `code-reviews/repair-mvp-standalone-dashboard.md`
+- `code-reviews/review-mvp-standalone-dashboard.md`
+
 Open `artifacts/current/dashboard.html` for the stable human-facing view of
 the most recent governed run.
 
@@ -166,6 +175,9 @@ npm install
 npm run dev
 ```
 
+`npm run dev` now opens the standalone ED throughput dashboard by default. Use
+the in-app `Open Builder` action if you need the authoring surface.
+
 Checks:
 
 ```bash
@@ -177,6 +189,19 @@ npm run build
 Generator CLI:
 
 ```bash
+cd /Users/lee/projects/dataForge
+PYTHONPATH=src python3 -m dataForge.main generate \
+  --pack financial \
+  --scenario market-downturn \
+  --seed 5301 \
+  --output /tmp/financial-market-downturn.sqlite \
+  --snapshot-output /tmp/financial-market-downturn.snapshot.json
+```
+
+Legacy compatibility entrypoint in dashForge:
+
+```bash
+cd /Users/lee/projects/dashForge
 PYTHONPATH=src python3 -m dashForge.main generate \
   --pack financial \
   --scenario market-downturn \
@@ -188,7 +213,8 @@ PYTHONPATH=src python3 -m dashForge.main generate \
 Real browser smoke still requires a local environment that permits localhost
 port binding. In this sandbox, `npm run dev -- --host 127.0.0.1` fails with
 `listen EPERM`. That remaining host-environment smoke now applies to the
-closed Sprint 9 live-binding builder/preview/presenter/export workflow.
+standalone default experience and the closed Sprint 9
+live-binding/builder/preview/presenter/export workflow.
 
 ## Key Project Docs
 
@@ -198,6 +224,9 @@ closed Sprint 9 live-binding builder/preview/presenter/export workflow.
 - `project-plan.md`: strategic roadmap
 - `sprint-plan.md`: tactical execution for the closed Sprint 9 window
 - `result-review.md`: completed work log
+- `docs/mvp-standalone-dashboard-contract.md`: bounded standalone MVP contract
+- `plans/mvp-standalone-dashboard-plan.md`: standalone MVP implementation plan
+- `code-reviews/review-mvp-standalone-dashboard.md`: formal standalone MVP review
 - `scenarios/healthcare/ed-throughput-crunch-contract.md`: ED throughput scenario contract
 - `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`: ED throughput execution runbook
 - `playbooks/ed_throughput_crunch_demo_workflow.yaml`: scenario package governance workflow

@@ -13,6 +13,11 @@ realistic, industry-specific dashboard prototypes during client workshops and
 convert those prototypes into production-ready React assets anchored by a
 reusable DashboardSpec.
 
+The current repo no longer owns mock-data generation as a primary
+implementation surface. That work now lives in sibling project
+`/Users/lee/projects/dataForge`; dashForge consumes the resulting artifacts and
+keeps compatibility wrappers only where transition continuity still matters.
+
 The philosophy is **Incremental Delivery**:
 
 > Build the smallest useful primitives first. Validate before scaling.
@@ -31,6 +36,7 @@ scratch.
 - Build reusable industry packs that accumulate consulting leverage across engagements
 - Establish DashboardSpec as the canonical artifact for prototype, presentation, and production handoff
 - Prove a workshop-to-delivery workflow that reduces rework, shortens alignment cycles, and avoids client vendor lock-in
+- Keep generator ownership separate from dashboard-runtime ownership now that `dataForge` exists
 
 ## Non-Negotiable Constraints
 
@@ -189,8 +195,8 @@ next bounded roadmap slice explicitly.
 
 ### Content and Data
 
-- industry packs and scenario templates
-- mock data generation pipeline
+- scenario package docs and runtime registration paths
+- compatibility with `dataForge`-generated mock-data artifacts
 - template dashboards by industry and use case
 
 ### Project Memory
@@ -209,7 +215,7 @@ next bounded roadmap slice explicitly.
 | Scope creep into a full BI platform | Hold to the workshop-first and bounded-slice constraints in `product-definition.md` and sprint contracts |
 | Repository drift from canon docs | Keep planning and state docs updated whenever architecture or product direction changes |
 | Mock data looks synthetic instead of believable | Validate scenarios with domain-aware reviewers before calling a pack workshop-ready |
-| Current repo scaffold still mixes transition-era Python with the React runtime | Keep the Python generator CLI bounded, and retire or isolate the remaining bootstrap-era residue in a later cleanup slice |
+| Legacy compatibility wrappers remain in dashForge after generator ownership moved to `dataForge` | Keep the wrappers thin, document the boundary clearly, and retire them only under an explicit follow-up decision |
 | Later live-binding work sprawls past the bounded REST path without enough governance | Start warehouse adapters, backend brokering, or credential helpers only under a new explicit contract |
 
 ## Success Metrics
@@ -223,7 +229,7 @@ next bounded roadmap slice explicitly.
 
 **Phase**: Phase 4 — Advanced / Future
 **Mode**: Collaborative execution (`Mode 2`)
-**Next Milestone**: Run one host-environment smoke of the closed Sprint 9 live-binding workflow and choose the next bounded roadmap slice beyond the governed Sprint 1-9 ladder
+**Next Milestone**: Run one host-environment smoke of the closed Sprint 9 live-binding workflow, then choose the next bounded roadmap slice and wrapper-retirement plan
 
 ## Guiding Philosophy
 
