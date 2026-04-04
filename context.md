@@ -10,7 +10,7 @@
 |-----------|-------|
 | **Phase** | Phase 4 — Advanced / Future |
 | **Mode** | 2 (Implementation with approval) |
-| **Last Updated** | 2026-04-03 |
+| **Last Updated** | 2026-04-04 |
 
 ### Sprint Status
 
@@ -68,6 +68,19 @@ Mock-data creation has now also been broken out of dashForge into the sibling
 wrappers at `src/dashForge/main.py`, `src/dashForge/generate.py`, and
 `src/dashForge/_dataforge_compat.py` so the historical CLI/tests still resolve,
 but new generator ownership now lives in `dataForge`.
+
+The first post-split code-review repair follow-up is now also closed.
+`frontend/src/features/builder/BuilderShell.tsx` no longer leaves the ED
+throughput command-view draft bound to ED-only datasets when an operator
+switches to a different healthcare scenario after opening Builder from the
+standalone app. If the current template cannot legally serve the requested
+scenario, the builder now regenerates a fresh draft from a valid template
+instead of mutating only the scenario id in place.
+
+The Python compatibility bridge is also less workspace-specific now.
+`src/dashForge/_dataforge_compat.py` now reports the actual candidate paths it
+checked and supports `DATAFORGE_SRC` as an explicit override instead of
+hard-coding Lee's local absolute path into the recovery message.
 
 Fresh standalone closeout verification passed in sandbox on 2026-04-02:
 `python3 -m pytest -q`, `npm --prefix frontend test`, and
@@ -129,6 +142,11 @@ contract (`monthly_metrics`) and widget taxonomy.
 - ✅ Broke mock-data creation out into `/Users/lee/projects/dataForge`, moving
   the real generator CLI, pack assets, and generator tests there while keeping
   dashForge compatibility wrappers for the old Python entrypoints
+- ✅ Closed the first post-split review follow-up by making builder
+  scenario switches regenerate a valid draft when the current template
+  cannot serve the requested scenario, and by making the Python
+  `dataForge` bridge report dynamic lookup paths plus support
+  `DATAFORGE_SRC`
 - ✅ Realigned the living dashForge canon docs so README, architecture,
   product-definition, project-plan, and the active memory files all describe
   `dataForge` as the generator owner and dashForge as the dashboard/runtime owner

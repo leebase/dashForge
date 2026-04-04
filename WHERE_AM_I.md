@@ -13,8 +13,8 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / Future |
-| **Overall Status** | 🟢 Sprint 9 is closed, the standalone MVP review/handoff is closed, and dashForge now treats mock-data generation as a sibling-project concern while keeping the standalone dashboard MVP intact |
-| **Last Updated** | 2026-04-03 |
+| **Overall Status** | 🟢 Sprint 9 is closed, the standalone MVP review/handoff is closed, mock-data generation is now a sibling-project concern, and the first post-split review regressions are repaired without widening the MVP |
+| **Last Updated** | 2026-04-04 |
 
 ---
 

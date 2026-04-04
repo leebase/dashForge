@@ -4,6 +4,49 @@
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
 
+## 2026-04-04 — Post-Review Regressions Were Closed For Builder Scenario Switching And dataForge Compatibility
+
+### What Was Built
+
+The first post-split review fixes are now in place.
+
+`frontend/src/features/builder/BuilderShell.tsx` now regenerates a fresh draft
+when the current template cannot legally serve the newly selected scenario,
+which closes the ED-throughput-to-flu-season regression introduced by opening
+Builder from the standalone MVP surface.
+
+`src/dashForge/_dataforge_compat.py` now reports the real candidate paths it
+checked and honors `DATAFORGE_SRC` as an override instead of hard-coding
+Lee-specific workspace guidance. Focused regression coverage was added in
+[BuilderShell.test.tsx](/Users/lee/projects/dashForge/frontend/src/features/builder/BuilderShell.test.tsx#L195)
+and
+[test_dataforge_compat.py](/Users/lee/projects/dashForge/tests/test_dataforge_compat.py#L1).
+
+### Why It Matters
+
+The builder fix keeps the standalone MVP path believable for operators: opening
+Builder from the ED dashboard and switching scenarios no longer strands the
+draft on invalid ED-only dataset bindings.
+
+The Python bridge fix makes the post-split compatibility story clearer on
+machines that do not match Lee's workspace layout, which reduces confusion for
+future operators and CI environments.
+
+### How To Verify
+
+```bash
+cd /Users/lee/projects/dashForge
+python3 -m pytest -q
+npm --prefix frontend test
+npm --prefix frontend run build
+PYTHONPATH=src python3 -m dashForge.main generate --scenario flu-season --seed 3101 --output /tmp/dashforge-review-fix.sqlite --snapshot-output /tmp/dashforge-review-fix.snapshot.json --force
+```
+
+Expect the full Python and frontend suites to pass, the frontend builder
+regression test to stay green inside the full run, and the compatibility CLI
+command to emit generated SQLite plus snapshot paths through the post-split
+bridge.
+
 ## 2026-04-03 — DashForge Canon Docs Were Realigned To The dataForge Split
 
 ### What Was Built

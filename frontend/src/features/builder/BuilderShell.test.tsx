@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createFreshDraftForScenario } from "./templateInstantiation";
 import { BuilderShell } from "./BuilderShell";
+import { createDefaultStandaloneDashboardSpec } from "../runtime/standaloneDashboard";
 
 describe("BuilderShell", () => {
   afterEach(() => {
@@ -190,5 +191,26 @@ describe("BuilderShell", () => {
 
     expect(monthlySummaryEditor).not.toBeNull();
     expect(within(monthlySummaryEditor!).getByText(/missing mappings: month/i)).toBeInTheDocument();
+  });
+
+  it("rebuilds the draft when a standalone-only template cannot serve the newly selected scenario", async () => {
+    render(<BuilderShell initialDraft={createDefaultStandaloneDashboardSpec()} />);
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "ED Throughput Command View" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByDisplayValue("ed-throughput-crunch")[0]).toBeInTheDocument();
+
+    fireEvent.change(screen.getAllByDisplayValue("ed-throughput-crunch")[0]!, {
+      target: { value: "flu-season" },
+    });
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("heading", { level: 2, name: "Healthcare Risk & Alert" }),
+      ).toBeInTheDocument(),
+    );
+    expect(screen.getAllByDisplayValue("flu-season")[0]).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

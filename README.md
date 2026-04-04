@@ -210,6 +210,18 @@ PYTHONPATH=src python3 -m dashForge.main generate \
   --snapshot-output /tmp/financial-market-downturn.snapshot.json
 ```
 
+If `dataForge` is not installed and does not live in the default sibling
+workspace location, set `DATAFORGE_SRC` to the `src/` directory of the
+`dataForge` checkout before running the compatibility command.
+
+```bash
+cd /Users/lee/projects/dashForge
+DATAFORGE_SRC=/path/to/dataForge/src \
+PYTHONPATH=src python3 -m dashForge.main generate \
+  --scenario flu-season \
+  --output /tmp/flu-season.sqlite
+```
+
 Real browser smoke still requires a local environment that permits localhost
 port binding. In this sandbox, `npm run dev -- --host 127.0.0.1` fails with
 `listen EPERM`. That remaining host-environment smoke now applies to the

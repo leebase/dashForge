@@ -17,6 +17,7 @@ import type { DashboardSpec } from "../../core/spec/dashboardSpec";
 import { listDashboardThemes, resolveDashboardTheme } from "../../core/theme/themeRegistry";
 import {
   getDefaultTemplateForScenario,
+  getTemplateById,
   getTemplatePackIds,
   listTemplateCatalog,
 } from "../../mock-data/templateCatalog";
@@ -203,6 +204,19 @@ export function BuilderShell({ aiClient, initialDraft: initialDraftProp }: Build
   }
 
   function changeScenario(scenarioId: string) {
+    const currentTemplate = selectedTemplateId
+      ? getTemplateById(selectedTemplateId)
+      : undefined;
+    const canReuseCurrentTemplate =
+      !currentTemplate ||
+      (currentTemplate.packId === currentPackId &&
+        currentTemplate.scenarioIds.includes(scenarioId));
+
+    if (!canReuseCurrentTemplate) {
+      createFreshDraft(currentPackId, scenarioId);
+      return;
+    }
+
     replaceDraft(
       updateDashboardDraft(draft, (current) => ({
         ...current,
