@@ -1,0 +1,152 @@
+{
+  "schema": "code-review-verdict/1.0",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "PKG-R1",
+      "severity": "Low",
+      "file": "frontend/package-tools/materializeMeetingDashboardPackage.ts",
+      "location": "publishPackageFiles, the existing-output-directory branch (rm(outputDirectory, { recursive: false, force: false }))",
+      "problem": "The branch is written to tolerate an output directory that already exists and is empty: it lstats the path, rejects symlinks and non-directories, rejects a non-empty directory, and otherwise removes the directory before renaming staging into place. The removal call passes recursive: false, and Node's fs.rm throws ERR_FS_EISDIR on a directory regardless of whether it is empty. I reproduced this directly by executing fs/promises.rm on a fresh empty directory in the declared scratch path: 'Path is a directory: rm returned EISDIR (is a directory)'. The surrounding catch re-throws anything whose code is not ENOENT, so the thrown EISDIR propagates and materializeMeetingDashboardPackage exits 1. The intended empty-directory path is therefore dead: only the absent-directory (ENOENT) path can ever succeed. In this run the output path did not pre-exist, so preserved validator 3 recorded exit status 0; the defect is latent, not triggered. Its practical effect is that the packaging command is not re-runnable once artifacts/current/client-meeting-dashboard-builder/ exists in any form, which will consume an attempt in any unattended re-arm of this playbook. Severity is Low because the failure is fail-closed and loud: staging is removed in the finally block, so no partial or stale package can ever be published.",
+      "proposed_fix": "Pass { recursive: true, force: false } to the rm call for the verified-empty directory, or drop the removal entirely and rename the staging directory over the empty target after the emptiness check. Add a regression test that pre-creates an empty output directory and asserts the materialization still succeeds."
+    },
+    {
+      "id": "PKG-R2",
+      "severity": "Low",
+      "file": "artifacts/current/client-meeting-dashboard-builder/dashboard.html",
+      "location": "document head; four external asset references",
+      "problem": "dashboard.html is a post-hydration DOM capture of the served page, byte-identical (sha256 62b82aed71b4a5733b8354ea935d67093884ed5e66ebaedf5e7e05a7e20ee98a) to artifacts/user-smoke/page-source.html. That makes it an honest capture, but it is not self-contained: it references /assets/index-D0F8Jmyk.js, /assets/react-vendor-BBQvgbyt.js, /assets/echarts-DhfVT81Y.js, and /assets/index-Bp6GjY7z.css, none of which is among the six package parts. Opened outside the serving app, the document loses styling and interactivity. The governance content survives that loss, which is why this is Low and not higher: the synthetic disclosure, the upstream digest, the twelve claim-source citations, the KPI values, the tables, and the ECharts SVG are all inline in the captured markup, and the document contains no sr-only, display:none, or display: none rule that would hide anything once the stylesheet is absent.",
+      "proposed_fix": "Either inline the built CSS and drop the script references when capturing the package copy of dashboard.html, or ship the referenced /assets/ files as additional package parts and document that dashboard.html must be served from the package root."
+    },
+    {
+      "id": "PKG-R3",
+      "severity": "Low",
+      "file": "frontend/src/core/data/verifiedSyntheticDataArtifacts.ts",
+      "location": "IDLE_WAREHOUSE_WORK_PACKAGE_DIGEST constant, and the absence of any hashing primitive in the scoped surface",
+      "problem": "The upstream digest that the entire package cites is a hardcoded string constant compared by string equality against the dashboard manifest; it is never derived from bytes anywhere in the scoped dataflow. A search of frontend/src and frontend/package-tools for createHash, subtle.digest, or any equivalent returns nothing, and the SyntheticDataArtifactAdapter comment states this is deliberate ('the canonical Python rfpf envelope is verified before this record reaches DashForge; TypeScript deliberately does not parse or reconstruct that envelope'). Consequently, if the vendored fixtures under frontend/src/fixtures/dataforge/ ever drifted from the received receipt files, no product code would detect it. In this run nothing has drifted: I compared all four fixtures to the corresponding received files by parsed-value equality and each is exactly equal, and I recomputed all 16 external byte pins (12 file_hash_matches in playbooks/shakedown_client_meeting_dashboard_builder.yaml plus 4 receipt received_files entries) and all 16 hold. Note also that the canonical digest sha256:57ed2966... is not the plain file hash of work-package.json, which is sha256:00768e3a...; it is an Agent-Orch canonicalization asserted by the receipt and the envelope. I attempted several plain-JSON canonicalizations of the payload and of the envelope-plus-payload object and reproduced none of them, so the canonical form is not independently re-derivable from the scoped surface.",
+      "proposed_fix": "Add a build- or test-time check that hashes each fixture under frontend/src/fixtures/dataforge/ against the receipt's received_files map, so fixture drift fails a test rather than passing silently on a hardcoded constant."
+    },
+    {
+      "id": "PKG-R4",
+      "severity": "Low",
+      "file": "frontend/src/core/data/SyntheticDataArtifactAdapter.ts",
+      "location": "collectRequiredMaterialSurfaceIds",
+      "problem": "The required-surface rule covers every widget, the dashboard description, the five standard story-arc surfaces, the executive summary, and any declared additionalMaterialSurfaceIds, but never narrative.presenterNotes. Those notes ship inside the packaged dashboard.spec.json and are rendered by presenter mode, so they are material text that reaches a human audience while being structurally exempt from claim coverage; nothing would block readiness if a future note asserted a number. Severity is Low because the three notes currently shipped are generic delivery coaching ('Open with the main client outcome before reading the chart.', 'Pause after the tension section to confirm the room sees the same risk.', 'Close by naming the decision this prototype is meant to support.'), assert nothing about the data, and appear nowhere in dashboard.html.",
+      "proposed_fix": "Either add a narrative:presenter-notes surface (or one surface per note) to collectRequiredMaterialSurfaceIds, or add an explicit schema constraint documenting that presenter notes must not carry data assertions, with a test covering the constraint."
+    },
+    {
+      "id": "PKG-R5",
+      "severity": "Low",
+      "file": "artifacts/current/client-meeting-dashboard-builder/dashboard.html",
+      "location": "the standalone-dashboard-stage section; the five dashboard-box widget cards",
+      "problem": "Twelve of the eighteen ledger surfaces render a visible standalone-claim-source line in the delivered document (the four metric evidence cards, the two recommendation entries, the five story-arc storyboard sections, and the dashboard description). The five dashboard-stage widget cards - Monthly Opportunity (High), Idle Warehouse Count, Warehouse Credit Concentration, Warehouse Control Gaps, and Prioritized Recommendations - render their values, chart, and tables with no on-surface source line, even though widget:* surfaces are individually cited in the claim ledger. This is not a coverage violation and does not weaken the readiness gate: the ledger covers all 18 required surfaces, and the same underlying numbers appear with citations in the evidence section above the stage. It is a presentation gap - a client reading the dashboard stage alone sees governed numbers without their citation.",
+      "proposed_fix": "Render a ClaimCitation for each widget surface in the standalone dashboard stage, reusing findMaterialClaim(spec, `widget:${widget.id}`), so every visible governed number carries its source inline."
+    }
+  ],
+  "checks_run": [
+    {
+      "command": "python3 -m pytest tests/ -q",
+      "exit_code": 0,
+      "summary": "Executed by this reviewer in /home/lee/projects/dashForge during run 6a579236e2f0 attempt 1; reported '10 passed in 4.32s'. This suite exercises the legacy Python compatibility wrapper, which this step's mission places out of scope for the package review; per that mission its exercising of the wrapper is not reported as a package finding, and it is recorded here only because the step mandates running it and pinning its exit code."
+    },
+    {
+      "command": "npm --prefix frontend test -- src/core/data/SyntheticDataArtifactAdapter.test.ts src/features/export/meetingDashboardPackage.test.ts",
+      "exit_code": 0,
+      "summary": "Executed by this reviewer during run 6a579236e2f0 attempt 1; vitest reported 'Test Files 2 passed (2)' and 'Tests 15 passed (15)' - 11 synthetic-data artifact adapter tests and 4 package-seam tests, covering artifact identity, quality gating, claim-ledger enforcement, and the six document markers the package seam requires."
+    }
+  ],
+  "lenses": {
+    "cross_project_isolation_in_scoped_dataflow": {
+      "finding_ids": [],
+      "justification": "No boundary bleed exists in the package dataflow. The packaging pipeline is TypeScript end to end (vite --ssr build of package-tools plus node, no Python step). Nothing under frontend/src or frontend/package-tools imports DataForge source, and nothing reads .agent-orch-inputs/ at build or run time. DataForge enters only as four read-only JSON data fixtures under frontend/src/fixtures/dataforge/, each verified exactly equal by parsed value to the corresponding received file. Outside that directory the only dataForge tokens are a provenance comment, a preview-data source label, and a test description. The legacy Python compatibility wrapper is out of scope for this package review per the step mission and is deliberately not re-reported."
+    },
+    "upstream_digest_identity": {
+      "finding_ids": [],
+      "justification": "sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390 is the sole upstream artifact digest in the package, occurring 75 times across the six parts. It appears in dashboard.spec.json (dataContext.artifact.digest, governance.claimLedger.upstreamArtifactDigest, and all 18 claim source.artifactDigest values), binding-map.json (upstreamArtifactDigest), claim-ledger.json (upstreamArtifactDigest and all 18 claims), and dashboard-generation-result.json (inputReference.artifactDigest and its embedded spec), plus 14 times in dashboard.html. The only other digests present are the snapshot dbee5dc0... (3) and the quality report 92ae1d44... (2), both matching the received bytes. No stale or competing digest survives."
+    },
+    "chain_of_custody": {
+      "finding_ids": ["PKG-R3"],
+      "justification": "The receipt states plainly that materialize_artifact_input refused this source run fail-closed (source employee identity mismatch from a null employee_id, and producer workspace outputs not sealed into source-run evidence), so custody rests on operator placement plus byte pins rather than on a platform artifact-input attestation. I recomputed all 16 pins independently - 12 file_hash_matches in the shakedown playbook and 4 receipt received_files entries - and all 16 hold; the four received files are mode 0444. The gap is that the canonical digest is asserted rather than derived anywhere in the scoped surface, and the plain file hash of work-package.json (00768e3a...) is not that canonical digest."
+    },
+    "claim_coverage_enforcement": {
+      "finding_ids": ["PKG-R4", "PKG-R5"],
+      "justification": "Enforcement is layered and load-bearing: collectRequiredMaterialSurfaceIds derives the required set from the spec, validateMaterialClaimCoverage requires a claim per surface and rejects duplicate ids, duplicate surfaces, and wrong-digest citations, validateClaimLedger additionally resolves each claim's dataset, fields, and predicate against actual snapshot rows, createDashboardGenerationResult folds all of it into status, and createMeetingDashboardPackageParts emits nothing unless status is ready with zero errors. I recomputed the required set independently at 18 surfaces and the ledger carries exactly 18 claims across 18 distinct surfaces, all citing the correct digest, with empty set difference in both directions. The two findings are a structural exemption (presenter notes) and a presentation gap (uncited widget cards), neither of which breaks coverage."
+    },
+    "browser_credential_and_model_call_absence": {
+      "finding_ids": [],
+      "justification": "Zero non-test hits across frontend/src and frontend/package-tools for fetch(, XMLHttpRequest, axios, WebSocket, process.env, import.meta.env, VITE_, api_key, x-api-key, or any provider name. Runtime dependencies are only ajv, echarts, react, react-dom, and react-grid-layout - no provider SDK. The AI seam is createStagedManifestGenerationClient, which reads a staged JSON manifest from a DOM element and revalidates it through validateDashboardGenerationResult (deterministic re-derivation plus serialization comparison, refusing anything not ready); its provider label is 'Agent-Orch staged manifest' and its model is 'staged-manifest'. The only Authorization/Bearer strings in the tree are tests asserting live headers are stripped from serialized specs. The packaged document carries one relative script reference, no credentials, and only two absolute URLs, both W3C SVG namespace URIs."
+    },
+    "visible_synthetic_disclosure": {
+      "finding_ids": [],
+      "justification": "dashboard.html carries data-testid=\"synthetic-quality-disclosure\" on a role=\"status\" section with data-quality-state=\"controlled\", inside a root marked data-demo=\"idle-warehouse-waste\" and data-readiness=\"controlled\". De-tagged, the region reads 'Controlled synthetic-data quality', a bolded 'Synthetic demo data' lead, the full upstream sentence about deterministic synthetic demo data not being live Snowflake observations, the fault tally '5 requested / 5 injected / 5 independently detected / 0 unexpected', the verified upstream digest, and the three upstream assumptions. The document contains no sr-only, display:none, or display: none anywhere, so the disclosure survives loss of the external stylesheet. meetingDashboardPackage.ts independently gates six document markers and refuses to emit any file if one is missing."
+    },
+    "data_mode_and_live_connector_absence": {
+      "finding_ids": [],
+      "justification": "dashboard.spec.json has dataContext.mode 'artifact' with no live-connection key. validateArtifactIdentity cross-checks artifact type, payload schema version, employee id, and digest shape; validateArtifactFiles cross-checks snapshot and quality-report paths and digests, snapshot pack/scenario/seed identity, and the report's scenario digest; validateQuality requires passed status on both work package and report, agreement across requested/injected/detected counts, zero unexpected findings, and all story assertions passed. A grep across all six package parts for authorization, bearer, password, token, apikey, secret, credential, and headers returns nothing."
+    },
+    "smoke_evidence_honesty": {
+      "finding_ids": ["PKG-R2"],
+      "justification": "The packaged browser-smoke-result.json is exactly equal as parsed values to artifacts/user-smoke/result.json, with no key added or dropped; the only difference is key ordering from deterministic serialization. app_started, page_loaded, interaction_succeeded, and success_observed are all true with empty blocking_errors, and start_exit_code -15 is the expected SIGTERM teardown of the preview server. dashboard.html is byte-identical (62b82aed...) to artifacts/user-smoke/page-source.html, so the reviewed document is exactly what the browser rendered. The honesty of the capture is what makes PKG-R2 visible: it is a DOM snapshot, and it carries the serving app's asset references with it."
+    },
+    "materialization_determinism": {
+      "finding_ids": ["PKG-R1"],
+      "justification": "stableJsonStringify serializes with a sorted union of every key encountered, and createDashboardGenerationResult takes runReference and generatedAt as explicit parameters rather than reading the clock, so with pinned inputs the six parts are content-deterministic. publishPackageFiles stages into mkdtemp and renames atomically, removing staging in a finally block, so a failed run cannot publish a partial or stale package. Preserved validator 3 recorded exit status 0 for this run's materialization; I did not re-run it, since this step declares allow_validator_rerun False. The reproduced defect is the empty-output-directory branch failing with EISDIR, which makes the command non-idempotent."
+    },
+    "validator_authority_reconciliation": {
+      "finding_ids": [],
+      "justification": "Three system-validator records were preserved and all recorded exit status 0 and passed: the five-file vitest run and npm run build for validate_verified_work_package, and the package:meeting-dashboard materialization for materialize_meeting_dashboard_package. I summarized those records rather than re-running them, as allow_validator_rerun is False for this step. Nothing in this review contradicts any of the three, and my own two mandated checks are separate commands whose exit codes I observed directly and recorded above."
+    },
+    "platform_attestation_reading": {
+      "finding_ids": [],
+      "justification": "Read from the evaluator evidence packet, not assumed. Route selection is recorded for 3 finished producer attempts and post-execution route attestation for 3 invocations, all verified_true with actual_route matching resolved_route (codex_cli twice, browser_smoke_runner once). Repository identity is verified_true for all 3, each classified valid_root_git_directory with empty differences. The evidence-chain snapshot reports ok true, 4 entries checked, 62 artifacts checked, first_divergence null, explicitly the evaluator-input snapshot with terminal false - not certified here as the approval-boundary or terminal attestation. Per the temporal scope rule I certify nothing about this step's own post-execution attestations, which are produced after this step returns. The only unavailable evidence class is semantic_judge_execution, correctly not_applicable because this playbook declares no semantic_check rule, and no readiness criterion below depends on it."
+    }
+  },
+  "readiness": {
+    "package_parts_complete_and_parseable": {
+      "state": "verified_true",
+      "basis": "All six declared parts exist under artifacts/current/client-meeting-dashboard-builder/ (dashboard.spec.json, binding-map.json, claim-ledger.json, dashboard.html, browser-smoke-result.json, dashboard-generation-result.json). All five JSON parts parse and were traversed. dashboard-generation-result.json reports status 'ready' with an empty errors array and validation {dashboardSpec: passed, artifactBindings: passed, claimCoverage: passed, materialClaimCount: 18}. The parts are mutually coherent: binding-map.json.bindings equals dashboard.spec.json.dataContext.artifact.bindings, claim-ledger.json equals dashboard.spec.json.governance.claimLedger, and dashboard-generation-result.json.output.dashboardSpec equals dashboard.spec.json. Preserved validator 3 recorded the materialization at exit status 0."
+    },
+    "upstream_digest_identical_across_package": {
+      "state": "verified_true",
+      "basis": "sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390 occurs 75 times across the six parts and is the only upstream artifact digest present. It is identical in all four required places: dashboard.spec.json (dataContext.artifact.digest, governance.claimLedger.upstreamArtifactDigest, all 18 claim source.artifactDigest values), binding-map.json (upstreamArtifactDigest), claim-ledger.json (upstreamArtifactDigest plus all 18 claims), and dashboard-generation-result.json (inputReference.artifactDigest plus its embedded spec). It matches the receipt's canonical_artifact_digest, the received envelope's own digest field, and IDLE_WAREHOUSE_WORK_PACKAGE_DIGEST in verifiedSyntheticDataArtifacts.ts. The only other digests anywhere in the package are the snapshot dbee5dc0... and the quality report 92ae1d44..., both matching the received bytes."
+    },
+    "visible_synthetic_disclosure_present": {
+      "state": "verified_true",
+      "basis": "dashboard.html carries a role=\"status\" section with data-testid=\"synthetic-quality-disclosure\" and data-quality-state=\"controlled\", within a root marked data-demo=\"idle-warehouse-waste\" and data-readiness=\"controlled\". Its de-tagged text contains 'Controlled synthetic-data quality', a bolded 'Synthetic demo data', the full sentence 'All datasets in this work package are deterministic synthetic demo data; they are not observations from a live Snowflake account.', the tally '5 requested / 5 injected / 5 independently detected / 0 unexpected', the verified upstream digest, and the three upstream assumptions. The document contains zero occurrences of sr-only, display:none, or display: none, so nothing suppresses it. meetingDashboardPackage.ts independently gates six markers including the disclosure test id, the controlled state, and the literal disclosure text, refusing to emit any file if one is absent."
+    },
+    "no_uncited_material_surface_can_be_ready": {
+      "state": "verified_true",
+      "basis": "I recomputed the required material-surface set from dashboard.spec.json using the same rule as collectRequiredMaterialSurfaceIds - 5 widgets, narrative:dashboard-description, the 5 standard story-arc surfaces, narrative:executive-summary, and 6 additionalMaterialSurfaceIds (4 metric, 2 recommendation) - giving exactly 18. The claim ledger carries 18 claims across 18 distinct surfaces, all citing the correct digest with dataset_observation evidence; the set difference is empty in both directions and matches validation.materialClaimCount 18. The gate is enforced at four layers (validateMaterialClaimCoverage, validateClaimLedger's row-level predicate resolution, createDashboardGenerationResult's status, and createMeetingDashboardPackageParts' refusal to emit files unless status is ready with zero errors), and the negative tests covering it are in the vitest run I executed at exit 0."
+    },
+    "no_browser_provider_credential_or_direct_model_call": {
+      "state": "verified_true",
+      "basis": "Static scan of frontend/src and frontend/package-tools returns zero non-test hits for fetch(, XMLHttpRequest, axios, WebSocket, process.env, import.meta.env, VITE_, api_key, apikey, x-api-key, secret, anthropic, or openai. Runtime dependencies are only ajv, echarts, react, react-dom, and react-grid-layout. The AI seam reads a staged JSON manifest from a DOM element and revalidates it deterministically, labelling itself 'Agent-Orch staged manifest' with model 'staged-manifest'. The only Authorization/Bearer strings in the repository are in tests asserting those headers are stripped from serialized specs. The packaged document has one relative script reference, no credentials, and only two absolute URLs, both W3C SVG namespaces; a grep of all six parts for credential-shaped keys returns nothing."
+    },
+    "scoped_dataflow_did_not_import_dataforge_source": {
+      "state": "verified_true",
+      "basis": "The package pipeline is TypeScript end to end - package:meeting-dashboard is a vite --ssr build of package-tools followed by node, with no Python step. Nothing under frontend/src or frontend/package-tools imports DataForge source or reads .agent-orch-inputs/ at build or run time. DataForge appears only as four read-only JSON data fixtures under frontend/src/fixtures/dataforge/, and I verified each is exactly equal by parsed value to the corresponding received file, so they are in-repo adopted data rather than a cross-repository code dependency. The only remaining dataForge tokens under frontend/src are a provenance comment, a preview-data source label, and a test description string. The legacy Python compatibility wrapper is out of scope for this package review per the step mission (already recorded as CMD-R1 from run e40c272b0e04 with a DashForge backlog follow-up) and is not re-reported."
+    },
+    "deterministic_materialization_content_stable": {
+      "state": "verified_true",
+      "basis": "stableJsonStringify serializes with a sorted union of all keys encountered, and createDashboardGenerationResult takes runReference and generatedAt as explicit parameters rather than reading the clock, so with the pinned --run-reference 31ad67eea2f1 and --generated-at 2026-08-10T00:00:00.000Z the six parts are content-deterministic. publishPackageFiles stages into mkdtemp and renames atomically with cleanup in a finally block, so no partial or stale package can be published. Preserved validator 3 recorded the materialization at exit status 0. I did not re-run that command, since this step declares allow_validator_rerun False, so this criterion rests on code reading plus that preserved success. PKG-R1 is recorded separately: content is deterministic, but the command is not re-runnable once the output path exists."
+    },
+    "route_selection_and_execution_attested": {
+      "state": "verified_true",
+      "basis": "The evaluator evidence packet provides route_selection for 3 finished producer attempts and route_execution (producer_route_executed) for 3 invocations, every one status verified_true. In each post-execution record actual_route equals resolved_route: codex_cli for validate_verified_work_package and materialize_meeting_dashboard_package, browser_smoke_runner for render_and_smoke_standalone, all route_id 'legacy-direct' with no route attempt errors. Per the temporal scope rule these are scoped to those producer invocations only; this step's own post-execution route attestation is produced after this step returns and is not certified here."
+    },
+    "repository_identity_unchanged": {
+      "state": "verified_true",
+      "basis": "The packet provides repository_identity for 3 finished attempts (validate_verified_work_package, render_and_smoke_standalone, materialize_meeting_dashboard_package), each with passed true, classification valid_root_git_directory, and an empty differences list - that is, before/after repository identity comparison found no divergence for any producer step in this run."
+    },
+    "evidence_chain_intact_at_evaluator_input": {
+      "state": "verified_true",
+      "basis": "The evidence_chain record verified before this evaluator was invoked reports ok true with 4 entries checked, 62 artifacts checked, and first_divergence null, verified at 2026-08-11T01:14:35.383209Z. It is explicitly lifecycle 'evaluator_input_snapshot' with terminal false, and the packet states it is not the approval-boundary or terminal attestation; this criterion asserts only the pre-evaluator snapshot state and certifies nothing about the terminal chain."
+    },
+    "chain_of_custody_byte_pinned": {
+      "state": "verified_true",
+      "basis": "The receipt discloses that materialize_artifact_input refused this source run fail-closed for two stated reasons (source employee identity mismatch from a null employee_id in the leg-1 run.json, and producer workspace outputs not being sealed into source-run evidence), so files were operator-placed and custody rests on byte pins rather than on a platform artifact-input attestation. I recomputed every one of those pins independently: all 12 file_hash_matches entries in playbooks/shakedown_client_meeting_dashboard_builder.yaml hold, and all 4 receipt received_files digests hold (work-package.json 00768e3a..., snapshot.json dbee5dc0..., quality-report.json 92ae1d44..., reproduction-manifest.json 9168d095...). All four received files are mode 0444. This criterion is recorded on that byte-level basis, which is what the packet's provided evidence supports; PKG-R3 records the residual gap that the canonical digest itself is asserted rather than derived in the scoped surface."
+    }
+  },
+  "recommendation": "Ready for controlled pilot",
+  "recommendation_basis": "Every governance property the step mission named holds and was re-derived here rather than inherited: the scoped dataflow imports no DataForge source, no browser provider credential or direct model call exists in it, sha256:57ed2966... is identical across spec, bindings, claims, and generation result, a visible synthetic disclosure is present in dashboard.html, and no uncited material surface can reach ready. Both mandated checks exited 0 and all three preserved system-validator records passed. All eleven readiness criteria are verified_true and all five findings are Low, below the Medium threshold enforced by review_verdict_clean, so the verdict is pass. Autonomous re-arm is nonetheless the wrong next step because of PKG-R1: the packaging command fails with EISDIR the moment its output path exists, even empty, so an unattended re-run against a populated artifacts/current/client-meeting-dashboard-builder/ would burn an attempt on a defect unrelated to the work. A controlled pilot with an operator clearing the output path carries none of that risk. PKG-R2 and PKG-R3 point the same direction: the delivered HTML is not yet self-contained without the serving app, and the canonical digest is trusted rather than derived inside the product, so operator-verified byte pins remain part of the control loop."
+}

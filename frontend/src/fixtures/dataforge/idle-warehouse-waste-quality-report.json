@@ -1,0 +1,199 @@
+{
+  "detected_findings": [
+    {
+      "column": "rows_produced",
+      "dataset": "query_history",
+      "detected_count": 1,
+      "fault_id": "missing-query-result-count",
+      "observations": [
+        {
+          "detected": true,
+          "source_rowid": 2
+        }
+      ],
+      "requested_count": 1,
+      "type": "missing_value"
+    },
+    {
+      "column": null,
+      "dataset": "metering_history",
+      "detected_count": 2,
+      "fault_id": "duplicate-serverless-metering",
+      "observations": [
+        {
+          "detected": true,
+          "source_rowid": 8
+        },
+        {
+          "detected": true,
+          "source_rowid": 1
+        }
+      ],
+      "requested_count": 2,
+      "type": "duplicate_row"
+    },
+    {
+      "column": "usage_date",
+      "dataset": "database_storage_usage_history",
+      "detected_count": 1,
+      "fault_id": "invalid-storage-usage-date",
+      "observations": [
+        {
+          "detected": true,
+          "source_rowid": 6
+        }
+      ],
+      "requested_count": 1,
+      "type": "invalid_date"
+    },
+    {
+      "column": "warehouse_name",
+      "dataset": "query_history",
+      "detected_count": 1,
+      "fault_id": "orphan-query-warehouse",
+      "observations": [
+        {
+          "detected": true,
+          "source_rowid": 1
+        }
+      ],
+      "requested_count": 1,
+      "type": "foreign_key_failure"
+    }
+  ],
+  "injected_findings": [
+    {
+      "after_digest": "sha256:74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "before_digest": "sha256:1d8c8adf9e71bf4f380170b1aeff318359e39cb11ca186bacc7c34dbfd41f060",
+      "column": "rows_produced",
+      "dataset": "query_history",
+      "fault_id": "missing-query-result-count",
+      "ordinal": 1,
+      "source_rowid": 2,
+      "type": "missing_value"
+    },
+    {
+      "dataset": "metering_history",
+      "fault_id": "duplicate-serverless-metering",
+      "injected_rowid": 15,
+      "ordinal": 1,
+      "row_digest": "sha256:ecf0dd209de33315f4b407922c675cc091ccc7fff1bd0c9e95b846356fa88a42",
+      "source_rowid": 8,
+      "type": "duplicate_row"
+    },
+    {
+      "dataset": "metering_history",
+      "fault_id": "duplicate-serverless-metering",
+      "injected_rowid": 16,
+      "ordinal": 2,
+      "row_digest": "sha256:1ce0f5f7c3f72d01e951ce30a2e707a9db6912a8fdc7cacfb34093681432b6c5",
+      "source_rowid": 1,
+      "type": "duplicate_row"
+    },
+    {
+      "after_digest": "sha256:31a7e97b8fbc650cdd307df796b36626230aa04efbe885de30308ba8213ff44b",
+      "before_digest": "sha256:95f5ae91dc89ae0a5c7df29ed4df9a075d9f4a71bf3a752d0254a63c5c3447f4",
+      "column": "usage_date",
+      "dataset": "database_storage_usage_history",
+      "fault_id": "invalid-storage-usage-date",
+      "ordinal": 1,
+      "source_rowid": 6,
+      "type": "invalid_date"
+    },
+    {
+      "after_digest": "sha256:b74ed6e803470ae634c296c596fcb05f450548d1872527c453de63896058e121",
+      "before_digest": "sha256:f3e159172aa7c5e9ecce4fe2b4ac44ad3a4f0d1bd1f48b54cc21ea9ab329886f",
+      "column": "warehouse_name",
+      "dataset": "query_history",
+      "fault_id": "orphan-query-warehouse",
+      "ordinal": 1,
+      "source_rowid": 1,
+      "type": "foreign_key_failure"
+    }
+  ],
+  "requested_findings": [
+    {
+      "column": "rows_produced",
+      "count": 1,
+      "dataset": "query_history",
+      "fault_id": "missing-query-result-count",
+      "type": "missing_value"
+    },
+    {
+      "column": null,
+      "count": 2,
+      "dataset": "metering_history",
+      "fault_id": "duplicate-serverless-metering",
+      "type": "duplicate_row"
+    },
+    {
+      "column": "usage_date",
+      "count": 1,
+      "dataset": "database_storage_usage_history",
+      "fault_id": "invalid-storage-usage-date",
+      "type": "invalid_date"
+    },
+    {
+      "column": "warehouse_name",
+      "count": 1,
+      "dataset": "query_history",
+      "fault_id": "orphan-query-warehouse",
+      "type": "foreign_key_failure"
+    }
+  ],
+  "scenario_digest": "sha256:25d4124c48271fd70f91c047a7e435762a69912ce5b3b240183f275eed3322f7",
+  "schema_version": "data-quality-report/1.0",
+  "status": "passed",
+  "story_assertions": [
+    {
+      "actual": 726.0,
+      "assertion_id": "monthly-opportunity-high-is-726",
+      "description": "The executive summary proves a 726 credit/month high-end savings opportunity.",
+      "expected": 726.0,
+      "operator": "equals",
+      "passed": true
+    },
+    {
+      "actual": 2.0,
+      "assertion_id": "idle-warehouse-count-is-2",
+      "description": "The executive summary identifies exactly two warehouses needing idle-policy review.",
+      "expected": 2.0,
+      "operator": "equals",
+      "passed": true
+    },
+    {
+      "actual": 2,
+      "assertion_id": "weak-suspension-policy-count-at-least-2",
+      "description": "Generated warehouse metadata contains at least two warehouses with disabled or weak auto-suspend controls.",
+      "expected": 2,
+      "operator": "greater_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 62.6,
+      "assertion_id": "finance-reporting-dominates-warehouse-credits",
+      "description": "FINANCE_REPORTING_WH accounts for at least 60 percent of warehouse credits in the review window.",
+      "expected": 60.0,
+      "operator": "greater_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 1,
+      "assertion_id": "p0-idle-review-recommendation-exists",
+      "description": "The recommendation queue includes a P0 idle warehouse review recommendation.",
+      "expected": 1,
+      "operator": "greater_than_or_equal",
+      "passed": true
+    }
+  ],
+  "summary": {
+    "detected_count": 5,
+    "injected_count": 5,
+    "requested_count": 5,
+    "story_assertions_passed": 5,
+    "story_assertions_total": 5,
+    "unexpected_count": 0
+  },
+  "unexpected_findings": [],
+  "validator_version": "dataforge-quality-validator/1.0"
+}

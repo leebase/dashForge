@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { sampleDashboard } from "../../sample/sampleDashboard";
+import { createDefaultStandaloneDashboardSpec } from "../../features/runtime/standaloneDashboard";
 import { validateDashboardSpec } from "./dashboardSchema";
 
 describe("validateDashboardSpec", () => {
@@ -64,5 +65,29 @@ describe("validateDashboardSpec", () => {
         expect.stringMatching(/impossible layout coordinates/i),
       ]),
     );
+  });
+
+  it("accepts the digest-pinned artifact and claim-ledger manifest", () => {
+    expect(
+      validateDashboardSpec(createDefaultStandaloneDashboardSpec()),
+    ).toMatchObject({ ok: true });
+  });
+
+  it("rejects artifact mode without its governed manifest and claim ledger", () => {
+    const spec = createDefaultStandaloneDashboardSpec();
+    spec.dataContext.artifact = undefined;
+    spec.governance = undefined;
+
+    const result = validateDashboardSpec(spec);
+
+    expect(result).toMatchObject({ ok: false });
+    if (!result.ok) {
+      expect(result.errors).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(/dataContext\.artifact is required/i),
+          expect.stringMatching(/governance is required/i),
+        ]),
+      );
+    }
   });
 });

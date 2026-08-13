@@ -1,0 +1,438 @@
+{
+  "schema_version": "synthetic-data-work-package/1.0",
+  "employee_id": "synthetic-data-story-engineer",
+  "run_reference": "31ad67eea2f1",
+  "input_reference": {
+    "scenario_digest": "sha256:25d4124c48271fd70f91c047a7e435762a69912ce5b3b240183f275eed3322f7",
+    "pack_id": "snowflakeCost",
+    "scenario_id": "idle-warehouse-waste",
+    "seed": 9101
+  },
+  "synthetic_disclosure": "All datasets in this work package are deterministic synthetic demo data; they are not observations from a live Snowflake account.",
+  "assumptions": [
+    "The approved curated pack and scenario remain the clean semantic baseline.",
+    "Controlled faults are bounded to the approved fault plan and output limits.",
+    "The SQLite artifact and derived snapshot contain synthetic demo data only."
+  ],
+  "evidence": [
+    {
+      "type": "scenario",
+      "path": "scenario.json",
+      "sha256": "sha256:b90c3b42d95214705d2f2a08b1a84cfcfcb2c60e27a7feb5e5df5be83638bdc6"
+    },
+    {
+      "type": "sqlite",
+      "path": "synthetic.sqlite",
+      "sha256": "sha256:8b762fb1ca3f22a71ff8810816a71e80ca356e286fdee7ea1c519d325336756c"
+    },
+    {
+      "type": "snapshot",
+      "path": "snapshot.json",
+      "sha256": "sha256:dbee5dc082b1f0694f9d0d0a830976c3b6f0c3408754ff3ea0ab634f78961f67"
+    },
+    {
+      "type": "quality_report",
+      "path": "quality-report.json",
+      "sha256": "sha256:92ae1d44d8076e2262690a10516486701e7be2672a20b8fd0e921a378c037c46"
+    },
+    {
+      "type": "reproduction_manifest",
+      "path": "reproduction-manifest.json",
+      "sha256": "sha256:9168d095dde5eef945ce9ab2ae3a8ec2ffef02c4bb3d72bb838e12809df64c81"
+    }
+  ],
+  "datasets": [
+    {
+      "dataset_id": "database_storage_usage_history",
+      "row_count": 7,
+      "normalized_digest": "sha256:37b2353f9a69a6570c4ff48944929ff07262754a6d3f0103c2b86fb0b173be90",
+      "columns": [
+        {
+          "name": "usage_date",
+          "type": "date",
+          "role": "date",
+          "label": "Usage Date"
+        },
+        {
+          "name": "database_name",
+          "type": "string",
+          "role": "dimension",
+          "label": "Database Name"
+        },
+        {
+          "name": "average_database_bytes",
+          "type": "number",
+          "role": "measure",
+          "label": "Average Database Bytes"
+        },
+        {
+          "name": "average_failsafe_bytes",
+          "type": "number",
+          "role": "measure",
+          "label": "Average Failsafe Bytes"
+        }
+      ]
+    },
+    {
+      "dataset_id": "executive_summary",
+      "row_count": 2,
+      "normalized_digest": "sha256:d4638a41e87a73e70126c1ad21c096bb352becb1d756deebb6dbb296ce36636a",
+      "columns": [
+        {
+          "name": "metricId",
+          "type": "string",
+          "role": "id",
+          "label": "Metric Id"
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "role": "measure",
+          "label": "Value"
+        },
+        {
+          "name": "delta",
+          "type": "number",
+          "role": "measure",
+          "label": "Delta"
+        },
+        {
+          "name": "deltaLabel",
+          "type": "string",
+          "role": "dimension",
+          "label": "Delta Label"
+        },
+        {
+          "name": "prefix",
+          "type": "string",
+          "role": "dimension",
+          "label": "Prefix"
+        },
+        {
+          "name": "suffix",
+          "type": "string",
+          "role": "dimension",
+          "label": "Suffix"
+        },
+        {
+          "name": "caption",
+          "type": "string",
+          "role": "dimension",
+          "label": "Caption"
+        }
+      ]
+    },
+    {
+      "dataset_id": "metering_history",
+      "row_count": 16,
+      "normalized_digest": "sha256:a6ac9a1f216529b9a12b99c4bbc82b3d459052eb85f615790693726f628ff008",
+      "columns": [
+        {
+          "name": "usage_day",
+          "type": "string",
+          "role": "dimension",
+          "label": "Usage Day"
+        },
+        {
+          "name": "service_type",
+          "type": "string",
+          "role": "dimension",
+          "label": "Service Type"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "role": "dimension",
+          "label": "Name"
+        },
+        {
+          "name": "credits_used",
+          "type": "number",
+          "role": "measure",
+          "label": "Credits Used"
+        }
+      ]
+    },
+    {
+      "dataset_id": "query_history",
+      "row_count": 3,
+      "normalized_digest": "sha256:522fc8bd3fbd3b14f168b751f51be2d8efc084b2ceaef67d112ffbadf59b8dc9",
+      "columns": [
+        {
+          "name": "query_id",
+          "type": "string",
+          "role": "id",
+          "label": "Query Id"
+        },
+        {
+          "name": "user_name",
+          "type": "string",
+          "role": "dimension",
+          "label": "User Name"
+        },
+        {
+          "name": "role_name",
+          "type": "string",
+          "role": "dimension",
+          "label": "Role Name"
+        },
+        {
+          "name": "warehouse_name",
+          "type": "string",
+          "role": "dimension",
+          "label": "Warehouse Name"
+        },
+        {
+          "name": "query_type",
+          "type": "string",
+          "role": "dimension",
+          "label": "Query Type"
+        },
+        {
+          "name": "elapsed_seconds",
+          "type": "number",
+          "role": "measure",
+          "label": "Elapsed Seconds"
+        },
+        {
+          "name": "total_elapsed_seconds",
+          "type": "number",
+          "role": "measure",
+          "label": "Total Elapsed Seconds"
+        },
+        {
+          "name": "bytes_scanned",
+          "type": "number",
+          "role": "measure",
+          "label": "Bytes Scanned"
+        },
+        {
+          "name": "rows_produced",
+          "type": "number",
+          "role": "measure",
+          "label": "Rows Produced"
+        },
+        {
+          "name": "query_text",
+          "type": "string",
+          "role": "dimension",
+          "label": "Query Text"
+        }
+      ]
+    },
+    {
+      "dataset_id": "recommendation_queue",
+      "row_count": 2,
+      "normalized_digest": "sha256:51ddf6e1e524b5d3ad90868109f9ac0b1ee2067dfdc83919b3b83a7bb1b00ac9",
+      "columns": [
+        {
+          "name": "recommendation_id",
+          "type": "string",
+          "role": "id",
+          "label": "Recommendation Id"
+        },
+        {
+          "name": "scope_name",
+          "type": "string",
+          "role": "dimension",
+          "label": "Scope Name"
+        },
+        {
+          "name": "scope_type",
+          "type": "string",
+          "role": "dimension",
+          "label": "Scope Type"
+        },
+        {
+          "name": "recommendation_type",
+          "type": "string",
+          "role": "dimension",
+          "label": "Recommendation Type"
+        },
+        {
+          "name": "executive_severity",
+          "type": "string",
+          "role": "dimension",
+          "label": "Executive Severity"
+        },
+        {
+          "name": "implementation_phase",
+          "type": "string",
+          "role": "dimension",
+          "label": "Implementation Phase"
+        },
+        {
+          "name": "implementation_effort",
+          "type": "string",
+          "role": "dimension",
+          "label": "Implementation Effort"
+        },
+        {
+          "name": "estimated_monthly_credit_savings_low",
+          "type": "number",
+          "role": "measure",
+          "label": "Estimated Monthly Credit Savings Low"
+        },
+        {
+          "name": "estimated_monthly_credit_savings_high",
+          "type": "number",
+          "role": "measure",
+          "label": "Estimated Monthly Credit Savings High"
+        },
+        {
+          "name": "confidence",
+          "type": "string",
+          "role": "dimension",
+          "label": "Confidence"
+        },
+        {
+          "name": "performance_risk",
+          "type": "string",
+          "role": "dimension",
+          "label": "Performance Risk"
+        },
+        {
+          "name": "suggested_owner",
+          "type": "string",
+          "role": "dimension",
+          "label": "Suggested Owner"
+        },
+        {
+          "name": "recommended_action",
+          "type": "string",
+          "role": "dimension",
+          "label": "Recommended Action"
+        },
+        {
+          "name": "evidence_detail",
+          "type": "string",
+          "role": "dimension",
+          "label": "Evidence Detail"
+        },
+        {
+          "name": "guardrail",
+          "type": "string",
+          "role": "dimension",
+          "label": "Guardrail"
+        }
+      ]
+    },
+    {
+      "dataset_id": "show_warehouses",
+      "row_count": 3,
+      "normalized_digest": "sha256:38d6dc2bbe28a06fd5fd8a3e3ddaa289c35b58e3254348efa6636f9e3f544218",
+      "columns": [
+        {
+          "name": "name",
+          "type": "string",
+          "role": "dimension",
+          "label": "Name"
+        },
+        {
+          "name": "size",
+          "type": "string",
+          "role": "dimension",
+          "label": "Size"
+        },
+        {
+          "name": "auto_suspend",
+          "type": "number",
+          "role": "measure",
+          "label": "Auto Suspend"
+        },
+        {
+          "name": "auto_resume",
+          "type": "string",
+          "role": "dimension",
+          "label": "Auto Resume"
+        },
+        {
+          "name": "resource_monitor",
+          "type": "string",
+          "role": "dimension",
+          "label": "Resource Monitor"
+        },
+        {
+          "name": "owner",
+          "type": "string",
+          "role": "dimension",
+          "label": "Owner"
+        },
+        {
+          "name": "business_owner",
+          "type": "string",
+          "role": "dimension",
+          "label": "Business Owner"
+        },
+        {
+          "name": "technical_owner",
+          "type": "string",
+          "role": "dimension",
+          "label": "Technical Owner"
+        },
+        {
+          "name": "cost_center",
+          "type": "string",
+          "role": "dimension",
+          "label": "Cost Center"
+        }
+      ]
+    },
+    {
+      "dataset_id": "warehouse_metering_history",
+      "row_count": 21,
+      "normalized_digest": "sha256:349c9327983662afd0483720594d6e97c49893562a3cc1578c3e3f9b70362835",
+      "columns": [
+        {
+          "name": "usage_day",
+          "type": "string",
+          "role": "dimension",
+          "label": "Usage Day"
+        },
+        {
+          "name": "warehouse_name",
+          "type": "string",
+          "role": "dimension",
+          "label": "Warehouse Name"
+        },
+        {
+          "name": "credits_used_compute",
+          "type": "number",
+          "role": "measure",
+          "label": "Credits Used Compute"
+        },
+        {
+          "name": "credits_used_cloud_services",
+          "type": "number",
+          "role": "measure",
+          "label": "Credits Used Cloud Services"
+        },
+        {
+          "name": "credits_used",
+          "type": "number",
+          "role": "measure",
+          "label": "Credits Used"
+        }
+      ]
+    }
+  ],
+  "snapshot": {
+    "path": "snapshot.json",
+    "sha256": "sha256:dbee5dc082b1f0694f9d0d0a830976c3b6f0c3408754ff3ea0ab634f78961f67"
+  },
+  "quality": {
+    "status": "passed",
+    "report_path": "quality-report.json",
+    "report_sha256": "sha256:92ae1d44d8076e2262690a10516486701e7be2672a20b8fd0e921a378c037c46",
+    "requested_fault_count": 5,
+    "injected_fault_count": 5,
+    "detected_fault_count": 5,
+    "unexpected_finding_count": 0,
+    "story_assertions_passed": 5,
+    "story_assertions_total": 5
+  },
+  "reproduction_manifest": {
+    "path": "reproduction-manifest.json",
+    "sha256": "sha256:9168d095dde5eef945ce9ab2ae3a8ec2ffef02c4bb3d72bb838e12809df64c81"
+  }
+}

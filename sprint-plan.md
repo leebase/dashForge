@@ -6,6 +6,96 @@
 
 ---
 
+## Unified DashForge/DataForge Operator Guide — 2026-08-11
+
+**Status:** Complete
+
+- [x] Publish one operator guide for browser, LAN HTTPS, Builder, and PDF use.
+- [x] Document DataForge generation, scenario validation, employee-package
+  generation, and the governed handoff boundary.
+- [x] Link the guide from both project READMEs.
+- [x] Verify the documented CLI, frontend test suite, production build, and
+  active LAN endpoint.
+
+This is an operator-preview guide only. It does not authorize a mission,
+authenticate approval, connect live Snowflake, host a production service, or
+deliver client material.
+
+## LAN HTTPS Preview and PDF Rendition — 2026-08-11
+
+**Status:** Complete
+
+- [x] Add `npm run dev:lan` with `0.0.0.0` binding and IP-specific HTTPS
+  certificate generation/reuse.
+- [x] Document Mac access, certificate trust, LAN safety, and port override.
+- [x] Add a standalone **Print / Save PDF** action using the existing export
+  path.
+- [x] Preserve chart colors and provenance in landscape print output while
+  hiding interactive controls.
+- [x] Verify HTTP/2 200 from `https://192.168.8.10:5173`, 107 frontend tests,
+  production build, and a seven-page landscape PDF rendition.
+
+This is a local operator-preview capability only. It does not host a
+production service, launch a mission, authenticate approval, connect live
+Snowflake data, or deliver client material.
+
+## Field-Service Executive Showcase — 2026-08-10
+
+**Status:** Complete
+
+- [x] Consume the deterministic DataForge field-service work package through
+  the strict artifact adapter.
+- [x] Register the field-service scenario, primary trend dataset, and dedicated
+  executive template.
+- [x] Build five contextual KPI comparisons with plan/target semantics.
+- [x] Build three story-ordered graphs for demand, branch concentration, and
+  callback causes.
+- [x] Add a claim-covered narrative arc, controlled-quality disclosure, and
+  compact evidence citations.
+- [x] Make the field-service review the default presentation while keeping
+  Builder available on explicit demand with the same draft.
+- [x] Pass 107 frontend tests, the production build, and host browser validation
+  with no clipped dashboard cards.
+
+The canonical closed healthcare MVP proof remains unchanged. This slice adds a
+synthetic presentation showcase only; it does not launch a mission, authenticate
+approval, bind live data, host the app, or deliver client material.
+
+## Cross-Stream Employee Handoff — 2026-08-09
+
+**Status:** Complete
+
+This bounded slice commissioned no live mission. It connected the two product
+employees through one pursuit while keeping their work in separate runs:
+
+- DataForge produces `synthetic-data-work-package/1.0`.
+- Agent-Orch verifies the source run, employee/tenant/pursuit, artifact type,
+  schema, and digest, then materializes a read-only downstream input.
+- DashForge consumes that receipt and produces
+  `meeting-dashboard-package/1.0`.
+- The result cites the exact upstream digest and retains quality, reproduction,
+  binding, claim, and browser evidence.
+- Human approval remains an explicit gate; no promotion, schedule, live
+  Snowflake connector, or client submission is in scope.
+
+Acceptance evidence: DataForge 57 tests, DashForge 33 Python tests plus 103
+frontend tests, successful production build including package tools, strict
+Agent-Orch playbook lint, independent review 10/10, and a successful fresh
+cross-run receipt smoke at digest
+`sha256:31d8b97c4843d6d9e5fdd0bcff5009d5abbce6252d8ffe70cbf9b1fdf6b4ba4e`.
+The package materializer also rejects stale non-empty output and preserves the
+existing directory.
+
+## Commercial Proof Slice — 2026-07-16
+
+The current bounded slice is Snowflake Cost Optimization using only
+`idle-warehouse-waste`. Auto-Orch run `ee6fac7897f9` completed the buyer-demo
+path with Grok 4.5 High implementation and Claude Code Opus 4.8 High review.
+Tests, production build, browser smoke, and the Medium+ review gate passed.
+No additional roadmap slice should begin until a real Snowflake buyer signal
+is logged; the three Low review findings remain candidates for the next
+evidence-driven repair cycle.
+
 ## Active Sprint
 
 | Field | Value |

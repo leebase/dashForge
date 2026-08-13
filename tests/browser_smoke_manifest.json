@@ -1,0 +1,24 @@
+{
+  "start_command": [
+    "python3",
+    "-m",
+    "http.server",
+    "4173",
+    "--bind",
+    "127.0.0.1",
+    "--directory",
+    "frontend/dist"
+  ],
+  "url": "http://127.0.0.1:4173/",
+  "ready_selector": "[data-readiness='controlled'] [data-action='same-day-executive-follow-up']:not(:disabled)",
+  "action": {
+    "type": "click",
+    "selector": "[data-action='same-day-executive-follow-up']"
+  },
+  "success": {
+    "selector": "[data-status='executive-follow-up']",
+    "text_contains": "Follow-up artifact is ready"
+  },
+  "startup_timeout_seconds": 15,
+  "interaction_timeout_seconds": 10
+}

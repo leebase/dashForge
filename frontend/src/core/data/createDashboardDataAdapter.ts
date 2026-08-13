@@ -2,6 +2,12 @@ import type { DataAdapter } from "./DataAdapter";
 import { HybridDataAdapter } from "./HybridDataAdapter";
 import { RestDataAdapter, type RestFetchLike } from "./RestDataAdapter";
 import { StaticDataAdapter } from "./StaticDataAdapter";
+import {
+  createSyntheticDataArtifactAdapter,
+  type ArtifactQualityDisclosure,
+  type VerifiedSyntheticDataArtifact,
+} from "./SyntheticDataArtifactAdapter";
+import { DEFAULT_VERIFIED_SYNTHETIC_DATA_ARTIFACTS } from "./verifiedSyntheticDataArtifacts";
 import type {
   DashboardDatasetReference,
   DashboardDataMode,
@@ -14,7 +20,7 @@ export interface DashboardDataBindingStatus {
   datasetId: string;
   widgetIds: string[];
   fields: string[];
-  source: "mock" | "live";
+  source: "mock" | "live" | "artifact";
   status: "ready" | "fallback" | "error";
   message: string;
 }
@@ -24,6 +30,7 @@ export interface DashboardDataAdapterResolutionSuccess {
   adapter: DataAdapter;
   datasets: DashboardDataBindingStatus[];
   mode: DashboardDataMode;
+  artifact?: ArtifactQualityDisclosure;
 }
 
 export interface DashboardDataAdapterResolutionFailure {
@@ -31,14 +38,16 @@ export interface DashboardDataAdapterResolutionFailure {
   errors: string[];
   datasets: DashboardDataBindingStatus[];
   mode: DashboardDataMode;
+  artifact?: ArtifactQualityDisclosure;
 }
 
 export type DashboardDataAdapterResolution =
   | DashboardDataAdapterResolutionSuccess
   | DashboardDataAdapterResolutionFailure;
 
-interface CreateDashboardDataAdapterOptions {
+export interface CreateDashboardDataAdapterOptions {
   fetcher?: RestFetchLike;
+  artifacts?: readonly VerifiedSyntheticDataArtifact[];
 }
 
 function validateLiveBinding(
@@ -102,6 +111,25 @@ function buildDatasetStatuses(spec: DashboardSpec): DashboardDataBindingStatus[]
       };
     }
 
+    if (spec.dataContext.mode === "artifact") {
+      const binding = spec.dataContext.artifact?.bindings[reference.datasetId];
+      const declaredDatasetIds = new Set(
+        spec.dataContext.artifact?.snapshot.datasetIds ?? [],
+      );
+      const isReady =
+        binding !== undefined &&
+        declaredDatasetIds.has(binding.snapshotDatasetId);
+
+      return {
+        ...reference,
+        source: "artifact" as const,
+        status: isReady ? ("ready" as const) : ("error" as const),
+        message: isReady
+          ? "Using a verified synthetic-data snapshot binding."
+          : `Dataset "${reference.datasetId}" is missing a declared artifact binding.`,
+      };
+    }
+
     const liveError = validateLiveBinding(reference, spec);
 
     if (spec.dataContext.mode === "live") {
@@ -150,6 +178,67 @@ export function createDashboardDataAdapter(
   options: CreateDashboardDataAdapterOptions = {},
 ): DashboardDataAdapterResolution {
   const datasets = buildDatasetStatuses(spec);
+  if (spec.dataContext.mode === "artifact") {
+    const manifest = spec.dataContext.artifact;
+    if (!manifest) {
+      return {
+        ok: false,
+        errors: ["Artifact data mode requires a synthetic-data artifact manifest."],
+        datasets,
+        mode: spec.dataContext.mode,
+      };
+    }
+
+    const artifacts =
+      options.artifacts ?? DEFAULT_VERIFIED_SYNTHETIC_DATA_ARTIFACTS;
+    const artifact =
+      artifacts.find((candidate) => candidate.verifiedDigest === manifest.digest) ??
+      artifacts.find(
+        (candidate) =>
+          candidate.artifactType === manifest.artifactType &&
+          candidate.payloadSchemaVersion === manifest.payloadSchemaVersion,
+      ) ??
+      (artifacts.length === 1 ? artifacts[0] : undefined);
+
+    if (!artifact) {
+      return {
+        ok: false,
+        errors: [
+          `No trusted synthetic-data work package is staged for digest "${manifest.digest}".`,
+        ],
+        datasets: datasets.map((dataset) => ({
+          ...dataset,
+          status: "error",
+          message: "Trusted artifact materialization is unavailable.",
+        })),
+        mode: spec.dataContext.mode,
+      };
+    }
+
+    const artifactResolution = createSyntheticDataArtifactAdapter(spec, artifact);
+    if (!artifactResolution.ok) {
+      return {
+        ok: false,
+        errors: artifactResolution.errors,
+        datasets: datasets.map((dataset) => ({
+          ...dataset,
+          status: "error",
+          message: "Artifact readiness is blocked; review the input errors.",
+        })),
+        mode: spec.dataContext.mode,
+        artifact: artifactResolution.disclosure,
+      };
+    }
+
+    return {
+      ok: true,
+      adapter: artifactResolution.adapter,
+      datasets,
+      mode: spec.dataContext.mode,
+      artifact: artifactResolution.disclosure,
+    };
+  }
+
   const errors = datasets
     .filter((dataset) => dataset.status === "error")
     .map((dataset) => dataset.message);

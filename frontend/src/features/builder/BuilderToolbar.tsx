@@ -3,7 +3,7 @@ interface BuilderToolbarProps {
   currentPackId: string;
   currentScenarioId: string;
   currentThemeId: string;
-  dataMode: "mock" | "live" | "hybrid";
+  dataMode: "mock" | "live" | "hybrid" | "artifact";
   isSpecIoOpen: boolean;
   isTemplateGalleryOpen: boolean;
   packIds: string[];
@@ -89,7 +89,7 @@ export function BuilderToolbar({
         <label className="builder-toolbar__field">
           <span>Pack</span>
           <select
-            disabled={dataMode === "live"}
+            disabled={dataMode === "live" || dataMode === "artifact"}
             onChange={(event) => onChangePack(event.target.value)}
             value={currentPackId}
           >
@@ -104,7 +104,7 @@ export function BuilderToolbar({
         <label className="builder-toolbar__field">
           <span>Scenario</span>
           <select
-            disabled={dataMode === "live"}
+            disabled={dataMode === "live" || dataMode === "artifact"}
             onChange={(event) => onChangeScenario(event.target.value)}
             value={currentScenarioId}
           >

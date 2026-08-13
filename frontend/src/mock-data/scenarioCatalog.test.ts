@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   getPrimaryTrendDatasetIdByScenario,
   getPrimaryTrendDatasetId,
+  getScenarioDefinition,
   listRegisteredScenarios,
   resolveScenarioDatasetMap,
 } from "./scenarioCatalog";
@@ -20,6 +21,11 @@ describe("scenarioCatalog", () => {
       { packId: "saas", scenarioId: "churn-crisis" },
       { packId: "saas", scenarioId: "product-led-growth" },
       { packId: "saas", scenarioId: "scaling-success" },
+      {
+        packId: "fieldService",
+        scenarioId: "first-heat-wave-parts-bottleneck",
+      },
+      { packId: "snowflakeCost", scenarioId: "idle-warehouse-waste" },
     ]);
   });
 
@@ -44,6 +50,8 @@ describe("scenarioCatalog", () => {
       ["saas", "churn-crisis"],
       ["saas", "product-led-growth"],
       ["saas", "scaling-success"],
+      ["fieldService", "first-heat-wave-parts-bottleneck"],
+      ["snowflakeCost", "idle-warehouse-waste"],
     ] as const) {
       const datasets = resolveScenarioDatasetMap({
         mode: "mock",
@@ -71,7 +79,9 @@ describe("scenarioCatalog", () => {
           ? "monthly_metrics"
           : "executive_summary";
 
-      expect(datasets[benchmarkDataset]?.length).toBeGreaterThanOrEqual(5);
+      expect(datasets[benchmarkDataset]?.length).toBeGreaterThanOrEqual(
+        packId === "snowflakeCost" ? 2 : 5,
+      );
       const primaryTrendDataset = getPrimaryTrendDatasetIdByScenario(
         packId,
         scenarioId,
@@ -94,6 +104,11 @@ describe("scenarioCatalog", () => {
         { packId: "saas", scenarioId: "churn-crisis" },
         { packId: "saas", scenarioId: "product-led-growth" },
         { packId: "saas", scenarioId: "scaling-success" },
+        {
+          packId: "fieldService",
+          scenarioId: "first-heat-wave-parts-bottleneck",
+        },
+        { packId: "snowflakeCost", scenarioId: "idle-warehouse-waste" },
       ]),
     );
   });
@@ -135,9 +150,68 @@ describe("scenarioCatalog", () => {
     );
   });
 
+  it("registers the idle-warehouse-waste buyer journey snapshot datasets", () => {
+    const scenario = getScenarioDefinition("snowflakeCost", "idle-warehouse-waste");
+
+    expect(scenario).toMatchObject({
+      packId: "snowflakeCost",
+      scenarioId: "idle-warehouse-waste",
+      title: "Idle Warehouse Waste",
+    });
+    expect(scenario?.story).toMatch(/warehouse/i);
+
+    const datasets = resolveScenarioDatasetMap({
+      mode: "mock",
+      mock: {
+        packId: "snowflakeCost",
+        scenarioId: "idle-warehouse-waste",
+        seed: 2048,
+      },
+      timeRange: {
+        start: "2026-06-01",
+        end: "2026-06-30",
+        granularity: "day",
+      },
+    });
+
+    expect(Object.keys(datasets)).toEqual(
+      expect.arrayContaining([
+        "executive_summary",
+        "warehouse_metering_history",
+        "show_warehouses",
+        "query_history",
+        "recommendation_queue",
+      ]),
+    );
+
+    expect(datasets.executive_summary?.length).toBeGreaterThanOrEqual(2);
+    expect(datasets.warehouse_metering_history?.length).toBeGreaterThan(0);
+    expect(datasets.recommendation_queue?.length).toBeGreaterThan(0);
+
+    const executiveMetricIds = (datasets.executive_summary ?? []).map(
+      (row) => row.metricId ?? row.metric_id,
+    );
+    expect(executiveMetricIds).toEqual(
+      expect.arrayContaining(["idle-warehouse-count", "monthly-opportunity-high"]),
+    );
+
+    const recommendationTypes = (datasets.recommendation_queue ?? []).map(
+      (row) => row.recommendation_type ?? row.recommendationType,
+    );
+    expect(recommendationTypes).toEqual(
+      expect.arrayContaining(["IDLE_WAREHOUSE_REVIEW"]),
+    );
+
+    expect(getPrimaryTrendDatasetIdByScenario("snowflakeCost", "idle-warehouse-waste")).toBe(
+      "warehouse_metering_history",
+    );
+  });
+
   it("exposes one primary trend dataset id per pack", () => {
     expect(getPrimaryTrendDatasetId("healthcare")).toBe("monthly_capacity");
     expect(getPrimaryTrendDatasetId("financial")).toBe("monthly_summary");
     expect(getPrimaryTrendDatasetId("saas")).toBe("monthly_summary");
+    expect(getPrimaryTrendDatasetId("fieldService")).toBe("weekly_service_trend");
+    expect(getPrimaryTrendDatasetId("snowflakeCost")).toBe("warehouse_metering_history");
   });
 });

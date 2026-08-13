@@ -1,0 +1,295 @@
+{
+  "packId": "snowflakeCost",
+  "scenarioId": "idle-warehouse-waste",
+  "seed": 9101,
+  "title": "Idle Warehouse Waste",
+  "story": "Multiple Snowflake warehouses run continuously or with weak suspension settings while ownership and resource-monitor controls are incomplete. This idle warehouse waste story concentrates cost on named warehouses and points buyers to low-risk governance controls first.",
+  "provenance": {
+    "label": "Synthetic demo data",
+    "source": "dataForge",
+    "artifact": "data/snowflakeCost/idle-warehouse-waste.snapshot.json",
+    "storyContract": "stories/snowflake/idle-warehouse-waste.yaml",
+    "useCaseId": "idle-warehouse-waste",
+    "readOnly": true
+  },
+  "previewDatasets": {
+    "executive_summary": [
+      {
+        "caption": "Warehouses with missing or weak suspension policy.",
+        "delta": 2.0,
+        "deltaLabel": "owner review",
+        "metricId": "idle-warehouse-count",
+        "prefix": "",
+        "suffix": "",
+        "value": 2.0
+      },
+      {
+        "caption": "High-end monthly opportunity from idle warehouse and auto-suspend controls.",
+        "delta": 0.0,
+        "deltaLabel": "credits/month",
+        "metricId": "monthly-opportunity-high",
+        "prefix": "",
+        "suffix": " credits",
+        "value": 726.0
+      }
+    ],
+    "warehouse_metering_history": [
+      {
+        "credits_used": 74.0,
+        "credits_used_cloud_services": 2.96,
+        "credits_used_compute": 71.04,
+        "usage_day": "2026-06-01",
+        "warehouse_name": "CORE_ELT_WH"
+      },
+      {
+        "credits_used": 390.0,
+        "credits_used_cloud_services": 15.6,
+        "credits_used_compute": 374.4,
+        "usage_day": "2026-06-01",
+        "warehouse_name": "FINANCE_REPORTING_WH"
+      },
+      {
+        "credits_used": 155.0,
+        "credits_used_cloud_services": 6.2,
+        "credits_used_compute": 148.8,
+        "usage_day": "2026-06-01",
+        "warehouse_name": "MARKETING_ADHOC_WH"
+      },
+      {
+        "credits_used": 79.0,
+        "credits_used_cloud_services": 3.16,
+        "credits_used_compute": 75.84,
+        "usage_day": "2026-06-02",
+        "warehouse_name": "CORE_ELT_WH"
+      },
+      {
+        "credits_used": 392.0,
+        "credits_used_cloud_services": 15.68,
+        "credits_used_compute": 376.32,
+        "usage_day": "2026-06-02",
+        "warehouse_name": "FINANCE_REPORTING_WH"
+      },
+      {
+        "credits_used": 160.0,
+        "credits_used_cloud_services": 6.4,
+        "credits_used_compute": 153.6,
+        "usage_day": "2026-06-02",
+        "warehouse_name": "MARKETING_ADHOC_WH"
+      },
+      {
+        "credits_used": 76.0,
+        "credits_used_cloud_services": 3.04,
+        "credits_used_compute": 72.96,
+        "usage_day": "2026-06-03",
+        "warehouse_name": "CORE_ELT_WH"
+      },
+      {
+        "credits_used": 388.0,
+        "credits_used_cloud_services": 15.52,
+        "credits_used_compute": 372.48,
+        "usage_day": "2026-06-03",
+        "warehouse_name": "FINANCE_REPORTING_WH"
+      },
+      {
+        "credits_used": 151.0,
+        "credits_used_cloud_services": 6.04,
+        "credits_used_compute": 144.96,
+        "usage_day": "2026-06-03",
+        "warehouse_name": "MARKETING_ADHOC_WH"
+      },
+      {
+        "credits_used": 82.0,
+        "credits_used_cloud_services": 3.28,
+        "credits_used_compute": 78.72,
+        "usage_day": "2026-06-04",
+        "warehouse_name": "CORE_ELT_WH"
+      },
+      {
+        "credits_used": 395.0,
+        "credits_used_cloud_services": 15.8,
+        "credits_used_compute": 379.2,
+        "usage_day": "2026-06-04",
+        "warehouse_name": "FINANCE_REPORTING_WH"
+      },
+      {
+        "credits_used": 158.0,
+        "credits_used_cloud_services": 6.32,
+        "credits_used_compute": 151.68,
+        "usage_day": "2026-06-04",
+        "warehouse_name": "MARKETING_ADHOC_WH"
+      },
+      {
+        "credits_used": 78.0,
+        "credits_used_cloud_services": 3.12,
+        "credits_used_compute": 74.88,
+        "usage_day": "2026-06-05",
+        "warehouse_name": "CORE_ELT_WH"
+      },
+      {
+        "credits_used": 391.0,
+        "credits_used_cloud_services": 15.64,
+        "credits_used_compute": 375.36,
+        "usage_day": "2026-06-05",
+        "warehouse_name": "FINANCE_REPORTING_WH"
+      },
+      {
+        "credits_used": 156.0,
+        "credits_used_cloud_services": 6.24,
+        "credits_used_compute": 149.76,
+        "usage_day": "2026-06-05",
+        "warehouse_name": "MARKETING_ADHOC_WH"
+      },
+      {
+        "credits_used": 75.0,
+        "credits_used_cloud_services": 3.0,
+        "credits_used_compute": 72.0,
+        "usage_day": "2026-06-06",
+        "warehouse_name": "CORE_ELT_WH"
+      },
+      {
+        "credits_used": 389.0,
+        "credits_used_cloud_services": 15.56,
+        "credits_used_compute": 373.44,
+        "usage_day": "2026-06-06",
+        "warehouse_name": "FINANCE_REPORTING_WH"
+      },
+      {
+        "credits_used": 154.0,
+        "credits_used_cloud_services": 6.16,
+        "credits_used_compute": 147.84,
+        "usage_day": "2026-06-06",
+        "warehouse_name": "MARKETING_ADHOC_WH"
+      },
+      {
+        "credits_used": 80.0,
+        "credits_used_cloud_services": 3.2,
+        "credits_used_compute": 76.8,
+        "usage_day": "2026-06-07",
+        "warehouse_name": "CORE_ELT_WH"
+      },
+      {
+        "credits_used": 394.0,
+        "credits_used_cloud_services": 15.76,
+        "credits_used_compute": 378.24,
+        "usage_day": "2026-06-07",
+        "warehouse_name": "FINANCE_REPORTING_WH"
+      },
+      {
+        "credits_used": 159.0,
+        "credits_used_cloud_services": 6.36,
+        "credits_used_compute": 152.64,
+        "usage_day": "2026-06-07",
+        "warehouse_name": "MARKETING_ADHOC_WH"
+      }
+    ],
+    "show_warehouses": [
+      {
+        "auto_resume": "true",
+        "auto_suspend": 300,
+        "business_owner": "Data Platform",
+        "cost_center": "DATA",
+        "name": "CORE_ELT_WH",
+        "owner": "SYSADMIN",
+        "resource_monitor": "CORE_ELT_MONITOR",
+        "size": "MEDIUM",
+        "technical_owner": "Analytics Engineering"
+      },
+      {
+        "auto_resume": "true",
+        "auto_suspend": 0,
+        "business_owner": "Finance",
+        "cost_center": "FIN",
+        "name": "FINANCE_REPORTING_WH",
+        "owner": "SYSADMIN",
+        "resource_monitor": null,
+        "size": "X-LARGE",
+        "technical_owner": null
+      },
+      {
+        "auto_resume": "true",
+        "auto_suspend": 3600,
+        "business_owner": "Marketing",
+        "cost_center": "MKT",
+        "name": "MARKETING_ADHOC_WH",
+        "owner": "SYSADMIN",
+        "resource_monitor": null,
+        "size": "LARGE",
+        "technical_owner": null
+      }
+    ],
+    "query_history": [
+      {
+        "bytes_scanned": 42000000000.0,
+        "elapsed_seconds": 210.0,
+        "query_id": "IWW001",
+        "query_text": "refresh weekly finance package",
+        "query_type": "SELECT",
+        "role_name": "FINANCE_BI",
+        "rows_produced": 85000.0,
+        "total_elapsed_seconds": 210.0,
+        "user_name": "svc_finance_bi",
+        "warehouse_name": "FINANCE_REPORTING_WH"
+      },
+      {
+        "bytes_scanned": 18000000000.0,
+        "elapsed_seconds": 145.0,
+        "query_id": "IWW002",
+        "query_text": "ad hoc campaign pull",
+        "query_type": "SELECT",
+        "role_name": "MARKETING_ANALYST",
+        "rows_produced": 12000.0,
+        "total_elapsed_seconds": 145.0,
+        "user_name": "analyst_mira",
+        "warehouse_name": "MARKETING_ADHOC_WH"
+      },
+      {
+        "bytes_scanned": 86000000000.0,
+        "elapsed_seconds": 920.0,
+        "query_id": "IWW003",
+        "query_text": "merge daily finance facts",
+        "query_type": "MERGE",
+        "role_name": "DATA_ENGINEER",
+        "rows_produced": 0.0,
+        "total_elapsed_seconds": 920.0,
+        "user_name": "svc_elt",
+        "warehouse_name": "CORE_ELT_WH"
+      }
+    ],
+    "recommendation_queue": [
+      {
+        "confidence": "High",
+        "estimated_monthly_credit_savings_high": 180.0,
+        "estimated_monthly_credit_savings_low": 95.0,
+        "evidence_detail": "FINANCE_REPORTING_WH consumes more than half of warehouse credits while visible query activity is sparse.",
+        "executive_severity": "P0",
+        "guardrail": "Confirm finance reporting schedules before changing warehouse availability.",
+        "implementation_effort": "Low",
+        "implementation_phase": "Quick control",
+        "performance_risk": "Low",
+        "recommendation_id": "IWW-001",
+        "recommendation_type": "IDLE_WAREHOUSE_REVIEW",
+        "recommended_action": "Assign an owner, enable auto-suspend, and validate whether FINANCE_REPORTING_WH needs to run outside reporting windows.",
+        "scope_name": "FINANCE_REPORTING_WH",
+        "scope_type": "WAREHOUSE",
+        "suggested_owner": "Finance and Data Platform"
+      },
+      {
+        "confidence": "Medium",
+        "estimated_monthly_credit_savings_high": 62.0,
+        "estimated_monthly_credit_savings_low": 28.0,
+        "evidence_detail": "MARKETING_ADHOC_WH has a 3600 second auto-suspend and no monitor.",
+        "executive_severity": "P1",
+        "guardrail": "Notify analysts and measure failed notebook restarts after the change.",
+        "implementation_effort": "Low",
+        "implementation_phase": "Quick control",
+        "performance_risk": "Low",
+        "recommendation_id": "IWW-002",
+        "recommendation_type": "AUTO_SUSPEND_REVIEW",
+        "recommended_action": "Reduce auto-suspend and add a resource monitor for marketing ad hoc usage.",
+        "scope_name": "MARKETING_ADHOC_WH",
+        "scope_type": "WAREHOUSE",
+        "suggested_owner": "Marketing Analytics"
+      }
+    ]
+  }
+}

@@ -522,6 +522,160 @@ const narrativeSectionSchema = {
   additionalProperties: false,
 } as const;
 
+const sha256DigestSchema = {
+  type: "string",
+  pattern: "^sha256:[0-9a-f]{64}$",
+} as const;
+
+const fileSha256Schema = {
+  type: "string",
+  pattern: "^sha256:[0-9a-f]{64}$",
+} as const;
+
+const artifactContextSchema = {
+  type: "object",
+  properties: {
+    artifactType: { const: "synthetic-data-work-package" },
+    payloadSchemaVersion: { const: "synthetic-data-work-package/1.0" },
+    digest: sha256DigestSchema,
+    employeeId: { const: "synthetic-data-story-engineer" },
+    qualityReport: {
+      type: "object",
+      properties: {
+        schemaVersion: { const: "data-quality-report/1.0" },
+        path: { type: "string", minLength: 1 },
+        sha256: fileSha256Schema,
+      },
+      required: ["schemaVersion", "path", "sha256"],
+      additionalProperties: false,
+    },
+    snapshot: {
+      type: "object",
+      properties: {
+        path: { type: "string", minLength: 1 },
+        sha256: fileSha256Schema,
+        datasetIds: {
+          type: "array",
+          minItems: 1,
+          uniqueItems: true,
+          items: { type: "string", minLength: 1 },
+        },
+      },
+      required: ["path", "sha256", "datasetIds"],
+      additionalProperties: false,
+    },
+    bindings: {
+      type: "object",
+      minProperties: 1,
+      additionalProperties: {
+        type: "object",
+        properties: {
+          snapshotDatasetId: { type: "string", minLength: 1 },
+          fieldMap: {
+            type: "object",
+            minProperties: 1,
+            additionalProperties: { type: "string", minLength: 1 },
+          },
+        },
+        required: ["snapshotDatasetId", "fieldMap"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: [
+    "artifactType",
+    "payloadSchemaVersion",
+    "digest",
+    "employeeId",
+    "qualityReport",
+    "snapshot",
+    "bindings",
+  ],
+  additionalProperties: false,
+} as const;
+
+const claimEvidenceSchema = {
+  oneOf: [
+    {
+      type: "object",
+      properties: {
+        type: { const: "assertion" },
+        assertionId: { type: "string", minLength: 1 },
+      },
+      required: ["type", "assertionId"],
+      additionalProperties: false,
+    },
+    {
+      type: "object",
+      properties: {
+        type: { const: "dataset_observation" },
+        bindingId: { type: "string", minLength: 1 },
+        datasetId: { type: "string", minLength: 1 },
+        fields: {
+          type: "array",
+          minItems: 1,
+          uniqueItems: true,
+          items: { type: "string", minLength: 1 },
+        },
+        predicate: {
+          type: "object",
+          additionalProperties: {
+            type: ["string", "number", "boolean", "null"],
+          },
+        },
+      },
+      required: ["type", "bindingId", "datasetId", "fields"],
+      additionalProperties: false,
+    },
+  ],
+} as const;
+
+const dashboardGovernanceSchema = {
+  type: "object",
+  properties: {
+    claimLedger: {
+      type: "object",
+      properties: {
+        schemaVersion: { const: "dashboard-claim-ledger/1.0" },
+        upstreamArtifactDigest: sha256DigestSchema,
+        claims: {
+          type: "array",
+          minItems: 1,
+          items: {
+            type: "object",
+            properties: {
+              claimId: { type: "string", minLength: 1 },
+              surfaceId: { type: "string", minLength: 1 },
+              kind: { enum: ["metric", "narrative", "recommendation"] },
+              statement: { type: "string", minLength: 1 },
+              source: {
+                type: "object",
+                properties: {
+                  artifactDigest: sha256DigestSchema,
+                  evidence: claimEvidenceSchema,
+                },
+                required: ["artifactDigest", "evidence"],
+                additionalProperties: false,
+              },
+            },
+            required: ["claimId", "surfaceId", "kind", "statement", "source"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["schemaVersion", "upstreamArtifactDigest", "claims"],
+      additionalProperties: false,
+    },
+    additionalMaterialSurfaceIds: {
+      type: "array",
+      uniqueItems: true,
+      items: { type: "string", minLength: 1 },
+    },
+  },
+  required: ["claimLedger", "additionalMaterialSurfaceIds"],
+  additionalProperties: false,
+} as const;
+
 const dashboardSchema = {
   type: "object",
   properties: {
@@ -580,7 +734,7 @@ const dashboardSchema = {
     dataContext: {
       type: "object",
       properties: {
-        mode: { enum: ["mock", "live", "hybrid"] },
+        mode: { enum: ["mock", "live", "hybrid", "artifact"] },
         mock: {
           type: "object",
           properties: {
@@ -653,6 +807,7 @@ const dashboardSchema = {
           required: ["bindings"],
           additionalProperties: false,
         },
+        artifact: artifactContextSchema,
         timeRange: {
           type: "object",
           properties: {
@@ -727,6 +882,7 @@ const dashboardSchema = {
       required: ["storyArc"],
       additionalProperties: true,
     },
+    governance: dashboardGovernanceSchema,
     filters: {
       type: "array",
       items: {
@@ -827,6 +983,47 @@ function validateSemanticRules(spec: DashboardSpec): string[] {
   if (spec.dataContext.mode === "hybrid") {
     if (!spec.dataContext.mock || !spec.dataContext.live) {
       errors.push("dataContext.hybrid mode requires both mock and live contexts.");
+    }
+  }
+
+  if (spec.dataContext.mode === "artifact") {
+    if (!spec.dataContext.artifact) {
+      errors.push('dataContext.artifact is required when mode is "artifact".');
+    }
+    if (spec.dataContext.mock || spec.dataContext.live) {
+      errors.push(
+        'dataContext.mock and dataContext.live must be omitted when mode is "artifact".',
+      );
+    }
+    if (!spec.governance) {
+      errors.push('governance is required when dataContext.mode is "artifact".');
+    }
+  } else if (spec.dataContext.artifact) {
+    errors.push('dataContext.artifact must be omitted unless mode is "artifact".');
+  }
+
+  if (spec.governance && spec.dataContext.artifact) {
+    const artifactDigest = spec.dataContext.artifact.digest;
+    const ledger = spec.governance.claimLedger;
+
+    if (ledger.upstreamArtifactDigest !== artifactDigest) {
+      errors.push("governance.claimLedger upstream digest must match the artifact digest.");
+    }
+
+    const claimIds = new Set<string>();
+    const surfaceIds = new Set<string>();
+    for (const claim of ledger.claims) {
+      if (claimIds.has(claim.claimId)) {
+        errors.push(`Duplicate material claim id "${claim.claimId}".`);
+      }
+      if (surfaceIds.has(claim.surfaceId)) {
+        errors.push(`Duplicate material claim surface "${claim.surfaceId}".`);
+      }
+      if (claim.source.artifactDigest !== artifactDigest) {
+        errors.push(`Material claim "${claim.claimId}" cites a different artifact digest.`);
+      }
+      claimIds.add(claim.claimId);
+      surfaceIds.add(claim.surfaceId);
     }
   }
 

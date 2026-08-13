@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { sampleDashboard } from "../../sample/sampleDashboard";
+import { createDefaultStandaloneDashboardSpec } from "../../features/runtime/standaloneDashboard";
 import { createDashboardDataAdapter } from "./createDashboardDataAdapter";
 
 describe("createDashboardDataAdapter", () => {
@@ -187,6 +188,56 @@ describe("createDashboardDataAdapter", () => {
           status: "error",
         }),
       ]),
+    );
+  });
+
+  it("resolves a digest-pinned artifact through the existing factory seam", async () => {
+    const result = createDashboardDataAdapter(
+      createDefaultStandaloneDashboardSpec(),
+    );
+
+    expect(result).toMatchObject({
+      ok: true,
+      mode: "artifact",
+      artifact: {
+        qualityState: "controlled",
+        qualityStatus: "passed",
+      },
+      datasets: expect.arrayContaining([
+        expect.objectContaining({
+          datasetId: "executive_summary",
+          source: "artifact",
+          status: "ready",
+        }),
+      ]),
+    });
+    if (!result.ok) {
+      throw new Error(result.errors.join("; "));
+    }
+    await expect(
+      result.adapter.query({ datasetId: "recommendation_queue" }),
+    ).resolves.toMatchObject({
+      rows: expect.arrayContaining([
+        expect.objectContaining({ recommendation_id: "IWW-001" }),
+      ]),
+    });
+  });
+
+  it("fails closed when no verified record matches the manifest digest", () => {
+    const spec = createDefaultStandaloneDashboardSpec();
+    if (!spec.dataContext.artifact) {
+      throw new Error("Fixture artifact context is missing.");
+    }
+    spec.dataContext.artifact.digest = `sha256:${"f".repeat(64)}`;
+
+    const result = createDashboardDataAdapter(spec);
+
+    expect(result).toMatchObject({ ok: false, mode: "artifact" });
+    if (result.ok) {
+      throw new Error("Artifact adapter resolution unexpectedly passed.");
+    }
+    expect(result.errors).toEqual(
+      expect.arrayContaining([expect.stringMatching(/digest/i)]),
     );
   });
 });

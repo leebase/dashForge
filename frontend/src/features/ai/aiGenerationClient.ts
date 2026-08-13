@@ -1,154 +1,96 @@
+import {
+  validateDashboardGenerationResult,
+  type DashboardGenerationResult,
+} from "../export/dashboardGenerationResult";
 import type {
   AiGenerationClient,
-  AiGenerationClientRequest,
   AiGenerationClientResult,
 } from "./aiTypes";
 
-interface ClaudeClientConfig {
-  apiKey?: string;
-  apiUrl?: string;
-  model?: string;
-  fetchImpl?: typeof fetch;
+export const STAGED_DASHBOARD_MANIFEST_ELEMENT_ID =
+  "dashforge-staged-dashboard-generation-result";
+
+export interface StagedManifestGenerationClientConfig {
+  stagedResult?: unknown;
+  readStagedResult?: () => unknown;
 }
 
-interface ClaudeMessageResponse {
-  id?: string;
-  model?: string;
-  content?: Array<{ type?: string; text?: string }>;
-  error?: {
-    message?: string;
-  };
-}
-
-function readRuntimeEnv() {
-  return (import.meta.env ?? {}) as Record<string, string | undefined>;
-}
-
-async function mapClaudeResponse(
-  response: Response,
-): Promise<AiGenerationClientResult> {
-  let payload: ClaudeMessageResponse;
+function readStagedResultFromDocument(): unknown {
+  if (typeof document === "undefined") {
+    return undefined;
+  }
+  const manifestElement = document.getElementById(
+    STAGED_DASHBOARD_MANIFEST_ELEMENT_ID,
+  );
+  if (!manifestElement?.textContent?.trim()) {
+    return undefined;
+  }
 
   try {
-    payload = (await response.json()) as ClaudeMessageResponse;
+    return JSON.parse(manifestElement.textContent);
   } catch {
-    return {
-      ok: false,
-      reason: "response",
-      error: "Claude returned a non-JSON response.",
-    };
+    return undefined;
   }
-
-  if (!response.ok) {
-    return {
-      ok: false,
-      reason: "response",
-      error:
-        payload.error?.message ??
-        `Claude request failed with status ${response.status}.`,
-    };
-  }
-
-  const responseText = payload.content
-    ?.filter((block) => block.type === "text" && typeof block.text === "string")
-    .map((block) => block.text?.trim() ?? "")
-    .filter((text) => text.length > 0)
-    .join("\n");
-
-  if (!responseText) {
-    return {
-      ok: false,
-      reason: "response",
-      error: "Claude returned no text content to parse into a DashboardSpec.",
-    };
-  }
-
-  return {
-    ok: true,
-    model: payload.model ?? "unknown-claude-model",
-    requestId: payload.id,
-    responseText,
-  };
 }
 
-export function createClaudeGenerationClient(
-  config: ClaudeClientConfig = {},
-): AiGenerationClient {
-  const apiKey = config.apiKey?.trim();
-  const apiUrl = config.apiUrl?.trim() || "https://api.anthropic.com/v1/messages";
-  const model = config.model?.trim() || "claude-3-5-sonnet-latest";
-  const fetchImpl = config.fetchImpl ?? globalThis.fetch;
+function resolveStagedResult(
+  config: StagedManifestGenerationClientConfig,
+): DashboardGenerationResult | undefined {
+  const input = config.readStagedResult
+    ? config.readStagedResult()
+    : config.stagedResult;
+  const validation = validateDashboardGenerationResult(input);
+  return validation.ok ? validation.result : undefined;
+}
 
-  if (!apiKey || typeof fetchImpl !== "function") {
-    return {
-      availability: {
-        status: "unconfigured",
-        providerLabel: "Claude",
-        reason:
-          "Set VITE_DASHFORGE_ANTHROPIC_API_KEY to enable prompt-to-spec generation.",
-      },
-      async generate() {
+export function createStagedManifestGenerationClient(
+  config: StagedManifestGenerationClientConfig = {},
+): AiGenerationClient {
+  const initialInput = config.readStagedResult
+    ? config.readStagedResult()
+    : config.stagedResult;
+  const initialValidation = validateDashboardGenerationResult(initialInput);
+  const providerLabel = "Agent-Orch staged manifest";
+
+  return {
+    availability: initialValidation.ok
+      ? {
+          status: "configured",
+          providerLabel,
+          model: "staged-manifest",
+        }
+      : {
+          status: "unconfigured",
+          providerLabel,
+          reason:
+            initialInput === undefined
+              ? "Stage a validated dashboard generation result before opening the builder."
+              : initialValidation.errors[0] ??
+                "The staged dashboard generation result is invalid.",
+        },
+    async generate(): Promise<AiGenerationClientResult> {
+      const result = resolveStagedResult(config);
+      if (!result) {
         return {
           ok: false,
           reason: "unconfigured",
           error:
-            "Claude generation is not configured in this environment.",
-        };
-      },
-    };
-  }
-
-  return {
-    availability: {
-      status: "configured",
-      providerLabel: "Claude",
-      model,
-    },
-    async generate(request: AiGenerationClientRequest) {
-      try {
-        const response = await fetchImpl(apiUrl, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "anthropic-version": "2023-06-01",
-            "anthropic-dangerous-direct-browser-access": "true",
-            "x-api-key": apiKey,
-          },
-          body: JSON.stringify({
-            model,
-            max_tokens: 4096,
-            temperature: 0.2,
-            system: request.systemPrompt,
-            messages: [
-              {
-                role: "user",
-                content: request.userPrompt,
-              },
-            ],
-          }),
-        });
-
-        return mapClaudeResponse(response);
-      } catch (error) {
-        return {
-          ok: false,
-          reason: "network",
-          error:
-            error instanceof Error
-              ? error.message
-              : "Claude generation failed before a response was received.",
+            "No ready, validated Agent-Orch dashboard generation result is staged.",
         };
       }
+
+      return {
+        ok: true,
+        model: "staged-manifest",
+        requestId: result.runReference,
+        responseText: JSON.stringify(result.output.dashboardSpec),
+      };
     },
   };
 }
 
 export function createDefaultAiGenerationClient(): AiGenerationClient {
-  const env = readRuntimeEnv();
-
-  return createClaudeGenerationClient({
-    apiKey: env.VITE_DASHFORGE_ANTHROPIC_API_KEY,
-    apiUrl: env.VITE_DASHFORGE_ANTHROPIC_API_URL,
-    model: env.VITE_DASHFORGE_ANTHROPIC_MODEL,
+  return createStagedManifestGenerationClient({
+    readStagedResult: readStagedResultFromDocument,
   });
 }

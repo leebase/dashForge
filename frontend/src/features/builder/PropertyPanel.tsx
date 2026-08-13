@@ -640,8 +640,9 @@ export function PropertyPanel({
             </div>
           ) : (
             <p className="builder-helper-copy">
-              Live mode omits the mock scenario context. Switch to mock or hybrid to restore pack
-              and scenario controls.
+              {draft.dataContext.mode === "artifact"
+                ? "Verified artifact mode pins pack, scenario, seed, and dataset bindings to the staged manifest."
+                : "Live mode omits the mock scenario context. Switch to mock or hybrid to restore pack and scenario controls."}
             </p>
           )}
 

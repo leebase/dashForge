@@ -1,0 +1,92 @@
+{
+  "detected_findings": [],
+  "injected_findings": [],
+  "requested_findings": [],
+  "scenario_digest": "sha256:790f035be603f60be01ffa8caf4bf9cb397f23e14228ed29dcd6e568f401911d",
+  "schema_version": "data-quality-report/1.0",
+  "status": "passed",
+  "story_assertions": [
+    {
+      "actual": 75.2,
+      "assertion_id": "network-first-time-fix-below-target",
+      "description": "Volume-weighted first-time fix rate is no more than 76%.",
+      "expected": 76.0,
+      "operator": "less_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 83.3,
+      "assertion_id": "network-emergency-sla-below-target",
+      "description": "Volume-weighted emergency SLA attainment is no more than 85%.",
+      "expected": 85.0,
+      "operator": "less_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 18.2,
+      "assertion_id": "repeat-truck-roll-rate-elevated",
+      "description": "Volume-weighted repeat truck-roll rate is at least 17%.",
+      "expected": 17.0,
+      "operator": "greater_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 13.1,
+      "assertion_id": "overtime-above-budget",
+      "description": "Volume-weighted overtime exceeds 12 hours per technician.",
+      "expected": 12.0,
+      "operator": "greater_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 177.3,
+      "assertion_id": "margin-below-plan",
+      "description": "Volume-weighted contribution margin is no more than $185 per work order.",
+      "expected": 185.0,
+      "operator": "less_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 65.2,
+      "assertion_id": "two-branches-concentrate-callbacks",
+      "description": "Phoenix West and Las Vegas account for at least 65% of repeat work orders.",
+      "expected": 65.0,
+      "operator": "greater_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 54.5,
+      "assertion_id": "parts-drive-callbacks",
+      "description": "Unavailable parts explain at least 52% of callback volume.",
+      "expected": 52.0,
+      "operator": "greater_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 27.9,
+      "assertion_id": "late-period-demand-above-plan",
+      "description": "Actual emergency work orders exceed plan by at least 18% across the final four weeks.",
+      "expected": 18.0,
+      "operator": "greater_than_or_equal",
+      "passed": true
+    },
+    {
+      "actual": 58.0,
+      "assertion_id": "critical-part-fill-rate",
+      "description": "At least one critical part has a fill rate no higher than 62%.",
+      "expected": 62.0,
+      "operator": "less_than_or_equal",
+      "passed": true
+    }
+  ],
+  "summary": {
+    "detected_count": 0,
+    "injected_count": 0,
+    "requested_count": 0,
+    "story_assertions_passed": 9,
+    "story_assertions_total": 9,
+    "unexpected_count": 0
+  },
+  "unexpected_findings": [],
+  "validator_version": "dataforge-quality-validator/1.0"
+}

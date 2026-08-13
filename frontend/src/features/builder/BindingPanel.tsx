@@ -35,6 +35,9 @@ export function BindingPanel({
   function changeMode(nextMode: DashboardDataMode) {
     onChangeDraft(
       updateDashboardDraft(draft, (current) => {
+        if (nextMode === "artifact") {
+          return current;
+        }
         if (nextMode === "mock") {
           return {
             ...current,
@@ -133,6 +136,7 @@ export function BindingPanel({
       <label className="form-field">
         <span>Data Mode</span>
         <select
+          disabled={draft.dataContext.mode === "artifact"}
           aria-label="Data Mode"
           onChange={(event) => changeMode(event.target.value as DashboardDataMode)}
           value={draft.dataContext.mode}
@@ -140,12 +144,14 @@ export function BindingPanel({
           <option value="mock">mock</option>
           <option value="live">live</option>
           <option value="hybrid">hybrid</option>
+          <option value="artifact">artifact (verified read-only)</option>
         </select>
       </label>
 
       <p className="builder-helper-copy">
-        Mock keeps the current scenario path, live requires every referenced dataset to bind, and
-        hybrid lets you bind only the datasets that should leave mock mode.
+        {draft.dataContext.mode === "artifact"
+          ? "Artifact bindings are digest-pinned and read-only. Stage a new validated manifest through Agent-Orch to change them."
+          : "Mock keeps the current scenario path, live requires every referenced dataset to bind, and hybrid lets you bind only the datasets that should leave mock mode."}
       </p>
 
       {datasetStatuses.length === 0 ? (
@@ -334,7 +340,9 @@ export function BindingPanel({
                   </>
                 ) : (
                   <p className="builder-helper-copy">
-                    Hybrid mode is currently leaving this dataset on the mock adapter path.
+                    {draft.dataContext.mode === "artifact"
+                      ? "This dataset resolves through the verified artifact field map."
+                      : "Hybrid mode is currently leaving this dataset on the mock adapter path."}
                   </p>
                 )}
               </section>

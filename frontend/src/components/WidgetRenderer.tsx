@@ -212,7 +212,15 @@ export function WidgetRenderer({
         title={widget.title}
       >
         <>
-          <KpiCard data={state.data} />
+          <KpiCard
+            data={state.data}
+            deltaFormat={
+              isKpiWidget(widget) ? widget.chart.kpiConfig?.deltaFormat : undefined
+            }
+            deltaPositive={
+              isKpiWidget(widget) ? widget.chart.kpiConfig?.deltaPositive : undefined
+            }
+          />
           {presentation?.showAnnotationLayer ? (
             <ChartAnnotationLayer widget={widget} />
           ) : null}

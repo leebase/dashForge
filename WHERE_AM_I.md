@@ -12,9 +12,9 @@
 |-----------|-------|
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
-| **Current Phase** | Phase 4 — Advanced / Future |
-| **Overall Status** | 🟢 Sprint 9 is closed, the standalone MVP review/handoff is closed, mock-data generation is now a sibling-project concern, and the first post-split review regressions are repaired without widening the MVP |
-| **Last Updated** | 2026-04-04 |
+| **Current Phase** | Phase 4 — Advanced / first employee handoff |
+| **Overall Status** | 🟢 Client Meeting Dashboard Builder now consumes a trusted DataForge work package and emits a cited meeting package; broader commercial expansion remains buyer-gated |
+| **Last Updated** | 2026-08-09 |
 
 ---
 
@@ -31,6 +31,7 @@
 | Standalone dashboard deliverable | ✅ Done | `frontend/src/App.tsx` now opens directly into the ED throughput command-view dashboard instead of builder-first chrome |
 | Shared DashboardSpec runtime | ✅ Done | The standalone path, builder, presenter, export, and live-binding surfaces all stay on the same `DashboardSpec` plus `DataAdapter` seams |
 | Planning and canon docs | ✅ Done | Product, architecture, planning, and handoff docs now agree on the narrower standalone MVP definition |
+| Trusted employee handoff | ✅ Done | DashForge validates a platform-received `synthetic-data-work-package/1.0` and emits a digest-pinned `meeting-dashboard-package/1.0` with binding and claim evidence |
 
 ### Current Phase Goals
 
@@ -44,6 +45,8 @@
 | Break mock-data creation into its own workspace project | ✅ Done | `dataForge` now owns generator code, pack assets, and tests; dashForge keeps compatibility wrappers only |
 | Run one host-environment browser smoke of the standalone/live-binding workflow | 🟡 Planned | Still blocked in this sandbox by localhost `listen EPERM`; remains a manual host-only follow-up |
 | Choose the next bounded scenario-building slice | 🟡 Planned | The next slice should package the ED throughput pattern into reusable skills/workflows rather than widen the MVP informally |
+| Prove the Snowflake Cost Optimization consulting path | ✅ Done | `idle-warehouse-waste` now runs through the existing standalone runtime to recommendations and follow-up export; run `ee6fac7897f9` passed the Medium+ review gate |
+| Obtain a real Snowflake buyer signal before more product work | 🟡 Gated | A send, reply, booked call/demo, proposal, approved client data, revenue event, or explicit Lee decision must clear the gate |
 
 ---
 
@@ -60,6 +63,7 @@
 | Sprint 7 — Presenter + export | Implementation, verify, repair, and review/handoff complete | ✅ Complete |
 | Sprint 8 — AI generation | Implementation, verify, repair, and review/handoff complete | ✅ Complete |
 | Sprint 9 — Production binding | Implementation, verify, repair, and review/handoff complete | ✅ Complete |
+| Sprint 10 — Client Meeting Dashboard Builder | Trusted DataForge receipt, dashboard validation, claim ledger, and meeting package | ✅ Complete |
 
 ---
 
@@ -72,6 +76,7 @@
 | Legacy Python compatibility wrappers remain in dashForge after the dataForge split | Generator ownership is clearer now, but future cleanup should decide how long the compatibility path stays in-repo | 🟡 Planned |
 | Broader live-binding work beyond REST could sprawl without a new contract | Sprint 9 is intentionally bounded; later adapters or brokering work should start under a new roadmap slice | 🟡 Planned |
 | The broader in-repo feature set could still obscure the narrower MVP if future docs drift | Builder, presenter, AI, and live-binding features exist, but they are no longer the MVP definition | 🟡 Planned |
+| Synthetic evidence could be mistaken for client proof | The Snowflake demo is governed and deterministic, but it must remain labeled as synthetic until client-approved data and outcomes exist | 🟡 Gated |
 
 ---
 
@@ -105,6 +110,8 @@ Decisions that affect product direction:
 | The durable DashForge playbooks now use Agent-Orch `operational_paths` for `artifacts/current/`, and restart playbooks are archived under `playbooks/backups/` | Keeps future governed runs aligned with the actual Agent-Orch feature set instead of the temporary recovery scaffolding used during delivery | 2026-04-01 |
 | The canonical MVP is scenario definition, data generation, and a standalone dashboard deliverable | Keeps the repo's first proof of value explicit despite the broader operator surfaces already present in-repo | 2026-04-02 |
 | Mock-data creation now lives in sibling project `dataForge`, with dashForge retaining compatibility wrappers for historical generator entrypoints | Clarifies repo ownership while preserving the existing CLI/test surface during transition | 2026-04-03 |
+| Snowflake Cost Optimization is the sole commercial proof path until buyer evidence supports expansion | Concentrates near-term consulting revenue effort and prevents a platform rewrite or duplicate UI/runtime | 2026-07-16 |
+| Client Meeting Dashboard Builder is the first DashForge product employee | Consumes a trusted DataForge work package and reuses DashboardSpec/DataAdapter/runtime seams; platform owns receipt and approval | 2026-08-09 |
 
 ---
 
@@ -115,6 +122,7 @@ Decisions that affect product direction:
 - [x] Mock data feels industry-realistic enough to support client-facing storytelling
 - [ ] DashForge is used successfully in at least 3 real client workshops
 - [ ] At least 2 consultants beyond Lee confirm the workflow is valuable
+- [x] A trusted DataForge package can be consumed without copying source fixtures, and the dashboard package cites its exact digest
 
 ---
 

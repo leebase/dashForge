@@ -1,6 +1,7 @@
 import type { DashboardSpec } from "../../core/spec/dashboardSpec";
 
 export interface PopupWindowLike {
+  opener?: unknown;
   close?: () => void;
   document: {
     close(): void;
@@ -22,7 +23,7 @@ interface DashboardExportInput {
   stylesHtml: string;
 }
 
-function escapeHtml(value: string) {
+export function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -60,6 +61,29 @@ export function buildDashboardExportDocument({
           .join("")}</ul></section>`
       : "";
 
+  const artifactEvidence = spec.dataContext.artifact
+    ? `<section class="proposal-export__evidence">
+        <h2>Evidence and provenance</h2>
+        <p><strong>Synthetic demo artifact</strong> — this rendition is
+        generated from a verified, read-only work package.</p>
+        <dl>
+          <div><dt>Upstream digest</dt><dd><code>${escapeHtml(
+            spec.dataContext.artifact.digest,
+          )}</code></dd></div>
+          <div><dt>Quality report</dt><dd>${escapeHtml(
+            spec.dataContext.artifact.qualityReport.path,
+          )} · <code>${escapeHtml(
+            spec.dataContext.artifact.qualityReport.sha256,
+          )}</code></dd></div>
+          <div><dt>Snapshot</dt><dd>${escapeHtml(
+            spec.dataContext.artifact.snapshot.path,
+          )} · <code>${escapeHtml(
+            spec.dataContext.artifact.snapshot.sha256,
+          )}</code></dd></div>
+        </dl>
+      </section>`
+    : "";
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -67,6 +91,14 @@ export function buildDashboardExportDocument({
     <title>${escapeHtml(spec.meta.title)} Proposal Export</title>
     ${stylesHtml}
     <style>
+      @page {
+        size: 11in 8.5in;
+        margin: 0.35in;
+      }
+      html {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       body {
         margin: 0;
         background: #f7f1e8;
@@ -102,6 +134,7 @@ export function buildDashboardExportDocument({
       .proposal-export__dashboard {
         margin-top: 20px;
       }
+      .proposal-export__evidence,
       .proposal-export__story,
       .proposal-export__notes {
         margin-top: 28px;
@@ -109,6 +142,32 @@ export function buildDashboardExportDocument({
         border: 1px solid rgba(74, 54, 32, 0.12);
         border-radius: 20px;
         background: rgba(255, 252, 246, 0.88);
+      }
+      .proposal-export__evidence h2,
+      .proposal-export__story h2,
+      .proposal-export__notes h2 {
+        margin-top: 0;
+      }
+      .proposal-export__evidence dl {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+      }
+      .proposal-export__evidence dl > div {
+        display: grid;
+        grid-template-columns: 140px minmax(0, 1fr);
+        gap: 12px;
+      }
+      .proposal-export__evidence dt {
+        color: #6b5744;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .proposal-export__evidence dd {
+        margin: 0;
+        overflow-wrap: anywhere;
       }
       .proposal-export__story-grid {
         display: grid;
@@ -121,12 +180,25 @@ export function buildDashboardExportDocument({
         border-radius: 16px;
         background: rgba(255, 255, 255, 0.72);
       }
+      .dashboard-grid__item,
+      .dashboard-box {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
       @media print {
         body {
           background: white;
         }
         .proposal-export {
+          max-width: none;
           padding: 0;
+        }
+        .proposal-export__header,
+        .proposal-export__evidence,
+        .proposal-export__story,
+        .proposal-export__notes {
+          break-inside: avoid;
+          page-break-inside: avoid;
         }
       }
     </style>
@@ -147,6 +219,7 @@ export function buildDashboardExportDocument({
             : ""
         }
       </header>
+      ${artifactEvidence}
       <section class="proposal-export__dashboard">${dashboardHtml}</section>
       ${
         storySections.length > 0
@@ -175,7 +248,7 @@ export function exportDashboardArtifact(
   input: DashboardExportInput,
   hostWindow: WindowHostLike = window,
 ) {
-  const popup = hostWindow.open("", "_blank", "noopener,noreferrer");
+  const popup = hostWindow.open("", "_blank");
 
   if (!popup) {
     return {
@@ -183,6 +256,7 @@ export function exportDashboardArtifact(
       errors: ["Dashboard export could not open a browser print window."],
     };
   }
+  popup.opener = null;
 
   popup.document.open();
   popup.document.write(buildDashboardExportDocument(input));

@@ -1,0 +1,17 @@
+[
+  {
+    "harness": "claude_code",
+    "model": "claude-opus-4-8",
+    "validated_at": "2026-07-16T16:35:27.117208+00:00"
+  },
+  {
+    "harness": "grok_cli",
+    "model": "grok-4.5",
+    "validated_at": "2026-07-16T16:35:27.117440+00:00"
+  },
+  {
+    "harness": "claude_code",
+    "model": "claude-opus-4-1",
+    "validated_at": "2026-08-11T00:31:01.509762+00:00"
+  }
+]

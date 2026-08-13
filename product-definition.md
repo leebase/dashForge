@@ -20,6 +20,17 @@ the scenario package, runtime registration, dashboard runtime, and standalone
 deliverable, while sibling project `dataForge` owns the deterministic
 mock-data-generation implementation used to create the scenario artifacts.
 
+On the AI Employee Foundation, the DashForge product employee is the
+`ClientMeetingDashboardBuilder`. It consumes a trusted, digest-pinned
+DataForge `synthetic-data-work-package/1.0`, a bounded dashboard manifest, and
+audience/decision context; it produces a validated
+`meeting-dashboard-package/1.0` with the rendered dashboard, dashboard
+specification, binding map, claim ledger, and meeting narrative. The employee
+may refuse when upstream quality, evidence, or required audience/decision
+context is missing. Agent-Orch owns execution identity, receipt verification,
+reviewer separation, and approval; DashForge owns dashboard composition and
+client-facing evidence semantics.
+
 The current MVP proof is intentionally narrower than the full long-term
 platform vision. The first success bar is not "every authoring tool at once."
 It is proving that one scenario package can move cleanly from scenario
@@ -124,8 +135,6 @@ Ranked by commercial impact, not technical elegance:
 - Or offer it as a standalone SaaS for enterprise analytics teams
 - Decision point: if 5+ engagements prove the model, evaluate product investment
 
----
-
 ## 7. MVP Definition — "Workshop-Ready"
 
 The MVP is the minimum set of capabilities that proves DashForge can take one
@@ -140,11 +149,19 @@ client workshop.
 4. **Scenario-to-runtime registration path** so a documented scenario package can be instantiated in-app through registered starter contracts
 5. **Standalone app surface** that opens directly into the packaged dashboard instead of builder-first chrome
 6. **Durable governance trail** proving contract, plan, verify, repair, and review/handoff for the scenario package and standalone dashboard slice
+7. **Employee handoff evidence** binding the dashboard result to the upstream work-package digest and exposing synthetic-data and quality disclosures
 
 The current canonical MVP proof is:
 
 - `healthcare:ed-throughput-crunch`
 - `tpl.healthcare.ed-throughput-command`
+
+That closed governed proof remains canonical. The current default presentation
+uses `fieldService:first-heat-wave-parts-bottleneck` with
+`tpl.fieldService.first-heat-wave-command` to demonstrate that a second
+industry story can reuse the same scenario, `DashboardSpec`, `DataAdapter`, and
+standalone-runtime contracts. It is a synthetic showcase, not a client result
+and not a replacement for the closed healthcare proof.
 
 ### MVP explicitly excludes:
 - in-repo ownership of the mock-data generator implementation now that `dataForge` exists

@@ -1,0 +1,40 @@
+{
+  "schema_version": "shakedown-handoff-receipt/1.0",
+  "receipt_id": "shakedown-dataforge-dashforge-20260810",
+  "purpose": "Digest-pinned operator handoff of the fresh DataForge synthetic-data work package for the governed DashForge shakedown run. Placed read-only by the operator; every file below is independently enforced by file_hash_matches gates in playbooks/shakedown_client_meeting_dashboard_builder.yaml.",
+  "source_run": {
+    "run_id": "31ad67eea2f1",
+    "runs_root": "/home/lee/projects/dataForge-agent-orch-runs",
+    "status": "COMPLETED",
+    "evidence_chain": "verified, 7 entries, 56 artifacts",
+    "playbook_id": "shakedown_synthetic_data_story_engineer",
+    "approval_lineage": "step_03_approve_scenario approved by principal lee (authenticated local_file authority) in source run d60719391d86 and inherited by resumed run 31ad67eea2f1"
+  },
+  "artifact": {
+    "artifact_type": "synthetic-data-work-package",
+    "payload_schema_version": "synthetic-data-work-package/1.0",
+    "canonical_artifact_digest": "sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390",
+    "scenario": "snowflakeCost/idle-warehouse-waste",
+    "seed": 9101,
+    "envelope_run_ref": "31ad67eea2f1",
+    "producer_employee_id": "synthetic-data-story-engineer"
+  },
+  "chain_of_custody": {
+    "canonical_digest_recorded_in_source_chain": "The source run's chained step_04_generate_package attempt artifacts (worker_result.json, stdout.log, last_message.txt; evidence-manifest entry index 3) record the exact canonical output digest sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390. Recomputing the canonical Artifact digest of .agent-orch-inputs/dataforge/work-package.json reproduces that digest byte-exactly.",
+    "attachment_digests_sealed_in_envelope": "The work-package envelope's evidence list pins snapshot.json (sha256:dbee5dc0...), quality-report.json (sha256:92ae1d44...), and reproduction-manifest.json (sha256:9168d095...); the received files match those digests byte-exactly and are re-pinned below.",
+    "trusted_receipt_seam_status": "materialize_artifact_input refused this source run fail-closed, as the 2026-08-09 receipt hardening requires: (1) 'source employee identity mismatch' (the source run.json carries employee_id null because the leg-1 launch did not export AGENT_ORCH_EMPLOYEE_ID); (2) 'source file is not recorded in source run evidence: artifacts/synthetic-data-story-engineer/work-package.json' (producer workspace outputs are not sealed into run evidence). Platform gap filed as agent-orch backlog candidate BI-015."
+  },
+  "received_files": {
+    ".agent-orch-inputs/dataforge/work-package.json": "sha256:00768e3ad321598409d32f8d7edb4a2e8cd2e2c1b8821b71b66060e46c39d073",
+    ".agent-orch-inputs/dataforge/snapshot.json": "sha256:dbee5dc082b1f0694f9d0d0a830976c3b6f0c3408754ff3ea0ab634f78961f67",
+    ".agent-orch-inputs/dataforge/quality-report.json": "sha256:92ae1d44d8076e2262690a10516486701e7be2672a20b8fd0e921a378c037c46",
+    ".agent-orch-inputs/dataforge/reproduction-manifest.json": "sha256:9168d095dde5eef945ce9ab2ae3a8ec2ffef02c4bb3d72bb838e12809df64c81"
+  },
+  "workspace_adoption": {
+    "frontend/src/fixtures/dataforge/idle-warehouse-waste-work-package.json": "payload section of the received work package (only run_reference changed versus the prior demo fixture payload; datasets, quality, snapshot references identical because generation is deterministic at seed 9101)",
+    "frontend/src/core/data/verifiedSyntheticDataArtifacts.ts": "IDLE_WAREHOUSE_WORK_PACKAGE_DIGEST repinned from the retired demo fixture digest sha256:fd4373d3... to the fresh canonical digest sha256:57ed2966...",
+    "note": "The synthetic demonstration disclosure is unchanged: all datasets are deterministic synthetic demo data, not observations from a live Snowflake account."
+  },
+  "materialized_at": "2026-08-10T19:23:00Z",
+  "materialized_by": "operator (Lee-approved shakedown leg 2); mode 0444 files"
+}

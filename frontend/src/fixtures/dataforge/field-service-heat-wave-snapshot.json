@@ -1,0 +1,756 @@
+{
+  "datasets": [
+    {
+      "columns": [
+        {
+          "label": "Metric Id",
+          "name": "metricId",
+          "role": "id",
+          "type": "string"
+        },
+        {
+          "label": "Value",
+          "name": "value",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Delta",
+          "name": "delta",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Delta Label",
+          "name": "deltaLabel",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Prefix",
+          "name": "prefix",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Suffix",
+          "name": "suffix",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Caption",
+          "name": "caption",
+          "role": "dimension",
+          "type": "string"
+        }
+      ],
+      "datasetId": "executive_summary",
+      "rowCount": 5,
+      "rows": [
+        {
+          "caption": "Revenue growth is not reaching contribution margin after callbacks and overtime.",
+          "delta": -18.6,
+          "deltaLabel": "vs $218 plan",
+          "metricId": "contribution-margin-per-order",
+          "prefix": "$",
+          "suffix": "",
+          "value": 177.3
+        },
+        {
+          "caption": "First-visit misses are consuming capacity promised to emergency calls.",
+          "delta": -11.7,
+          "deltaLabel": "pp vs 95% target",
+          "metricId": "emergency-sla-rate",
+          "prefix": "",
+          "suffix": "%",
+          "value": 83.3
+        },
+        {
+          "caption": "Repeat work is concentrated where van stock is thinnest.",
+          "delta": -8.8,
+          "deltaLabel": "pp vs 84% target",
+          "metricId": "first-time-fix-rate",
+          "prefix": "",
+          "suffix": "%",
+          "value": 75.2
+        },
+        {
+          "caption": "Repeat dispatches are extending the day without adding first-visit capacity.",
+          "delta": 64.0,
+          "deltaLabel": "vs 8.0h budget",
+          "metricId": "overtime-hours-per-tech",
+          "prefix": "",
+          "suffix": "h",
+          "value": 13.1
+        },
+        {
+          "caption": "Phoenix West and Las Vegas account for most repeat visits.",
+          "delta": 7.7,
+          "deltaLabel": "pp vs 10.5% plan",
+          "metricId": "repeat-truck-roll-rate",
+          "prefix": "",
+          "suffix": "%",
+          "value": 18.2
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Week",
+          "name": "week",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Week Label",
+          "name": "weekLabel",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Series",
+          "name": "series",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Work Orders",
+          "name": "workOrders",
+          "role": "measure",
+          "type": "number"
+        }
+      ],
+      "datasetId": "weekly_service_trend",
+      "rowCount": 24,
+      "rows": [
+        {
+          "series": "Actual",
+          "week": "2026-W18",
+          "weekLabel": "Apr 27",
+          "workOrders": 984
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W18",
+          "weekLabel": "Apr 27",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W19",
+          "weekLabel": "May 4",
+          "workOrders": 1009
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W19",
+          "weekLabel": "May 4",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W20",
+          "weekLabel": "May 11",
+          "workOrders": 1042
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W20",
+          "weekLabel": "May 11",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W21",
+          "weekLabel": "May 18",
+          "workOrders": 1071
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W21",
+          "weekLabel": "May 18",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W22",
+          "weekLabel": "May 25",
+          "workOrders": 1095
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W22",
+          "weekLabel": "May 25",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W23",
+          "weekLabel": "Jun 1",
+          "workOrders": 1130
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W23",
+          "weekLabel": "Jun 1",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W24",
+          "weekLabel": "Jun 8",
+          "workOrders": 1164
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W24",
+          "weekLabel": "Jun 8",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W25",
+          "weekLabel": "Jun 15",
+          "workOrders": 1190
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W25",
+          "weekLabel": "Jun 15",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W26",
+          "weekLabel": "Jun 22",
+          "workOrders": 1223
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W26",
+          "weekLabel": "Jun 22",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W27",
+          "weekLabel": "Jun 29",
+          "workOrders": 1244
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W27",
+          "weekLabel": "Jun 29",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W28",
+          "weekLabel": "Jul 6",
+          "workOrders": 1262
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W28",
+          "weekLabel": "Jul 6",
+          "workOrders": 980
+        },
+        {
+          "series": "Actual",
+          "week": "2026-W29",
+          "weekLabel": "Jul 13",
+          "workOrders": 1284
+        },
+        {
+          "series": "Plan",
+          "week": "2026-W29",
+          "weekLabel": "Jul 13",
+          "workOrders": 980
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Branch Id",
+          "name": "branchId",
+          "role": "id",
+          "type": "string"
+        },
+        {
+          "label": "Branch Name",
+          "name": "branchName",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Market",
+          "name": "market",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Technician Count",
+          "name": "technicianCount",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Completed Work Orders",
+          "name": "completedWorkOrders",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Repeat Work Orders",
+          "name": "repeatWorkOrders",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "First Time Fix Rate",
+          "name": "firstTimeFixRate",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "First Time Fix Target",
+          "name": "firstTimeFixTarget",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Repeat Truck Roll Rate",
+          "name": "repeatTruckRollRate",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Repeat Truck Roll Target",
+          "name": "repeatTruckRollTarget",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Emergency Sla Rate",
+          "name": "emergencySlaRate",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Emergency Sla Target",
+          "name": "emergencySlaTarget",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Overtime Hours Per Tech",
+          "name": "overtimeHoursPerTech",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Overtime Budget Hours",
+          "name": "overtimeBudgetHours",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Contribution Margin Per Order",
+          "name": "contributionMarginPerOrder",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Contribution Margin Plan",
+          "name": "contributionMarginPlan",
+          "role": "measure",
+          "type": "number"
+        }
+      ],
+      "datasetId": "branch_performance",
+      "rowCount": 5,
+      "rows": [
+        {
+          "branchId": "albuquerque",
+          "branchName": "Albuquerque",
+          "completedWorkOrders": 530,
+          "contributionMarginPerOrder": 226.0,
+          "contributionMarginPlan": 218.0,
+          "emergencySlaRate": 94.5,
+          "emergencySlaTarget": 95.0,
+          "firstTimeFixRate": 84.5,
+          "firstTimeFixTarget": 84.0,
+          "market": "New Mexico",
+          "overtimeBudgetHours": 8.0,
+          "overtimeHoursPerTech": 7.4,
+          "repeatTruckRollRate": 10.1,
+          "repeatTruckRollTarget": 10.5,
+          "repeatWorkOrders": 54,
+          "technicianCount": 17
+        },
+        {
+          "branchId": "las-vegas",
+          "branchName": "Las Vegas",
+          "completedWorkOrders": 940,
+          "contributionMarginPerOrder": 154.0,
+          "contributionMarginPlan": 218.0,
+          "emergencySlaRate": 78.6,
+          "emergencySlaTarget": 95.0,
+          "firstTimeFixRate": 69.8,
+          "firstTimeFixTarget": 84.0,
+          "market": "Nevada",
+          "overtimeBudgetHours": 8.0,
+          "overtimeHoursPerTech": 16.1,
+          "repeatTruckRollRate": 23.0,
+          "repeatTruckRollTarget": 10.5,
+          "repeatWorkOrders": 216,
+          "technicianCount": 22
+        },
+        {
+          "branchId": "phoenix-east",
+          "branchName": "Phoenix East",
+          "completedWorkOrders": 900,
+          "contributionMarginPerOrder": 198.0,
+          "contributionMarginPlan": 218.0,
+          "emergencySlaRate": 88.2,
+          "emergencySlaTarget": 95.0,
+          "firstTimeFixRate": 80.5,
+          "firstTimeFixTarget": 84.0,
+          "market": "Arizona",
+          "overtimeBudgetHours": 8.0,
+          "overtimeHoursPerTech": 10.2,
+          "repeatTruckRollRate": 14.3,
+          "repeatTruckRollTarget": 10.5,
+          "repeatWorkOrders": 129,
+          "technicianCount": 24
+        },
+        {
+          "branchId": "phoenix-west",
+          "branchName": "Phoenix West",
+          "completedWorkOrders": 1180,
+          "contributionMarginPerOrder": 142.0,
+          "contributionMarginPlan": 218.0,
+          "emergencySlaRate": 74.2,
+          "emergencySlaTarget": 95.0,
+          "firstTimeFixRate": 67.5,
+          "firstTimeFixTarget": 84.0,
+          "market": "Arizona",
+          "overtimeBudgetHours": 8.0,
+          "overtimeHoursPerTech": 17.8,
+          "repeatTruckRollRate": 24.0,
+          "repeatTruckRollTarget": 10.5,
+          "repeatWorkOrders": 283,
+          "technicianCount": 28
+        },
+        {
+          "branchId": "tucson",
+          "branchName": "Tucson",
+          "completedWorkOrders": 650,
+          "contributionMarginPerOrder": 207.0,
+          "contributionMarginPlan": 218.0,
+          "emergencySlaRate": 91.0,
+          "emergencySlaTarget": 95.0,
+          "firstTimeFixRate": 82.0,
+          "firstTimeFixTarget": 84.0,
+          "market": "Arizona",
+          "overtimeBudgetHours": 8.0,
+          "overtimeHoursPerTech": 9.0,
+          "repeatTruckRollRate": 12.8,
+          "repeatTruckRollTarget": 10.5,
+          "repeatWorkOrders": 83,
+          "technicianCount": 18
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Branch Id",
+          "name": "branchId",
+          "role": "id",
+          "type": "string"
+        },
+        {
+          "label": "Branch Name",
+          "name": "branchName",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Cause",
+          "name": "cause",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Repeat Work Orders",
+          "name": "repeatWorkOrders",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Share Pct",
+          "name": "sharePct",
+          "role": "measure",
+          "type": "number"
+        }
+      ],
+      "datasetId": "callback_causes",
+      "rowCount": 20,
+      "rows": [
+        {
+          "branchId": "albuquerque",
+          "branchName": "Albuquerque",
+          "cause": "Customer unavailable",
+          "repeatWorkOrders": 10,
+          "sharePct": 18.5
+        },
+        {
+          "branchId": "albuquerque",
+          "branchName": "Albuquerque",
+          "cause": "Diagnosis missed",
+          "repeatWorkOrders": 16,
+          "sharePct": 29.6
+        },
+        {
+          "branchId": "albuquerque",
+          "branchName": "Albuquerque",
+          "cause": "Parts unavailable",
+          "repeatWorkOrders": 16,
+          "sharePct": 29.6
+        },
+        {
+          "branchId": "albuquerque",
+          "branchName": "Albuquerque",
+          "cause": "Workmanship",
+          "repeatWorkOrders": 12,
+          "sharePct": 22.2
+        },
+        {
+          "branchId": "las-vegas",
+          "branchName": "Las Vegas",
+          "cause": "Customer unavailable",
+          "repeatWorkOrders": 17,
+          "sharePct": 7.9
+        },
+        {
+          "branchId": "las-vegas",
+          "branchName": "Las Vegas",
+          "cause": "Diagnosis missed",
+          "repeatWorkOrders": 45,
+          "sharePct": 20.8
+        },
+        {
+          "branchId": "las-vegas",
+          "branchName": "Las Vegas",
+          "cause": "Parts unavailable",
+          "repeatWorkOrders": 130,
+          "sharePct": 60.2
+        },
+        {
+          "branchId": "las-vegas",
+          "branchName": "Las Vegas",
+          "cause": "Workmanship",
+          "repeatWorkOrders": 24,
+          "sharePct": 11.1
+        },
+        {
+          "branchId": "phoenix-east",
+          "branchName": "Phoenix East",
+          "cause": "Customer unavailable",
+          "repeatWorkOrders": 16,
+          "sharePct": 12.4
+        },
+        {
+          "branchId": "phoenix-east",
+          "branchName": "Phoenix East",
+          "cause": "Diagnosis missed",
+          "repeatWorkOrders": 32,
+          "sharePct": 24.8
+        },
+        {
+          "branchId": "phoenix-east",
+          "branchName": "Phoenix East",
+          "cause": "Parts unavailable",
+          "repeatWorkOrders": 58,
+          "sharePct": 45.0
+        },
+        {
+          "branchId": "phoenix-east",
+          "branchName": "Phoenix East",
+          "cause": "Workmanship",
+          "repeatWorkOrders": 23,
+          "sharePct": 17.8
+        },
+        {
+          "branchId": "phoenix-west",
+          "branchName": "Phoenix West",
+          "cause": "Customer unavailable",
+          "repeatWorkOrders": 20,
+          "sharePct": 7.1
+        },
+        {
+          "branchId": "phoenix-west",
+          "branchName": "Phoenix West",
+          "cause": "Diagnosis missed",
+          "repeatWorkOrders": 54,
+          "sharePct": 19.1
+        },
+        {
+          "branchId": "phoenix-west",
+          "branchName": "Phoenix West",
+          "cause": "Parts unavailable",
+          "repeatWorkOrders": 181,
+          "sharePct": 64.0
+        },
+        {
+          "branchId": "phoenix-west",
+          "branchName": "Phoenix West",
+          "cause": "Workmanship",
+          "repeatWorkOrders": 28,
+          "sharePct": 9.9
+        },
+        {
+          "branchId": "tucson",
+          "branchName": "Tucson",
+          "cause": "Customer unavailable",
+          "repeatWorkOrders": 12,
+          "sharePct": 14.5
+        },
+        {
+          "branchId": "tucson",
+          "branchName": "Tucson",
+          "cause": "Diagnosis missed",
+          "repeatWorkOrders": 22,
+          "sharePct": 26.5
+        },
+        {
+          "branchId": "tucson",
+          "branchName": "Tucson",
+          "cause": "Parts unavailable",
+          "repeatWorkOrders": 32,
+          "sharePct": 38.6
+        },
+        {
+          "branchId": "tucson",
+          "branchName": "Tucson",
+          "cause": "Workmanship",
+          "repeatWorkOrders": 17,
+          "sharePct": 20.5
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Part Sku",
+          "name": "partSku",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Part Name",
+          "name": "partName",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Equipment Family",
+          "name": "equipmentFamily",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Branches Affected",
+          "name": "branchesAffected",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Fill Rate",
+          "name": "fillRate",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Target Fill Rate",
+          "name": "targetFillRate",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Delayed Jobs",
+          "name": "delayedJobs",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Transfer Available Units",
+          "name": "transferAvailableUnits",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Recommended Action",
+          "name": "recommendedAction",
+          "role": "dimension",
+          "type": "string"
+        }
+      ],
+      "datasetId": "parts_constraints",
+      "rowCount": 4,
+      "rows": [
+        {
+          "branchesAffected": "Phoenix West; Las Vegas",
+          "delayedJobs": 74,
+          "equipmentFamily": "Split system and heat pump",
+          "fillRate": 58.0,
+          "partName": "Universal control board",
+          "partSku": "BRD-CTRL-U7",
+          "recommendedAction": "Rebalance branch stock and protect emergency-job allocation.",
+          "targetFillRate": 90.0,
+          "transferAvailableUnits": 102
+        },
+        {
+          "branchesAffected": "Phoenix West; Las Vegas",
+          "delayedJobs": 96,
+          "equipmentFamily": "Packaged rooftop unit",
+          "fillRate": 61.0,
+          "partName": "48-frame condenser fan motor",
+          "partSku": "MTR-CFM-48",
+          "recommendedAction": "Transfer stock from Albuquerque and Tucson within 48 hours.",
+          "targetFillRate": 92.0,
+          "transferAvailableUnits": 138
+        },
+        {
+          "branchesAffected": "Phoenix West",
+          "delayedJobs": 31,
+          "equipmentFamily": "Commercial split system",
+          "fillRate": 74.0,
+          "partName": "40-amp two-pole contactor",
+          "partSku": "CTR-2P-40A",
+          "recommendedAction": "Increase the Phoenix West van minimum for six weeks.",
+          "targetFillRate": 94.0,
+          "transferAvailableUnits": 64
+        },
+        {
+          "branchesAffected": "Las Vegas",
+          "delayedJobs": 18,
+          "equipmentFamily": "Packaged rooftop unit",
+          "fillRate": 80.0,
+          "partName": "R-410A thermal expansion valve",
+          "partSku": "VLV-TXV-R410",
+          "recommendedAction": "Pre-position units against open emergency calls.",
+          "targetFillRate": 90.0,
+          "transferAvailableUnits": 28
+        }
+      ]
+    }
+  ],
+  "packId": "fieldService",
+  "scenarioId": "first-heat-wave-parts-bottleneck",
+  "seed": 6207
+}

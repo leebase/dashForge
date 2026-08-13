@@ -2,12 +2,69 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.7  
-**Date:** April 3, 2026  
+**Version:** 1.8  
+**Date:** August 10, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.7 records the repo-boundary shift that moves mock-data generation ownership into sibling project `dataForge` while keeping dashForge focused on scenario packaging and the dashboard runtime.
+**Revision notes:** v1.8 records the reusable field-service presentation
+default on the existing DataForge artifact, `DashboardSpec`, `DataAdapter`, and
+standalone-runtime seams.
 
 ---
+## 2026-08-10 — Field-service showcase is the presentation default
+
+**Decision:** `frontend/src/App.tsx` now opens
+`fieldService:first-heat-wave-parts-bottleneck` through
+`tpl.fieldService.first-heat-wave-command`. The closed canonical MVP proof
+remains `healthcare:ed-throughput-crunch`; this change demonstrates reusable
+composition rather than redefining that governed closeout.
+
+**Contract:** DataForge owns the deterministic pack, strict scenario, governed
+story, quality report, and work-package digest. DashForge keeps a pinned local
+fixture of that artifact, validates it through
+`SyntheticDataArtifactAdapter`, binds five datasets through the existing
+`DashboardSpec`/`DataAdapter` path, and renders five comparison KPIs plus three
+story-ordered charts. Every material KPI, caption, and narrative statement is
+covered by the dashboard claim ledger.
+
+**Consequences:** No second renderer, orchestration layer, live connector, or
+client-data path was added. The default view is meeting-ready and clearly
+labels the fictional Apex Climate Services data as synthetic. Builder mode
+opens only on demand and receives the same validated field-service draft.
+
+
+## 2026-08-09 — Client Meeting Dashboard Builder employee boundary
+
+**Decision:** DashForge's product employee is
+`ClientMeetingDashboardBuilder`. It consumes a platform-received
+`synthetic-data-work-package/1.0` and produces a
+`meeting-dashboard-package/1.0`; it does not import DataForge source fixtures
+or create a second orchestration framework.
+
+**Inputs and gates:** The trusted receipt must bind the upstream run,
+employee/tenant/pursuit, artifact type/schema, and digest. DashForge then
+validates the scenario, quality report, reproduction manifest, dataset
+bindings, audience, decision context, and material claim sources. Blocking
+quality or unsupported/uncited claims are refusals, not warnings.
+
+**Domain ownership:** `DashboardSpec`, data adapters, layout/visual decisions,
+rendering, export, claim ledger, and meeting narrative remain DashForge
+responsibilities. `dataForge` owns scenario generation and quality inspection.
+Agent-Orch owns run isolation, worker routing, receipt materialization,
+reviewer separation, retry/failure policy, and evidence-chain verification.
+The Factory owns deployment records and commissioning; Agent Board owns the
+shared pursuit projection.
+
+**Deterministic versus model work:** artifact validation, dataset binding,
+claim-source coverage, rendering, export, and evidence assembly are
+deterministic. A future model may propose a manifest or narrative only behind
+the employee's declared provider-independent route and the same deterministic
+validation gates; this slice does not make a live model or Snowflake call.
+
+**Result contract:** the package retains the upstream artifact digest,
+dashboard spec, binding map, claim ledger, rendered HTML, browser-smoke
+evidence, assumptions, confidence, and synthetic-data disclosure. It is
+approval-ready, not automatically approved or submitted.
+
 
 ## 2026-04-03 — Mock-Data Generation Ownership Moved To dataForge
 

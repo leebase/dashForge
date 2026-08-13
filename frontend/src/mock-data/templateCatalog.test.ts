@@ -13,6 +13,8 @@ describe("templateCatalog", () => {
     expect(listTemplatesByPack("healthcare")).toHaveLength(4);
     expect(listTemplatesByPack("financial")).toHaveLength(3);
     expect(listTemplatesByPack("saas")).toHaveLength(3);
+    expect(listTemplatesByPack("fieldService")).toHaveLength(1);
+    expect(listTemplatesByPack("snowflakeCost")).toHaveLength(1);
   });
 
   it("filters templates by scenario and returns deterministic defaults", () => {
@@ -34,9 +36,27 @@ describe("templateCatalog", () => {
       "ed-throughput-crunch",
     );
     const healthcareIds = healthcareTemplates.map((template) => template.templateId);
+    const idleWarehouseTemplate = getDefaultTemplateForScenario(
+      "snowflakeCost",
+      "idle-warehouse-waste",
+    );
+    const fieldServiceTemplate = getDefaultTemplateForScenario(
+      "fieldService",
+      "first-heat-wave-parts-bottleneck",
+    );
 
+    expect(fieldServiceTemplate).toMatchObject({
+      templateId: "tpl.fieldService.first-heat-wave-command",
+      packId: "fieldService",
+      intent: "risk_alert",
+    });
     expect(saasIds).toContain("tpl.saas.risk-alert");
     expect(healthcareIds).toContain("tpl.healthcare.ed-throughput-command");
+    expect(idleWarehouseTemplate).toMatchObject({
+      templateId: "tpl.snowflakeCost.idle-warehouse-waste",
+      packId: "snowflakeCost",
+      scenarioIds: expect.arrayContaining(["idle-warehouse-waste"]),
+    });
   });
 
   it("supports intent and audience filtering", () => {

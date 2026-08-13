@@ -6,10 +6,15 @@ __pycache__/
 
 frontend/node_modules/
 frontend/dist/
+frontend/dist-package-tools/
 frontend/.vite/
 frontend/*.tsbuildinfo
+frontend/.certs/
 frontend/vite.config.js
 frontend/vite.config.d.ts
 
 .agent-orch-scratch/
+.agent-orch-inputs/
 artifacts/
+._*
+*.sync-conflict-*

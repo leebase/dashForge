@@ -1,0 +1,338 @@
+{
+  "playbook_id": "client_meeting_dashboard_builder",
+  "name": "Client Meeting Dashboard Builder governed delivery",
+  "defaults": {
+    "worker": "codex_cli",
+    "retry_policy": {
+      "max_attempts": 2,
+      "strategy": "rerun_with_validation_feedback"
+    }
+  },
+  "roles": {
+    "independent_reviewer": {
+      "harness": "claude_code",
+      "model": "claude-opus-4-1"
+    }
+  },
+  "run_policy": {
+    "on_step_failure": "halt",
+    "require_validation_pass_to_advance": true
+  },
+  "operational_paths": [
+    "artifacts/current/client-meeting-dashboard-builder/",
+    "artifacts/user-smoke/",
+    "frontend/dist/",
+    "frontend/dist-package-tools/"
+  ],
+  "steps": [
+    {
+      "step_id": "validate_verified_work_package",
+      "name": "Validate the verified work package and dashboard contracts",
+      "mission": "Read AGENTS.md, employee-specs/client-meeting-dashboard-builder.json, employee-specs/client-meeting-dashboard-builder.fixture.json, and the digest-pinned DataForge fixture files. Do not access DataForge source or live Snowflake. Run the focused adapter, claim-ledger, generation-result, export, and standalone tests plus the production frontend build. Write artifacts/current/client-meeting-dashboard-builder/input-validation.json with the input artifact type, payload schema, exact verified digest, scenario, seed, command exit codes, and a ready/blocked decision. A wrong digest, missing binding, blocking quality state, uncited material claim, or failed command must produce blocked rather than an invented success.",
+      "inputs": [
+        "AGENTS.md",
+        "employee-specs/client-meeting-dashboard-builder.json",
+        "employee-specs/client-meeting-dashboard-builder.fixture.json",
+        "frontend/src/fixtures/dataforge/idle-warehouse-waste-work-package.json",
+        "frontend/src/fixtures/dataforge/idle-warehouse-waste-snapshot.json",
+        "frontend/src/fixtures/dataforge/idle-warehouse-waste-quality-report.json",
+        "frontend/src/fixtures/dataforge/idle-warehouse-waste-reproduction-manifest.json",
+        "frontend/src/core/data/SyntheticDataArtifactAdapter.test.ts",
+        "frontend/src/features/export/dashboardGenerationResult.test.ts",
+        "frontend/src/features/export/meetingDashboardPackage.test.ts"
+      ],
+      "allowed_paths": [
+        "artifacts/current/client-meeting-dashboard-builder/",
+        "frontend/dist/"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "artifacts/current/client-meeting-dashboard-builder/input-validation.json",
+            "type": "json"
+          },
+          {
+            "path": "frontend/dist/index.html",
+            "type": "html"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "json_parse",
+            "path": "artifacts/current/client-meeting-dashboard-builder/input-validation.json"
+          }
+        ],
+        "system": [
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "test",
+              "--",
+              "src/core/data/SyntheticDataArtifactAdapter.test.ts",
+              "src/core/data/createDashboardDataAdapter.test.ts",
+              "src/features/export/dashboardGenerationResult.test.ts",
+              "src/features/export/meetingDashboardPackage.test.ts",
+              "src/features/runtime/StandaloneDashboardApp.test.tsx"
+            ],
+            "require_collected_tests": true,
+            "timeout_seconds": 900
+          },
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "run",
+              "build"
+            ],
+            "timeout_seconds": 900
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Re-run deterministic validation and report blocked unless the verified work package, adapter bindings, claim coverage, export tests, and production build all pass. Do not alter the digest-pinned fixture or product source in this execution playbook.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "render_and_smoke_standalone",
+      "name": "Render and smoke the controlled standalone dashboard",
+      "worker": "browser_smoke_runner",
+      "mission": "Serve the already-built frontend with tests/browser_smoke_manifest.json, open the canonical standalone route, wait for controlled synthetic quality readiness, exercise the same-day executive follow-up action, and capture the rendered page source and browser result. The evidence must visibly contain the synthetic-data disclosure, controlled quality state, upstream artifact digest, material source citations, and a successful export interaction. Do not repair product code from this evaluator step.",
+      "inputs": [
+        "frontend/dist/index.html",
+        "tests/browser_smoke_manifest.json",
+        "artifacts/current/client-meeting-dashboard-builder/input-validation.json"
+      ],
+      "allowed_paths": [
+        "artifacts/user-smoke/"
+      ],
+      "depends_on": [
+        "validate_verified_work_package"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "artifacts/user-smoke/result.json",
+            "type": "json"
+          },
+          {
+            "path": "artifacts/user-smoke/page-source.html",
+            "type": "html"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "json_parse",
+            "path": "artifacts/user-smoke/result.json"
+          },
+          {
+            "type": "file_exists",
+            "path": "artifacts/user-smoke/page-source.html"
+          },
+          {
+            "type": "file_hash_matches",
+            "path": "tests/browser_smoke_manifest.json",
+            "sha256": "b55d40c82035d15167de3665540202db9ee5d10f1ef76cc416b95fdbdec797c6"
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Re-run the real standalone browser path. Do not claim readiness unless the controlled quality disclosure is visible and the export interaction succeeds.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "materialize_meeting_dashboard_package",
+      "name": "Materialize deterministic meeting dashboard package parts",
+      "mission": "Use the existing frontend package:meeting-dashboard export seam with the browser-smoke result and captured standalone HTML. Materialize exactly dashboard.spec.json, binding-map.json, claim-ledger.json, dashboard.html, browser-smoke-result.json, and dashboard-generation-result.json under artifacts/current/client-meeting-dashboard-builder/. Never construct an rfpf envelope in TypeScript; canonical wrapping is platform-owned. The generation result must be ready only when its input digest equals the verified DataForge artifact digest and every deterministic validation state passed.",
+      "inputs": [
+        "frontend/package.json",
+        "frontend/package-tools/materializeMeetingDashboardPackage.ts",
+        "frontend/src/features/export/meetingDashboardPackage.ts",
+        "artifacts/user-smoke/result.json",
+        "artifacts/user-smoke/page-source.html"
+      ],
+      "allowed_paths": [
+        "artifacts/current/client-meeting-dashboard-builder/",
+        "frontend/dist-package-tools/"
+      ],
+      "depends_on": [
+        "render_and_smoke_standalone"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "artifacts/current/client-meeting-dashboard-builder/dashboard.spec.json",
+            "type": "json"
+          },
+          {
+            "path": "artifacts/current/client-meeting-dashboard-builder/binding-map.json",
+            "type": "json"
+          },
+          {
+            "path": "artifacts/current/client-meeting-dashboard-builder/claim-ledger.json",
+            "type": "json"
+          },
+          {
+            "path": "artifacts/current/client-meeting-dashboard-builder/dashboard.html",
+            "type": "html"
+          },
+          {
+            "path": "artifacts/current/client-meeting-dashboard-builder/browser-smoke-result.json",
+            "type": "json"
+          },
+          {
+            "path": "artifacts/current/client-meeting-dashboard-builder/dashboard-generation-result.json",
+            "type": "json"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "json_parse",
+            "path": "artifacts/current/client-meeting-dashboard-builder/dashboard.spec.json"
+          },
+          {
+            "type": "json_parse",
+            "path": "artifacts/current/client-meeting-dashboard-builder/binding-map.json"
+          },
+          {
+            "type": "json_parse",
+            "path": "artifacts/current/client-meeting-dashboard-builder/claim-ledger.json"
+          },
+          {
+            "type": "file_exists",
+            "path": "artifacts/current/client-meeting-dashboard-builder/dashboard.html"
+          },
+          {
+            "type": "json_parse",
+            "path": "artifacts/current/client-meeting-dashboard-builder/browser-smoke-result.json"
+          },
+          {
+            "type": "json_parse",
+            "path": "artifacts/current/client-meeting-dashboard-builder/dashboard-generation-result.json"
+          }
+        ],
+        "system": [
+          {
+            "type": "command_succeeds",
+            "command": [
+              "npm",
+              "--prefix",
+              "frontend",
+              "run",
+              "package:meeting-dashboard",
+              "--",
+              "--smoke-result",
+              "../artifacts/user-smoke/result.json",
+              "--dashboard-html",
+              "../artifacts/user-smoke/page-source.html",
+              "--output",
+              "../artifacts/current/client-meeting-dashboard-builder",
+              "--run-reference",
+              "fixture-dashforge-iww-9101",
+              "--generated-at",
+              "2026-08-09T00:00:00.000Z"
+            ],
+            "timeout_seconds": 900
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Re-materialize only through the package export seam. Halt on failed smoke, blocked generation result, digest mismatch, missing claim, or missing package part; never hand-author a successful payload.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "independent_package_review",
+      "role": "independent_reviewer",
+      "name": "Independently review the governed dashboard package",
+      "mission": "Act as an independent read-only reviewer. Inspect the behavioral spec, digest-pinned input fixture, deterministic validation record, browser-smoke evidence, and every materialized package part. Verify that DashForge did not import DataForge source, no browser provider credential/direct model call exists, the input digest is identical across spec/bindings/claims/generation result, visible disclosure is present in dashboard.html, and no uncited material surface can be ready. Run `python3 -m pytest tests/ -q` and `npm --prefix frontend test -- src/core/data/SyntheticDataArtifactAdapter.test.ts src/features/export/meetingDashboardPackage.test.ts`, then record their actual exit codes in the canonical verdict JSON so checks_run_match can re-execute the allowlisted Python check. Write code-reviews/review-client-meeting-dashboard-builder.md with Checks Run and Lens Notes sections, each containing at least 40 non-whitespace characters, and the canonical verdict JSON. Do not edit frontend, fixtures, employee specs, tests, or package artifacts.",
+      "inputs": [
+        "AGENTS.md",
+        "employee-specs/client-meeting-dashboard-builder.json",
+        "employee-specs/client-meeting-dashboard-builder.fixture.json",
+        "artifacts/current/client-meeting-dashboard-builder/",
+        "artifacts/user-smoke/result.json",
+        "frontend/src/"
+      ],
+      "allowed_paths": [
+        "code-reviews/"
+      ],
+      "depends_on": [
+        "materialize_meeting_dashboard_package"
+      ],
+      "outputs": {
+        "required": [
+          {
+            "path": "code-reviews/review-client-meeting-dashboard-builder.md",
+            "type": "markdown"
+          },
+          {
+            "path": "code-reviews/review-client-meeting-dashboard-builder.verdict.json",
+            "type": "json"
+          }
+        ]
+      },
+      "validation": {
+        "structural": [
+          {
+            "type": "markdown_headings_present",
+            "path": "code-reviews/review-client-meeting-dashboard-builder.md",
+            "headings": [
+              "Checks Run",
+              "Lens Notes"
+            ],
+            "min_chars_under_heading": 40
+          },
+          {
+            "type": "json_schema",
+            "path": "code-reviews/review-client-meeting-dashboard-builder.verdict.json",
+            "schema_path": "builtin:review_verdict/v1"
+          },
+          {
+            "type": "review_verdict_clean",
+            "path": "code-reviews/review-client-meeting-dashboard-builder.verdict.json",
+            "severity_threshold": "Medium"
+          }
+        ],
+        "system": [
+          {
+            "type": "checks_run_match",
+            "path": "code-reviews/review-client-meeting-dashboard-builder.verdict.json",
+            "timeout_seconds": 900
+          }
+        ]
+      },
+      "on_fail": {
+        "retry_message": "Repair only the review evidence if it is incomplete. A real product or package finding must remain a failing verdict and halt for a separately authorized repair; the reviewer must not fix its own finding.",
+        "after_retries_exhausted": "halt"
+      }
+    },
+    {
+      "step_id": "approve_meeting_dashboard_package",
+      "type": "human_approval",
+      "name": "Approve the client meeting dashboard package",
+      "mission": "Human gate: inspect the standalone dashboard, synthetic/quality disclosures, browser-smoke evidence, six domain package parts, and independent review verdict. Approval is explicit and does not launch, promote, schedule, wrap, or send the artifact. Approve with `agent-orch approve <run_dir> approve_meeting_dashboard_package` and resume with `agent-orch resume-run <run_dir>` only if the package is suitable for the client meeting.",
+      "inputs": [
+        "artifacts/current/client-meeting-dashboard-builder/",
+        "artifacts/user-smoke/result.json",
+        "code-reviews/review-client-meeting-dashboard-builder.md",
+        "code-reviews/review-client-meeting-dashboard-builder.verdict.json"
+      ],
+      "depends_on": [
+        "independent_package_review"
+      ]
+    }
+  ]
+}

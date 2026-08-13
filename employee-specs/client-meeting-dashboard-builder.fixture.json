@@ -1,0 +1,45 @@
+{
+  "schema_version": "ai-employee-behavioral-fixture/1.0",
+  "fixture_id": "client-meeting-dashboard-builder-snowflake-cost-9101",
+  "employee_spec": "employee-specs/client-meeting-dashboard-builder.json",
+  "pursuit_id": "dashforge-dataforge-initial-proof",
+  "run_reference": "fixture-dashforge-iww-9101",
+  "generated_at": "2026-08-09T00:00:00.000Z",
+  "input": {
+    "artifact_type": "synthetic-data-work-package",
+    "payload_schema_version": "synthetic-data-work-package/1.0",
+    "artifact_digest": "sha256:fd4373d38c9fd39e344332b4be74888ce859021aefdb9ffd63dc334c848c0f60",
+    "scenario": "snowflakeCost/idle-warehouse-waste",
+    "seed": 9101,
+    "fixture_files": {
+      "work_package": "frontend/src/fixtures/dataforge/idle-warehouse-waste-work-package.json",
+      "snapshot": "frontend/src/fixtures/dataforge/idle-warehouse-waste-snapshot.json",
+      "quality_report": "frontend/src/fixtures/dataforge/idle-warehouse-waste-quality-report.json",
+      "reproduction_manifest": "frontend/src/fixtures/dataforge/idle-warehouse-waste-reproduction-manifest.json"
+    }
+  },
+  "expected_success": {
+    "status": "ready",
+    "artifact_type": "meeting-dashboard-package",
+    "payload_schema_version": "meeting-dashboard-package/1.0",
+    "required_parts": [
+      "dashboard.spec.json",
+      "binding-map.json",
+      "claim-ledger.json",
+      "dashboard.html",
+      "browser-smoke-result.json",
+      "dashboard-generation-result.json"
+    ],
+    "input_artifact_digest_must_match": true,
+    "quality_state": "controlled",
+    "human_approval_required": true
+  },
+  "expected_refusals": [
+    "wrong input artifact type, payload schema, employee id, or digest",
+    "missing snapshot dataset or mapped field",
+    "undeclared dataset binding",
+    "blocking upstream quality state",
+    "uncited material claim",
+    "failed standalone browser smoke"
+  ]
+}

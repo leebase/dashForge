@@ -112,6 +112,26 @@ const templateCatalog: TemplateCatalogEntry[] = [
     intent: "risk_alert",
     audience: "analyst",
   },
+  {
+    templateId: "tpl.fieldService.first-heat-wave-command",
+    packId: "fieldService",
+    scenarioIds: ["first-heat-wave-parts-bottleneck"],
+    title: "First Heat Wave: Parts, Not People",
+    description:
+      "Commercial HVAC operating view that separates heat-wave demand from the parts constraints driving repeat visits, SLA misses, overtime, and margin leakage.",
+    intent: "risk_alert",
+    audience: "executive",
+  },
+  {
+    templateId: "tpl.snowflakeCost.idle-warehouse-waste",
+    packId: "snowflakeCost",
+    scenarioIds: ["idle-warehouse-waste"],
+    title: "Idle Warehouse Waste",
+    description:
+      "Snowflake cost-governance view that surfaces idle warehouse waste, credit concentration, and low-risk owner-validated actions.",
+    intent: "risk_alert",
+    audience: "client_demo",
+  },
 ];
 
 interface TemplateCatalogQuery {
@@ -132,6 +152,9 @@ const DEFAULT_TEMPLATE_BY_SCENARIO: Record<string, string> = {
   "saas:churn-crisis": "tpl.saas.risk-alert",
   "saas:product-led-growth": "tpl.saas.operational-detail",
   "saas:scaling-success": "tpl.saas.executive-summary",
+  "fieldService:first-heat-wave-parts-bottleneck":
+    "tpl.fieldService.first-heat-wave-command",
+  "snowflakeCost:idle-warehouse-waste": "tpl.snowflakeCost.idle-warehouse-waste",
 };
 
 export function listTemplateCatalog(

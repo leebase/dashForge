@@ -629,6 +629,203 @@ function createSaasWidget(
   }
 }
 
+function createSnowflakeCostWidget(
+  chartType: ChartType,
+  widgetId: string,
+  position: WidgetPosition,
+): WidgetSpec {
+  switch (chartType) {
+    case "kpi":
+      return {
+        id: widgetId,
+        position,
+        title: "Monthly Opportunity",
+        subtitle: "Idle warehouse waste high-end credits",
+        chart: {
+          type: "kpi",
+          intent: "monitoring",
+          encoding: {
+            value: { field: "value" },
+          },
+          kpiConfig: {
+            deltaField: "delta",
+          },
+        },
+        data: datasetRef("executive_summary", {
+          filters: [{ field: "metricId", operator: "eq", value: "monthly-opportunity-high" }],
+          limit: 1,
+        }),
+      };
+    case "line":
+      return {
+        id: widgetId,
+        position,
+        title: "Warehouse Credits Trend",
+        subtitle: "Daily metering by warehouse",
+        chart: {
+          type: "line",
+          intent: "trend",
+          encoding: {
+            x: { field: "usage_day" },
+            y: { field: "credits_used" },
+            series: { field: "warehouse_name" },
+          },
+          options: {
+            smooth: true,
+            showGrid: true,
+            showTooltip: true,
+            showLegend: true,
+          },
+        },
+        data: datasetRef("warehouse_metering_history", {
+          columns: ["usage_day", "warehouse_name", "credits_used"],
+        }),
+      };
+    case "bar":
+      return {
+        id: widgetId,
+        position,
+        title: "Credit Concentration",
+        subtitle: "Credits by warehouse",
+        chart: {
+          type: "bar",
+          intent: "comparison",
+          encoding: {
+            x: { field: "warehouse_name" },
+            y: { field: "credits_used" },
+          },
+          options: {
+            showGrid: true,
+          },
+        },
+        data: datasetRef("warehouse_metering_history", {
+          columns: ["warehouse_name", "credits_used"],
+        }),
+      };
+    case "stacked_bar":
+      return {
+        id: widgetId,
+        position,
+        title: "Credit Composition",
+        subtitle: "Compute vs cloud services starter",
+        chart: {
+          type: "stacked_bar",
+          intent: "composition",
+          encoding: {
+            x: { field: "label" },
+            y: { field: "value" },
+            series: { field: "series" },
+          },
+          options: {
+            showLegend: true,
+          },
+        },
+        data: {
+          source: "inline",
+          payload: {
+            points: [
+              { label: "FINANCE_REPORTING_WH", series: "Compute", value: 374 },
+              { label: "FINANCE_REPORTING_WH", series: "Cloud Services", value: 16 },
+              { label: "MARKETING_ADHOC_WH", series: "Compute", value: 149 },
+              { label: "MARKETING_ADHOC_WH", series: "Cloud Services", value: 6 },
+              { label: "CORE_ELT_WH", series: "Compute", value: 71 },
+              { label: "CORE_ELT_WH", series: "Cloud Services", value: 3 },
+            ],
+          },
+        },
+      };
+    case "donut":
+      return {
+        id: widgetId,
+        position,
+        title: "Warehouse Share",
+        subtitle: "Credit concentration snapshot",
+        chart: {
+          type: "donut",
+          intent: "composition",
+          encoding: {
+            category: { field: "warehouse_name" },
+            value: { field: "credits_used" },
+          },
+        },
+        data: datasetRef("warehouse_metering_history", {
+          columns: ["warehouse_name", "credits_used"],
+        }),
+      };
+    case "table":
+      return {
+        id: widgetId,
+        position,
+        title: "Recommendation Queue",
+        subtitle: "Prioritized idle warehouse actions",
+        chart: {
+          type: "table",
+          intent: "ranking",
+          encoding: {
+            columns: [
+              { field: "executive_severity", label: "Priority" },
+              { field: "scope_name", label: "Warehouse" },
+              { field: "recommended_action", label: "Action" },
+              { field: "suggested_owner", label: "Owner" },
+              { field: "guardrail", label: "Guardrail" },
+            ],
+          },
+        },
+        data: datasetRef("recommendation_queue", {
+          columns: [
+            "executive_severity",
+            "scope_name",
+            "recommended_action",
+            "suggested_owner",
+            "guardrail",
+          ],
+        }),
+      };
+    case "sparkline":
+      return {
+        id: widgetId,
+        position,
+        title: "Idle Spend Momentum",
+        subtitle: "Compact warehouse credit signal",
+        chart: {
+          type: "sparkline",
+          intent: "trend",
+          encoding: {
+            x: { field: "usage_day" },
+            y: { field: "credits_used" },
+          },
+        },
+        data: datasetRef("warehouse_metering_history", {
+          columns: ["usage_day", "credits_used"],
+          filters: [{ field: "warehouse_name", operator: "eq", value: "FINANCE_REPORTING_WH" }],
+        }),
+      };
+    case "gauge":
+      return {
+        id: widgetId,
+        position,
+        title: "Idle Warehouse Count",
+        subtitle: "Warehouses needing policy review",
+        chart: {
+          type: "gauge",
+          intent: "anomaly",
+          encoding: {
+            value: { field: "value" },
+          },
+          gaugeConfig: {
+            min: 0,
+            max: 10,
+            suffix: "",
+          },
+        },
+        data: datasetRef("executive_summary", {
+          filters: [{ field: "metricId", operator: "eq", value: "idle-warehouse-count" }],
+          limit: 1,
+        }),
+      };
+  }
+}
+
 export function createPaletteWidget(
   packId: string,
   chartType: ChartType,
@@ -641,6 +838,10 @@ export function createPaletteWidget(
 
   if (packId === "financial") {
     return createFinancialWidget(chartType, widgetId, position);
+  }
+
+  if (packId === "snowflakeCost") {
+    return createSnowflakeCostWidget(chartType, widgetId, position);
   }
 
   return createSaasWidget(chartType, widgetId, position);

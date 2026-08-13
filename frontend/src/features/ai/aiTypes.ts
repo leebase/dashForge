@@ -33,10 +33,6 @@ export interface BuiltGenerationPrompt {
   promptTemplate?: AiPromptTemplate;
 }
 
-export interface AiGenerationClientRequest {
-  systemPrompt: string;
-  userPrompt: string;
-}
 
 export type AiGenerationClientAvailability =
   | {
@@ -65,7 +61,7 @@ export type AiGenerationClientResult =
 
 export interface AiGenerationClient {
   availability: AiGenerationClientAvailability;
-  generate(request: AiGenerationClientRequest): Promise<AiGenerationClientResult>;
+  generate(): Promise<AiGenerationClientResult>;
 }
 
 export type GenerateDashboardSpecResult =

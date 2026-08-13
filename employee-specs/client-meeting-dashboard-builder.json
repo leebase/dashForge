@@ -1,0 +1,20 @@
+{
+  "schema_version": "ai-employee-spec/1.0",
+  "employee_id": "client-meeting-dashboard-builder",
+  "name": "Client Meeting Dashboard Builder",
+  "produces": "meeting-dashboard-package",
+  "inputs": [
+    {
+      "name": "synthetic_data_work_package",
+      "artifact_type": "synthetic-data-work-package",
+      "required": true,
+      "on_deficient": "refuse_and_escalate",
+      "on_absent": "refuse_and_escalate",
+      "min_confidence": 1.0,
+      "requires_independent_provider": false
+    }
+  ],
+  "reads_knowledge_layer": false,
+  "escalation_target": "human:dashforge-operator",
+  "output_schema_version": "meeting-dashboard-package/1.0"
+}

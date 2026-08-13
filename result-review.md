@@ -3,6 +3,189 @@
 > **Running log of completed work.** Newest entries at the top.
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
+## 2026-08-11 — Unified DashForge/DataForge operator guide
+
+### What Was Built
+
+Added `docs/user-guide.md` as the end-user guide for both sibling projects.
+It covers local and LAN HTTPS browser use, Builder, print/PDF export, the
+DataForge CLI and canonical employee package, the pinned-fixture boundary,
+governed receipt handoff, and common troubleshooting.
+
+The DashForge and DataForge READMEs now link to the guide. DataForge's
+field-service `generate --pack` parser was also aligned with its existing
+generator registry, with regression coverage.
+
+### Evidence
+
+- `curl -k -I https://127.0.0.1:5173`: HTTP/2 200 from the active LAN preview.
+- DataForge field-service validate/generate/employee-run smoke passed.
+- DataForge: 61 tests passed; changed-file Ruff and Black checks passed.
+- DashForge: 35 frontend files/107 tests passed.
+- DashForge: `npm run build` passed.
+
+The guide preserves the existing boundary: synthetic data only, no live
+Snowflake connector, no authenticated approval from direct CLI commands, and
+no external client delivery.
+
+---
+
+## 2026-08-11 — LAN HTTPS preview and print-quality PDF
+
+### What Was Built
+
+The field-service standalone dashboard can now be opened from a Mac on the
+trusted LAN with `npm run dev:lan`. Vite binds to `0.0.0.0`; the launcher
+creates/reuses an IP-specific self-signed certificate and exposes
+`https://192.168.8.10:5173` by default. The certificate is ignored by git and
+the README documents browser trust and Keychain installation.
+
+The standalone runtime now exposes **Print / Save PDF**. It uses the existing
+browser export seam rather than a second renderer, adds evidence/provenance
+metadata, preserves the dark chart treatment in print, uses landscape letter
+geometry, avoids splitting dashboard cards, and hides interactive controls.
+
+### Evidence
+
+- `curl -k -I https://192.168.8.10:5173`: HTTP/2 200.
+- `npm test`: 35 files, 107 tests passed.
+- `npm run build`: TypeScript checks and Vite production build passed.
+- Headless Chrome produced `/tmp/dashforge-field-service-final.pdf`: seven
+  landscape-letter pages; the rendered first page contains the synthetic
+  disclosure, scenario title, and upstream artifact digest.
+
+---
+
+## 2026-08-11 — Governed shakedown and receipt disposition
+
+### Result
+
+Run `d1ce08a229dd` completed from approval-bound run `6a579236e2f0` with a
+verified `5`-entry, `12`-artifact evidence chain and authenticated principal
+`lee`. It proves the bounded dashboard package path, but its DataForge input
+was an operator-materialized copy from legacy run `31ad67eea2f1`, not a trusted
+`artifact_inputs` receipt. The prior constructed receipt smoke proves the seam
+in isolation; it does not convert the legacy source into commissioning
+evidence.
+
+Agent-Orch can now seal producer outputs in a fresh source run. DashForge's
+next receipt identity/schema fields and run-specific destination are prepared,
+but its exact `source_run_id` and digest do not exist yet and were not
+fabricated. The mission remains unlaunched, unscheduled, non-hosted, and
+non-delivering behind DataForge and Lee gates.
+
+---
+
+## 2026-08-10 — Field-service executive dashboard showcase
+
+### What Was Built
+
+DashForge now opens a meeting-ready field-service operating review for the
+fictional Apex Climate Services scenario. The app validates a digest-pinned
+DataForge work package and quality report, resolves five artifact-backed
+datasets, and renders five KPI comparisons plus three graphs through the
+existing `DashboardSpec`, `DataAdapter`, widget, and standalone-runtime paths.
+
+The visible story is specific: first-time fix is 75.2% against an 84% target,
+emergency SLA is 83.3% against 95%, repeat truck rolls are 18.2% against a
+10.5% plan, overtime is 13.1 hours against an 8-hour budget, and contribution
+margin is $177.30 against a $218 plan. Weekly demand rises 27.9% above plan in
+the latest four weeks; Phoenix West and Las Vegas carry 65.2% of repeat work;
+unavailable parts explain 54.5% of callbacks.
+
+### Why It Matters
+
+This is a coherent executive conversation, not a generic dashboard gallery.
+The narrative moves from demand pressure to first-visit failure, branch
+concentration, a documented parts constraint, and reversible operating action.
+Every material surface remains claim-covered and the page visibly discloses
+that the data is synthetic.
+
+### Evidence
+
+- `npm test`: 35 files and 107 tests passed.
+- `npm run build`: TypeScript checks and Vite production build passed.
+- Browser smoke at 1440x1000 confirmed the dark executive theme, synthetic
+  disclosure, controlled-quality block, five unclipped KPI cards, three
+  unclipped graph cards, compact source citations, and Builder handoff.
+- Upstream fixture digest:
+  `sha256:e886a65cea294553d38c0c42c7f2625e7f504b01fe5dd7bad809bb852fc727ab`.
+
+---
+
+
+## 2026-08-09 — Client Meeting Dashboard Builder Employee Slice
+
+### What Was Built
+
+DashForge now has a bounded `ClientMeetingDashboardBuilder` employee path.
+It receives a trusted `synthetic-data-work-package/1.0`, validates the
+scenario digest, quality state, reproduction manifest, dataset bindings, and
+claim sources, then emits `meeting-dashboard-package/1.0`.
+
+The package includes the digest-pinned dashboard specification, binding map,
+claim ledger, rendered dashboard HTML, browser-smoke result, and meeting
+narrative. Blocking upstream quality, missing audience/decision context,
+unsupported bindings, and uncited material claims refuse the result. The
+materializer writes all package files into a temporary sibling directory and
+renames it into place only after every file succeeds; it rejects non-empty
+output directories.
+
+The implementation reuses `DashboardSpec`, `DataAdapter`, the existing runtime,
+export path, and Agent-Orch receipt rather than adding another renderer or
+coordinator.
+
+### Why It Matters
+
+DashForge is now a consumer employee rather than a fixture-copying dashboard
+utility. The dashboard can identify exactly which DataForge package produced
+each material claim while preserving the synthetic-data disclosure and the
+human approval boundary.
+
+### Evidence
+
+- `npm --prefix frontend test`: 103 passed.
+- `npm --prefix frontend run build`: succeeded, including the package-tool
+  TypeScript scope.
+- Python suite: 33 passed.
+- Governed browser smoke observed the standalone page and follow-up action.
+- Independent dashboard review: 10/10 checks passed.
+- Fresh cross-run receipt smoke verified the exact upstream digest
+  `sha256:31d8b97c4843d6d9e5fdd0bcff5009d5abbce6252d8ffe70cbf9b1fdf6b4ba4e`
+  and read-only materialization. The checked-in browser/package fixture is
+  separately pinned to
+  `sha256:fd4373d38c9fd39e344332b4be74888ce859021aefdb9ffd63dc334c848c0f60`.
+
+## 2026-07-16 — Snowflake Idle-Warehouse Buyer Demo Passed Governed Review
+
+### What Was Built
+
+The standalone runtime now carries the bounded Snowflake Cost Optimization
+`idle-warehouse-waste` story from synthetic evidence through executive impact,
+prioritized recommendations, and a same-day follow-up artifact. The work was
+completed by Auto-Orch run `ee6fac7897f9`, with Grok 4.5 High as implementer
+and Claude Code Opus 4.8 High as the canonical reviewer.
+
+### Why It Matters
+
+This is the first integrated proof path for turning a buyer's Snowflake pain
+into a repeatable consulting demo without creating a second UI runtime or a
+second recommendation engine. Further feature work is paused until a named
+buyer signal clears the next conversion gate.
+
+### How To Verify
+
+```bash
+cd /Volumes/NVME1/projects/dashForge
+npm --prefix frontend test
+npm --prefix frontend run build
+```
+
+Browser-smoke evidence is in `artifacts/user-smoke/result.json`; the canonical
+review is `code-reviews/review-idle-warehouse-waste.md`. The review found three
+Low issues—headline/recommendation reconciliation, two panels bypassing the
+adapter seam, and controlled synthetic values not being HTML-escaped—and no
+Medium-or-higher blocker.
 
 ## 2026-04-04 — Post-Review Regressions Were Closed For Builder Scenario Switching And dataForge Compatibility
 

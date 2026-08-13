@@ -8,6 +8,7 @@ import { healthcareEdThroughputCrunchScenario } from "./healthcareEdThroughputCr
 import { financialAdvisorAttritionScenario } from "./financialAdvisorAttrition";
 import { financialGrowthQuarterScenario } from "./financialGrowthQuarter";
 import { financialMarketDownturnScenario } from "./financialMarketDownturn";
+import { fieldServiceFirstHeatWaveScenario } from "./fieldServiceFirstHeatWave";
 import type {
   MockScenario,
   ScenarioDatasetMap,
@@ -17,6 +18,7 @@ import { healthcareQualityImprovementScenario } from "./healthcareQualityImprove
 import { saasChurnCrisisScenario } from "./saasChurnCrisis";
 import { saasProductLedGrowthScenario } from "./saasProductLedGrowth";
 import { saasScalingSuccessScenario } from "./saasScalingSuccess";
+import { snowflakeCostIdleWarehouseWasteScenario } from "./snowflakeCostIdleWarehouseWaste";
 
 export type { MockScenario, ScenarioDatasetMap, ScenarioRow } from "./mockScenarioTypes";
 
@@ -91,12 +93,28 @@ const scenarioCatalog = new Map<string, MockScenario>([
       datasets: saasScalingSuccessScenario.datasets,
     },
   ],
+  [
+    "fieldService:first-heat-wave-parts-bottleneck",
+    {
+      ...fieldServiceFirstHeatWaveScenario,
+      datasets: fieldServiceFirstHeatWaveScenario.datasets,
+    },
+  ],
+  [
+    "snowflakeCost:idle-warehouse-waste",
+    {
+      ...snowflakeCostIdleWarehouseWasteScenario,
+      datasets: snowflakeCostIdleWarehouseWasteScenario.datasets,
+    },
+  ],
 ]);
 
 const PRIMARY_TREND_DATASET_BY_PACK: Record<string, string> = {
   healthcare: "monthly_capacity",
   financial: "monthly_summary",
   saas: "monthly_summary",
+  snowflakeCost: "warehouse_metering_history",
+  fieldService: "weekly_service_trend",
 };
 
 function getPrimaryTrendDatasetIdForScenario(packId: string, scenarioId?: string): string {

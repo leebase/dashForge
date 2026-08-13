@@ -85,19 +85,19 @@ describe("BuilderShell", () => {
     const aiClient = {
       availability: {
         status: "configured" as const,
-        providerLabel: "Claude",
-        model: "claude-test",
+        providerLabel: "Agent-Orch staged manifest",
+        model: "staged-manifest",
       },
       generate: vi.fn().mockResolvedValue({
         ok: true as const,
-        model: "claude-test",
+        model: "staged-manifest",
         responseText: JSON.stringify(candidate),
       }),
     };
 
     render(<BuilderShell aiClient={aiClient} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Generate Candidate" }));
+    fireEvent.click(screen.getByRole("button", { name: "Load Staged Candidate" }));
 
     await waitFor(() => expect(aiClient.generate).toHaveBeenCalledTimes(1));
     expect(await screen.findByText("Staged Candidate", {}, { timeout: 3000 })).toBeInTheDocument();
@@ -130,8 +130,8 @@ describe("BuilderShell", () => {
     const aiClient = {
       availability: {
         status: "configured" as const,
-        providerLabel: "Claude",
-        model: "claude-test",
+        providerLabel: "Agent-Orch staged manifest",
+        model: "staged-manifest",
       },
       generate: vi.fn(),
     };
@@ -142,10 +142,7 @@ describe("BuilderShell", () => {
       target: { value: "" },
     });
 
-    fireEvent.change(screen.getByLabelText("Mode"), {
-      target: { value: "improve_current" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Generate Candidate" }));
+    fireEvent.click(screen.getByRole("button", { name: "Load Staged Candidate" }));
 
     expect(aiClient.generate).not.toHaveBeenCalled();
     expect(
@@ -193,24 +190,25 @@ describe("BuilderShell", () => {
     expect(within(monthlySummaryEditor!).getByText(/missing mappings: month/i)).toBeInTheDocument();
   });
 
-  it("rebuilds the draft when a standalone-only template cannot serve the newly selected scenario", async () => {
+  it("keeps verified artifact bindings and scenario selection read-only", async () => {
     render(<BuilderShell initialDraft={createDefaultStandaloneDashboardSpec()} />);
 
     expect(
-      screen.getByRole("heading", { level: 2, name: "ED Throughput Command View" }),
+      screen.getByRole("heading", { level: 2, name: "Idle Warehouse Waste" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByDisplayValue("ed-throughput-crunch")[0]).toBeInTheDocument();
-
-    fireEvent.change(screen.getAllByDisplayValue("ed-throughput-crunch")[0]!, {
-      target: { value: "flu-season" },
-    });
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole("heading", { level: 2, name: "Healthcare Risk & Alert" }),
-      ).toBeInTheDocument(),
-    );
-    expect(screen.getAllByDisplayValue("flu-season")[0]).toBeInTheDocument();
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    const packSelect = screen.getAllByDisplayValue("snowflakeCost")[0];
+    const scenarioSelect =
+      screen.getAllByDisplayValue("idle-warehouse-waste")[0];
+    expect(packSelect).toBeDisabled();
+    expect(scenarioSelect).toBeDisabled();
+    expect(screen.getByLabelText("Data Mode")).toBeDisabled();
+    expect(
+      screen.getByText(/Artifact bindings are digest-pinned and read-only/i),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findAllByText(
+        /resolves through the verified artifact field map/i,
+      ),
+    ).not.toHaveLength(0);
   });
 });

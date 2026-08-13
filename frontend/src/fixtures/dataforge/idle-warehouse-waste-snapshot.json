@@ -1,0 +1,793 @@
+{
+  "datasets": [
+    {
+      "columns": [
+        {
+          "label": "Metric Id",
+          "name": "metricId",
+          "role": "id",
+          "type": "string"
+        },
+        {
+          "label": "Value",
+          "name": "value",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Delta",
+          "name": "delta",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Delta Label",
+          "name": "deltaLabel",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Prefix",
+          "name": "prefix",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Suffix",
+          "name": "suffix",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Caption",
+          "name": "caption",
+          "role": "dimension",
+          "type": "string"
+        }
+      ],
+      "datasetId": "executive_summary",
+      "rowCount": 2,
+      "rows": [
+        {
+          "caption": "Warehouses with missing or weak suspension policy.",
+          "delta": 2.0,
+          "deltaLabel": "owner review",
+          "metricId": "idle-warehouse-count",
+          "prefix": "",
+          "suffix": "",
+          "value": 2.0
+        },
+        {
+          "caption": "High-end monthly opportunity from idle warehouse and auto-suspend controls.",
+          "delta": 0.0,
+          "deltaLabel": "credits/month",
+          "metricId": "monthly-opportunity-high",
+          "prefix": "",
+          "suffix": " credits",
+          "value": 726.0
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Usage Day",
+          "name": "usage_day",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Warehouse Name",
+          "name": "warehouse_name",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Credits Used Compute",
+          "name": "credits_used_compute",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Credits Used Cloud Services",
+          "name": "credits_used_cloud_services",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Credits Used",
+          "name": "credits_used",
+          "role": "measure",
+          "type": "number"
+        }
+      ],
+      "datasetId": "warehouse_metering_history",
+      "rowCount": 21,
+      "rows": [
+        {
+          "credits_used": 74.0,
+          "credits_used_cloud_services": 2.96,
+          "credits_used_compute": 71.04,
+          "usage_day": "2026-06-01",
+          "warehouse_name": "CORE_ELT_WH"
+        },
+        {
+          "credits_used": 390.0,
+          "credits_used_cloud_services": 15.6,
+          "credits_used_compute": 374.4,
+          "usage_day": "2026-06-01",
+          "warehouse_name": "FINANCE_REPORTING_WH"
+        },
+        {
+          "credits_used": 155.0,
+          "credits_used_cloud_services": 6.2,
+          "credits_used_compute": 148.8,
+          "usage_day": "2026-06-01",
+          "warehouse_name": "MARKETING_ADHOC_WH"
+        },
+        {
+          "credits_used": 79.0,
+          "credits_used_cloud_services": 3.16,
+          "credits_used_compute": 75.84,
+          "usage_day": "2026-06-02",
+          "warehouse_name": "CORE_ELT_WH"
+        },
+        {
+          "credits_used": 392.0,
+          "credits_used_cloud_services": 15.68,
+          "credits_used_compute": 376.32,
+          "usage_day": "2026-06-02",
+          "warehouse_name": "FINANCE_REPORTING_WH"
+        },
+        {
+          "credits_used": 160.0,
+          "credits_used_cloud_services": 6.4,
+          "credits_used_compute": 153.6,
+          "usage_day": "2026-06-02",
+          "warehouse_name": "MARKETING_ADHOC_WH"
+        },
+        {
+          "credits_used": 76.0,
+          "credits_used_cloud_services": 3.04,
+          "credits_used_compute": 72.96,
+          "usage_day": "2026-06-03",
+          "warehouse_name": "CORE_ELT_WH"
+        },
+        {
+          "credits_used": 388.0,
+          "credits_used_cloud_services": 15.52,
+          "credits_used_compute": 372.48,
+          "usage_day": "2026-06-03",
+          "warehouse_name": "FINANCE_REPORTING_WH"
+        },
+        {
+          "credits_used": 151.0,
+          "credits_used_cloud_services": 6.04,
+          "credits_used_compute": 144.96,
+          "usage_day": "2026-06-03",
+          "warehouse_name": "MARKETING_ADHOC_WH"
+        },
+        {
+          "credits_used": 82.0,
+          "credits_used_cloud_services": 3.28,
+          "credits_used_compute": 78.72,
+          "usage_day": "2026-06-04",
+          "warehouse_name": "CORE_ELT_WH"
+        },
+        {
+          "credits_used": 395.0,
+          "credits_used_cloud_services": 15.8,
+          "credits_used_compute": 379.2,
+          "usage_day": "2026-06-04",
+          "warehouse_name": "FINANCE_REPORTING_WH"
+        },
+        {
+          "credits_used": 158.0,
+          "credits_used_cloud_services": 6.32,
+          "credits_used_compute": 151.68,
+          "usage_day": "2026-06-04",
+          "warehouse_name": "MARKETING_ADHOC_WH"
+        },
+        {
+          "credits_used": 78.0,
+          "credits_used_cloud_services": 3.12,
+          "credits_used_compute": 74.88,
+          "usage_day": "2026-06-05",
+          "warehouse_name": "CORE_ELT_WH"
+        },
+        {
+          "credits_used": 391.0,
+          "credits_used_cloud_services": 15.64,
+          "credits_used_compute": 375.36,
+          "usage_day": "2026-06-05",
+          "warehouse_name": "FINANCE_REPORTING_WH"
+        },
+        {
+          "credits_used": 156.0,
+          "credits_used_cloud_services": 6.24,
+          "credits_used_compute": 149.76,
+          "usage_day": "2026-06-05",
+          "warehouse_name": "MARKETING_ADHOC_WH"
+        },
+        {
+          "credits_used": 75.0,
+          "credits_used_cloud_services": 3.0,
+          "credits_used_compute": 72.0,
+          "usage_day": "2026-06-06",
+          "warehouse_name": "CORE_ELT_WH"
+        },
+        {
+          "credits_used": 389.0,
+          "credits_used_cloud_services": 15.56,
+          "credits_used_compute": 373.44,
+          "usage_day": "2026-06-06",
+          "warehouse_name": "FINANCE_REPORTING_WH"
+        },
+        {
+          "credits_used": 154.0,
+          "credits_used_cloud_services": 6.16,
+          "credits_used_compute": 147.84,
+          "usage_day": "2026-06-06",
+          "warehouse_name": "MARKETING_ADHOC_WH"
+        },
+        {
+          "credits_used": 80.0,
+          "credits_used_cloud_services": 3.2,
+          "credits_used_compute": 76.8,
+          "usage_day": "2026-06-07",
+          "warehouse_name": "CORE_ELT_WH"
+        },
+        {
+          "credits_used": 394.0,
+          "credits_used_cloud_services": 15.76,
+          "credits_used_compute": 378.24,
+          "usage_day": "2026-06-07",
+          "warehouse_name": "FINANCE_REPORTING_WH"
+        },
+        {
+          "credits_used": 159.0,
+          "credits_used_cloud_services": 6.36,
+          "credits_used_compute": 152.64,
+          "usage_day": "2026-06-07",
+          "warehouse_name": "MARKETING_ADHOC_WH"
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Query Id",
+          "name": "query_id",
+          "role": "id",
+          "type": "string"
+        },
+        {
+          "label": "User Name",
+          "name": "user_name",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Role Name",
+          "name": "role_name",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Warehouse Name",
+          "name": "warehouse_name",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Query Type",
+          "name": "query_type",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Elapsed Seconds",
+          "name": "elapsed_seconds",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Total Elapsed Seconds",
+          "name": "total_elapsed_seconds",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Bytes Scanned",
+          "name": "bytes_scanned",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Rows Produced",
+          "name": "rows_produced",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Query Text",
+          "name": "query_text",
+          "role": "dimension",
+          "type": "string"
+        }
+      ],
+      "datasetId": "query_history",
+      "rowCount": 3,
+      "rows": [
+        {
+          "bytes_scanned": 42000000000.0,
+          "elapsed_seconds": 210.0,
+          "query_id": "IWW001",
+          "query_text": "refresh weekly finance package",
+          "query_type": "SELECT",
+          "role_name": "FINANCE_BI",
+          "rows_produced": 85000.0,
+          "total_elapsed_seconds": 210.0,
+          "user_name": "svc_finance_bi",
+          "warehouse_name": "__DATAFORGE_MISSING_FK_477d175d9085__"
+        },
+        {
+          "bytes_scanned": 18000000000.0,
+          "elapsed_seconds": 145.0,
+          "query_id": "IWW002",
+          "query_text": "ad hoc campaign pull",
+          "query_type": "SELECT",
+          "role_name": "MARKETING_ANALYST",
+          "rows_produced": null,
+          "total_elapsed_seconds": 145.0,
+          "user_name": "analyst_mira",
+          "warehouse_name": "MARKETING_ADHOC_WH"
+        },
+        {
+          "bytes_scanned": 86000000000.0,
+          "elapsed_seconds": 920.0,
+          "query_id": "IWW003",
+          "query_text": "merge daily finance facts",
+          "query_type": "MERGE",
+          "role_name": "DATA_ENGINEER",
+          "rows_produced": 0.0,
+          "total_elapsed_seconds": 920.0,
+          "user_name": "svc_elt",
+          "warehouse_name": "CORE_ELT_WH"
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Usage Day",
+          "name": "usage_day",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Service Type",
+          "name": "service_type",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Name",
+          "name": "name",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Credits Used",
+          "name": "credits_used",
+          "role": "measure",
+          "type": "number"
+        }
+      ],
+      "datasetId": "metering_history",
+      "rowCount": 16,
+      "rows": [
+        {
+          "credits_used": 14.0,
+          "name": "REPORTING_CLUSTERING",
+          "service_type": "AUTOMATIC_CLUSTERING",
+          "usage_day": "2026-06-01"
+        },
+        {
+          "credits_used": 14.0,
+          "name": "REPORTING_CLUSTERING",
+          "service_type": "AUTOMATIC_CLUSTERING",
+          "usage_day": "2026-06-01"
+        },
+        {
+          "credits_used": 8.0,
+          "name": "FINANCE_LOAD_PIPE",
+          "service_type": "SNOWPIPE",
+          "usage_day": "2026-06-01"
+        },
+        {
+          "credits_used": 8.0,
+          "name": "FINANCE_LOAD_PIPE",
+          "service_type": "SNOWPIPE",
+          "usage_day": "2026-06-01"
+        },
+        {
+          "credits_used": 15.0,
+          "name": "REPORTING_CLUSTERING",
+          "service_type": "AUTOMATIC_CLUSTERING",
+          "usage_day": "2026-06-02"
+        },
+        {
+          "credits_used": 7.0,
+          "name": "FINANCE_LOAD_PIPE",
+          "service_type": "SNOWPIPE",
+          "usage_day": "2026-06-02"
+        },
+        {
+          "credits_used": 16.0,
+          "name": "REPORTING_CLUSTERING",
+          "service_type": "AUTOMATIC_CLUSTERING",
+          "usage_day": "2026-06-03"
+        },
+        {
+          "credits_used": 8.0,
+          "name": "FINANCE_LOAD_PIPE",
+          "service_type": "SNOWPIPE",
+          "usage_day": "2026-06-03"
+        },
+        {
+          "credits_used": 14.0,
+          "name": "REPORTING_CLUSTERING",
+          "service_type": "AUTOMATIC_CLUSTERING",
+          "usage_day": "2026-06-04"
+        },
+        {
+          "credits_used": 9.0,
+          "name": "FINANCE_LOAD_PIPE",
+          "service_type": "SNOWPIPE",
+          "usage_day": "2026-06-04"
+        },
+        {
+          "credits_used": 15.0,
+          "name": "REPORTING_CLUSTERING",
+          "service_type": "AUTOMATIC_CLUSTERING",
+          "usage_day": "2026-06-05"
+        },
+        {
+          "credits_used": 8.0,
+          "name": "FINANCE_LOAD_PIPE",
+          "service_type": "SNOWPIPE",
+          "usage_day": "2026-06-05"
+        },
+        {
+          "credits_used": 14.0,
+          "name": "REPORTING_CLUSTERING",
+          "service_type": "AUTOMATIC_CLUSTERING",
+          "usage_day": "2026-06-06"
+        },
+        {
+          "credits_used": 7.0,
+          "name": "FINANCE_LOAD_PIPE",
+          "service_type": "SNOWPIPE",
+          "usage_day": "2026-06-06"
+        },
+        {
+          "credits_used": 15.0,
+          "name": "REPORTING_CLUSTERING",
+          "service_type": "AUTOMATIC_CLUSTERING",
+          "usage_day": "2026-06-07"
+        },
+        {
+          "credits_used": 8.0,
+          "name": "FINANCE_LOAD_PIPE",
+          "service_type": "SNOWPIPE",
+          "usage_day": "2026-06-07"
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Usage Date",
+          "name": "usage_date",
+          "role": "date",
+          "type": "date"
+        },
+        {
+          "label": "Database Name",
+          "name": "database_name",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Average Database Bytes",
+          "name": "average_database_bytes",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Average Failsafe Bytes",
+          "name": "average_failsafe_bytes",
+          "role": "measure",
+          "type": "number"
+        }
+      ],
+      "datasetId": "database_storage_usage_history",
+      "rowCount": 7,
+      "rows": [
+        {
+          "average_database_bytes": 680000000000.0,
+          "average_failsafe_bytes": 60000000000.0,
+          "database_name": "FINANCE_ANALYTICS",
+          "usage_date": "2026-06-01"
+        },
+        {
+          "average_database_bytes": 684000000000.0,
+          "average_failsafe_bytes": 60700000000.0,
+          "database_name": "FINANCE_ANALYTICS",
+          "usage_date": "2026-06-02"
+        },
+        {
+          "average_database_bytes": 688000000000.0,
+          "average_failsafe_bytes": 61400000000.0,
+          "database_name": "FINANCE_ANALYTICS",
+          "usage_date": "2026-06-03"
+        },
+        {
+          "average_database_bytes": 692000000000.0,
+          "average_failsafe_bytes": 62100000000.0,
+          "database_name": "FINANCE_ANALYTICS",
+          "usage_date": "2026-06-04"
+        },
+        {
+          "average_database_bytes": 696000000000.0,
+          "average_failsafe_bytes": 62800000000.0,
+          "database_name": "FINANCE_ANALYTICS",
+          "usage_date": "2026-06-05"
+        },
+        {
+          "average_database_bytes": 704000000000.0,
+          "average_failsafe_bytes": 64200000000.0,
+          "database_name": "FINANCE_ANALYTICS",
+          "usage_date": "2026-06-07"
+        },
+        {
+          "average_database_bytes": 700000000000.0,
+          "average_failsafe_bytes": 63500000000.0,
+          "database_name": "FINANCE_ANALYTICS",
+          "usage_date": "not-a-date-fe2c65b59ef6"
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Name",
+          "name": "name",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Size",
+          "name": "size",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Auto Suspend",
+          "name": "auto_suspend",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Auto Resume",
+          "name": "auto_resume",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Resource Monitor",
+          "name": "resource_monitor",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Owner",
+          "name": "owner",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Business Owner",
+          "name": "business_owner",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Technical Owner",
+          "name": "technical_owner",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Cost Center",
+          "name": "cost_center",
+          "role": "dimension",
+          "type": "string"
+        }
+      ],
+      "datasetId": "show_warehouses",
+      "rowCount": 3,
+      "rows": [
+        {
+          "auto_resume": "true",
+          "auto_suspend": 300,
+          "business_owner": "Data Platform",
+          "cost_center": "DATA",
+          "name": "CORE_ELT_WH",
+          "owner": "SYSADMIN",
+          "resource_monitor": "CORE_ELT_MONITOR",
+          "size": "MEDIUM",
+          "technical_owner": "Analytics Engineering"
+        },
+        {
+          "auto_resume": "true",
+          "auto_suspend": 0,
+          "business_owner": "Finance",
+          "cost_center": "FIN",
+          "name": "FINANCE_REPORTING_WH",
+          "owner": "SYSADMIN",
+          "resource_monitor": null,
+          "size": "X-LARGE",
+          "technical_owner": null
+        },
+        {
+          "auto_resume": "true",
+          "auto_suspend": 3600,
+          "business_owner": "Marketing",
+          "cost_center": "MKT",
+          "name": "MARKETING_ADHOC_WH",
+          "owner": "SYSADMIN",
+          "resource_monitor": null,
+          "size": "LARGE",
+          "technical_owner": null
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "label": "Recommendation Id",
+          "name": "recommendation_id",
+          "role": "id",
+          "type": "string"
+        },
+        {
+          "label": "Scope Name",
+          "name": "scope_name",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Scope Type",
+          "name": "scope_type",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Recommendation Type",
+          "name": "recommendation_type",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Executive Severity",
+          "name": "executive_severity",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Implementation Phase",
+          "name": "implementation_phase",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Implementation Effort",
+          "name": "implementation_effort",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Estimated Monthly Credit Savings Low",
+          "name": "estimated_monthly_credit_savings_low",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Estimated Monthly Credit Savings High",
+          "name": "estimated_monthly_credit_savings_high",
+          "role": "measure",
+          "type": "number"
+        },
+        {
+          "label": "Confidence",
+          "name": "confidence",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Performance Risk",
+          "name": "performance_risk",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Suggested Owner",
+          "name": "suggested_owner",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Recommended Action",
+          "name": "recommended_action",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Evidence Detail",
+          "name": "evidence_detail",
+          "role": "dimension",
+          "type": "string"
+        },
+        {
+          "label": "Guardrail",
+          "name": "guardrail",
+          "role": "dimension",
+          "type": "string"
+        }
+      ],
+      "datasetId": "recommendation_queue",
+      "rowCount": 2,
+      "rows": [
+        {
+          "confidence": "High",
+          "estimated_monthly_credit_savings_high": 180.0,
+          "estimated_monthly_credit_savings_low": 95.0,
+          "evidence_detail": "FINANCE_REPORTING_WH consumes more than half of warehouse credits while visible query activity is sparse.",
+          "executive_severity": "P0",
+          "guardrail": "Confirm finance reporting schedules before changing warehouse availability.",
+          "implementation_effort": "Low",
+          "implementation_phase": "Quick control",
+          "performance_risk": "Low",
+          "recommendation_id": "IWW-001",
+          "recommendation_type": "IDLE_WAREHOUSE_REVIEW",
+          "recommended_action": "Assign an owner, enable auto-suspend, and validate whether FINANCE_REPORTING_WH needs to run outside reporting windows.",
+          "scope_name": "FINANCE_REPORTING_WH",
+          "scope_type": "WAREHOUSE",
+          "suggested_owner": "Finance and Data Platform"
+        },
+        {
+          "confidence": "Medium",
+          "estimated_monthly_credit_savings_high": 62.0,
+          "estimated_monthly_credit_savings_low": 28.0,
+          "evidence_detail": "MARKETING_ADHOC_WH has a 3600 second auto-suspend and no monitor.",
+          "executive_severity": "P1",
+          "guardrail": "Notify analysts and measure failed notebook restarts after the change.",
+          "implementation_effort": "Low",
+          "implementation_phase": "Quick control",
+          "performance_risk": "Low",
+          "recommendation_id": "IWW-002",
+          "recommendation_type": "AUTO_SUSPEND_REVIEW",
+          "recommended_action": "Reduce auto-suspend and add a resource monitor for marketing ad hoc usage.",
+          "scope_name": "MARKETING_ADHOC_WH",
+          "scope_type": "WAREHOUSE",
+          "suggested_owner": "Marketing Analytics"
+        }
+      ]
+    }
+  ],
+  "packId": "snowflakeCost",
+  "scenarioId": "idle-warehouse-waste",
+  "seed": 9101
+}

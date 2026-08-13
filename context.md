@@ -8,9 +8,9 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Phase** | Phase 4 — Advanced / Future |
+| **Phase** | Conditional commissioning behind DataForge |
 | **Mode** | 2 (Implementation with approval) |
-| **Last Updated** | 2026-04-04 |
+| **Last Updated** | 2026-08-11 |
 
 ### Sprint Status
 
@@ -25,12 +25,150 @@
 | Sprint 7 — Presenter + export | ✅ Complete | 100% |
 | Sprint 8 — AI generation | ✅ Complete | 100% |
 | Sprint 9 — Production binding | ✅ Complete | 100% |
+| Sprint 10 — Client Meeting Dashboard Builder | ✅ Complete | 100% |
 
 ---
+
+## 2026-08-11 — Unified DashForge/DataForge operator guide
+
+Added `docs/user-guide.md` as the cross-project user guide. It documents the
+local and LAN browser paths, certificate trust, Builder, PDF export, the
+DataForge `generate`, `validate-scenario`, and `employee-run` commands, the
+current pinned-fixture behavior, the governed receipt boundary, and
+troubleshooting. Both project READMEs link to it.
+
+The companion DataForge CLI fix exposes `fieldService` through
+`generate --pack`, matching the existing generator registry. The guide
+explicitly keeps synthetic demo data, live Snowflake, approval
+authentication, and external delivery boundaries visible.
+
+Verification: active LAN HTTPS endpoint returned HTTP/2 200; DataForge
+validation/generation/employee-run smoke passed; DataForge passed 61 tests;
+DashForge passed 35 frontend files/107 tests and `npm run build` passed.
+
+## 2026-08-11 — LAN HTTPS preview and PDF rendition
+
+The standalone field-service dashboard is now available to another device on
+the trusted LAN through `npm run dev:lan`. The launcher binds Vite to
+`0.0.0.0:5173`, generates and reuses a 30-day self-signed certificate with
+`192.168.8.10` in its IP subject-alternative name, and prints the Mac URL
+`https://192.168.8.10:5173`.
+
+The standalone summary now includes **Print / Save PDF**. The existing
+export-document path was upgraded with landscape print geometry, preserved
+chart colors, evidence/provenance metadata, story arc and presenter notes, and
+page-break protection. Native print styling hides interactive controls.
+
+Verification: `curl -k -I https://192.168.8.10:5173` returned HTTP/2 200;
+`npm test` passed 35 files/107 tests; `npm run build` passed; headless Chrome
+produced a seven-page landscape letter PDF and the rendered first page
+contained the synthetic disclosure, scenario title, and upstream digest.
+
+## 2026-08-11 — Direct shakedown reconciled; next launch remains blocked
+
+Direct Agent-Orch run `d1ce08a229dd` completed as
+`client-meeting-dashboard-builder` after Lee authenticated the package gate in
+source run `6a579236e2f0`; its evidence chain verifies (`5 entries, 12
+artifacts`). That run used an operator-materialized, digest-pinned copy of
+DataForge run `31ad67eea2f1`, not an Agent-Orch `artifact_inputs` receipt.
+Earlier constructed receipt smokes remain valid seam tests, but neither they
+nor this manual-handoff shakedown satisfy fresh employee commissioning.
+
+DataForge cycle `20260811T151705Z` consumed its latest one-cycle grant but
+deferred in Auto-Orch Author before Execute after stale mission posture selected
+the wrong item. It created no Agent-Orch source run or package digest. The
+posture is corrected without granting a retry; DataForge now waits on one fresh
+Lee grant, so this DashForge gate remains closed.
+
+The next source must be a fresh terminal, identity-bound DataForge run whose
+declared output is chained under
+`step_04_generate_package/attempt-1/sealed-outputs/`. The fixed receipt fields
+are already known: employee `synthetic-data-story-engineer`, tenant
+`lee-installation`, pursuit `dataforge-idle-warehouse-proof`, artifact
+`dataforge-idle-warehouse-proof:synthetic-data-story-engineer:0001`, and schema
+`synthetic-data-work-package/1.0`. Only that future run id and exact envelope
+digest may populate the playbook; never reuse the historical manual digest.
+
+The Auto-Orch mission remains inert (`launch_approved: false`, no schedule,
+stub routing, Board disabled, no automatic commit). Do not launch until the
+fresh trusted DataForge receipt exists and Lee separately approves the
+DashForge mission gate. No hosting, external delivery, or customer data is
+authorized.
+
+## 2026-08-10 — Field-service executive showcase
+
+The default app now opens a polished operating review for fictional Apex
+Climate Services: `fieldService:first-heat-wave-parts-bottleneck` through
+`tpl.fieldService.first-heat-wave-command`. It consumes the pinned DataForge
+work package at digest
+`sha256:e886a65cea294553d38c0c42c7f2625e7f504b01fe5dd7bad809bb852fc727ab`
+through the strict synthetic-artifact adapter, not through a second data path.
+
+The dashboard carries five explicit comparisons—first-time fix, emergency SLA,
+repeat truck rolls, overtime per technician, and contribution margin—and three
+linked charts for weekly demand versus plan, callback concentration by branch,
+and documented callback causes. A five-step narrative arc, controlled-quality
+disclosure, compact source citations, and a digest-pinned claim ledger keep the
+meeting story attributable. Opening Builder preserves the same scenario and
+template.
+
+Verification: all 107 frontend tests passed; the TypeScript/Vite production
+build succeeded; browser smoke confirmed the dark executive theme, synthetic
+and quality disclosures, five unclipped KPI cards, three unclipped charts, and
+the field-service Builder handoff. No mission, live connector, customer data,
+hosting, or external delivery was introduced.
+
+## 2026-08-09 — Client Meeting Dashboard Builder
+
+The first DashForge employee slice is complete. The
+`ClientMeetingDashboardBuilder` consumes a trusted
+`synthetic-data-work-package/1.0` through the Agent-Orch artifact receipt,
+validates the upstream scenario/quality/reproduction evidence, resolves a
+bounded `DashboardSpec`, and emits `meeting-dashboard-package/1.0`.
+
+The result carries the upstream artifact digest, dashboard specification and
+binding map, material-surface claim ledger, rendered dashboard artifact, and
+meeting narrative. It refuses missing or blocking upstream quality, invalid
+bindings, unsupported claims, and missing audience/decision context. It does
+not connect to Snowflake, call a browser provider, send client material, or
+make claims beyond the generated evidence.
+
+Evidence:
+
+- DashForge frontend suite: 103 passed.
+- Python suite: 33 passed.
+- Production build: succeeded.
+- Governed browser smoke: interaction observed and evidence artifacts written.
+- Independent dashboard review: 10/10 checks passed.
+- Cross-run smoke: package output cites the exact DataForge digest
+  `sha256:fd4373d38c9fd39e344332b4be74888ce859021aefdb9ffd63dc334c848c0f60`.
+
+## 2026-08-09 — Receipt smoke and package publication hardening
+
+The package materializer now publishes through a temporary sibling directory
+and refuses a non-empty output directory, so a failed or stale run cannot
+silently merge files into a meeting package. Its package-tool TypeScript scope
+is included in the production build.
+
+A fresh DataForge employee-run artifact was accepted through the Agent-Orch
+receipt path, materialized read-only, and verified at digest
+`sha256:31d8b97c4843d6d9e5fdd0bcff5009d5abbce6252d8ffe70cbf9b1fdf6b4ba4e`.
+The checked-in browser/package fixture remains separately pinned to its
+fixture digest.
 
 ## What's Happening Now
 
 ### Current Work Stream
+
+The active commercial proof path is now Snowflake Cost Optimization, bounded to
+the governed `idle-warehouse-waste` story. Auto-Orch run `ee6fac7897f9`
+completed the standalone buyer-demo slice through the existing
+`DashboardSpec` + `DataAdapter` runtime, including executive story flow,
+prioritized recommendations, and same-day follow-up export. Frontend tests,
+production build, browser smoke, evidence verification, and Claude Code Opus
+4.8 High review passed; the review recorded three Low findings and no Medium+
+findings. New product work is gated on a real Snowflake buyer signal rather
+than further platform or collateral expansion.
 
 The governed Sprint 1-9 delivery ladder is now formally closed in-repo.
 Sprint 9's bounded production-binding slice remains the current baseline on top

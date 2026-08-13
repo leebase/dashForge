@@ -44,7 +44,7 @@ export const SUPPORTED_CHART_TYPES = [
 export type DashboardSpecVersion = typeof CURRENT_DASHBOARD_SPEC_VERSION;
 export type DashboardIntentType = (typeof SUPPORTED_DASHBOARD_INTENT_TYPES)[number];
 export type DashboardAudience = (typeof SUPPORTED_DASHBOARD_AUDIENCES)[number];
-export type DashboardDataMode = "mock" | "live" | "hybrid";
+export type DashboardDataMode = "mock" | "live" | "hybrid" | "artifact";
 export type DashboardGranularity = (typeof SUPPORTED_DASHBOARD_GRANULARITIES)[number];
 export type DashboardCompaction = "vertical" | "horizontal" | "none";
 export type ChartType = (typeof SUPPORTED_CHART_TYPES)[number];
@@ -119,10 +119,71 @@ export interface DashboardLiveContext {
   bindings: Record<string, DataBinding>;
 }
 
+export interface ArtifactDatasetBinding {
+  snapshotDatasetId: string;
+  fieldMap: Record<string, string>;
+}
+
+export interface DashboardArtifactContext {
+  artifactType: "synthetic-data-work-package";
+  payloadSchemaVersion: "synthetic-data-work-package/1.0";
+  digest: string;
+  employeeId: "synthetic-data-story-engineer";
+  qualityReport: {
+    schemaVersion: "data-quality-report/1.0";
+    path: string;
+    sha256: string;
+  };
+  snapshot: {
+    path: string;
+    sha256: string;
+    datasetIds: string[];
+  };
+  bindings: Record<string, ArtifactDatasetBinding>;
+}
+
+export type DashboardClaimKind = "metric" | "narrative" | "recommendation";
+
+export type DashboardClaimEvidence =
+  | {
+      type: "assertion";
+      assertionId: string;
+    }
+  | {
+      type: "dataset_observation";
+      bindingId: string;
+      datasetId: string;
+      fields: string[];
+      predicate?: Record<string, string | number | boolean | null>;
+    };
+
+export interface DashboardMaterialClaim {
+  claimId: string;
+  surfaceId: string;
+  kind: DashboardClaimKind;
+  statement: string;
+  source: {
+    artifactDigest: string;
+    evidence: DashboardClaimEvidence;
+  };
+}
+
+export interface DashboardClaimLedger {
+  schemaVersion: "dashboard-claim-ledger/1.0";
+  upstreamArtifactDigest: string;
+  claims: DashboardMaterialClaim[];
+}
+
+export interface DashboardGovernance {
+  claimLedger: DashboardClaimLedger;
+  additionalMaterialSurfaceIds: string[];
+}
+
 export interface DashboardDataContext {
   mode: DashboardDataMode;
   mock?: DashboardMockContext;
   live?: DashboardLiveContext;
+  artifact?: DashboardArtifactContext;
   timeRange: DashboardTimeRange;
 }
 
@@ -450,6 +511,7 @@ export interface DashboardSpec {
   layout: DashboardLayout;
   widgets: WidgetSpec[];
   narrative?: NarrativeSpec;
+  governance?: DashboardGovernance;
   filters?: DashboardFilterSpec[];
 }
 

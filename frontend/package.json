@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vite build",
-    "test": "vitest run"
+    "dev:lan": "node scripts/start-lan-https.mjs",
+    "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.package-tools.json && vite build",
+    "test": "vitest run",
+    "package:meeting-dashboard": "vite build --ssr package-tools/materializeMeetingDashboardPackage.ts --outDir dist-package-tools && node dist-package-tools/materializeMeetingDashboardPackage.js"
   },
   "dependencies": {
     "ajv": "^8.17.1",
