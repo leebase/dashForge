@@ -45,9 +45,11 @@ steps:
     covering every AC-N check in traces_to, valid authority (human, mission, author, or exploratory),
     and a JSON array of non-empty command strings in command_allowlist. Every allowlisted command and every
     command a journey records MUST be runnable verbatim from the workspace root with system python3; the
-    package uses a src layout and is not installed, so use exactly the form
-    "env PYTHONPATH=src python3 -m dashForge.main" and "env PYTHONPATH=src python3 -m pytest" (the env
-    prefix, never a bare VAR= assignment). Journey status values are exactly passed or failed. Keep all
+    package uses a src layout and is not installed, so application commands use exactly the form
+    "env PYTHONPATH=src python3 -m dashForge.main" (the env prefix, never a bare VAR= assignment). The
+    test-suite command is exactly "python3 -m pytest tests/ -q" with NO PYTHONPATH override: the
+    orchestrator re-executes claims in a bounded environment whose own PYTHONPATH is what makes pytest
+    importable, and an override hides it. Journey status values are exactly passed or failed. Keep all
     writes within docs/ and journeys/.'
   name: Define the slice contract
   on_fail:
