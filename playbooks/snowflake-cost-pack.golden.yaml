@@ -41,23 +41,34 @@ steps:
     validation, routing intent, and acceptance checks for the snowflake-cost-pack
     slice under docs/snowflake-cost-pack-contract.md under the Overview, Problem,
     Constraints, and Acceptance Checks headings, with at least 120 non-whitespace
-    characters under each required heading. Enumerate every acceptance check with
-    an explicit ID of the form AC-1, AC-2, AC-3 and so on, one per check. Downstream
-    gates match those IDs literally: the user-simulation gate requires every AC-N
-    in this document to be covered by at least one user journey citing it in traces_to,
-    so an unnumbered or renumbered check is an uncoverable check. Also author the
-    synchronized user journeys manifest in journeys/user_journeys_manifest.json with
-    natural-language user journeys covering every AC-N check in traces_to, valid authority
-    (human, mission, author, or exploratory), and a JSON array of non-empty command
-    strings in command_allowlist. Every allowlisted command and every command a journey
-    records MUST be runnable verbatim from the workspace root with system python3;
-    the package uses a src layout and is not installed, so application commands use
-    exactly the form "env PYTHONPATH=src python3 -m dashForge.main" (the env prefix,
+    characters under each required heading. Slice intent: Expose dataForge''s snowflakeCost
+    pack through dashForge''s existing generate CLI and snapshot packager so a buyer
+    demo for any Snowflake cost story (for example idle-warehouse-waste) is produced
+    by one command as a deterministic SQLite database plus a provenance-labeled JSON
+    snapshot marked synthetic. Scenarios are enumerated from dataForge, unknown scenarios
+    fail closed with exit 2, the recommendation queue columns are preserved, and existing
+    packs keep working. Out of scope: frontend, DashboardSpec or scenario-folder work;
+    live Snowflake access or new dependencies; edits under dataForge/. Enumerate every
+    acceptance check with an explicit ID of the form AC-1, AC-2, AC-3 and so on, one
+    per check. Downstream gates match those IDs literally: the user-simulation gate
+    requires every AC-N in this document to be covered by at least one user journey
+    citing it in traces_to, so an unnumbered or renumbered check is an uncoverable
+    check. Also author the synchronized user journeys manifest in journeys/user_journeys_manifest.json
+    with natural-language user journeys covering every AC-N check in traces_to, valid
+    authority (human, mission, author, or exploratory), and a JSON array of non-empty
+    command strings in command_allowlist. Every allowlisted command and every command
+    a journey records MUST be runnable verbatim from the workspace root with system
+    python3; the package uses a src layout and is not installed, so application commands
+    use exactly the form "env PYTHONPATH=src python3 -m dashForge.main" (the env prefix,
     never a bare VAR= assignment). The test-suite command is exactly "python3 -m pytest
     tests/ -q" with NO PYTHONPATH override: the orchestrator re-executes claims in
     a bounded environment whose own PYTHONPATH is what makes pytest importable, and
-    an override hides it. Journey status values are exactly passed or failed. Keep
-    all writes within docs/ and journeys/.'
+    an override hides it. Every journey must be verifiable by at least one command
+    whose argv prefix is in command_allowlist; shell pipelines and tools such as jq,
+    grep, or cat are not re-executable and must not be a journey''s only evidence.
+    To verify file structure or metadata, run a targeted test in the form python3
+    -m pytest <test file> -q -k <test name> or an application command. Journey status
+    values are exactly passed or failed. Keep all writes within docs/ and journeys/.'
   name: Define the slice contract
   on_fail:
     after_retries_exhausted: halt
@@ -97,13 +108,19 @@ steps:
   - docs/snowflake-cost-pack-contract.md
   - architecture.md
   - product-definition.md
-  mission: Before writing, read AGENTS.md, docs/snowflake-cost-pack-contract.md, architecture.md,
-    and product-definition.md. Turn the contract into a concrete implementation plan
-    in plans/snowflake-cost-pack-implementation-plan.md covering Architecture, Tests,
-    Verification, and Risks, with at least 120 non-whitespace characters under each
-    required heading. Every acceptance check in the contract must map to a concrete
+  mission: 'Before writing, read AGENTS.md, docs/snowflake-cost-pack-contract.md,
+    architecture.md, and product-definition.md. Turn the contract into a concrete
+    implementation plan in plans/snowflake-cost-pack-implementation-plan.md covering
+    Architecture, Tests, Verification, and Risks, with at least 120 non-whitespace
+    characters under each required heading. Slice intent: Expose dataForge''s snowflakeCost
+    pack through dashForge''s existing generate CLI and snapshot packager so a buyer
+    demo for any Snowflake cost story (for example idle-warehouse-waste) is produced
+    by one command as a deterministic SQLite database plus a provenance-labeled JSON
+    snapshot marked synthetic. Scenarios are enumerated from dataForge, unknown scenarios
+    fail closed with exit 2, the recommendation queue columns are preserved, and existing
+    packs keep working. Every acceptance check in the contract must map to a concrete
     plan item; a traceability judge verifies this and fails the step naming any criterion
-    it cannot map. Keep all writes within plans/.
+    it cannot map. Keep all writes within plans/.'
   name: Plan the implementation
   on_fail:
     after_retries_exhausted: halt
@@ -180,14 +197,20 @@ steps:
   - src/dashForge/main.py
   - src/dashForge/package_snapshot.py
   - src/dashForge/_dataforge_compat.py
-  mission: Before writing code, read AGENTS.md, docs/snowflake-cost-pack-contract.md,
+  mission: 'Before writing code, read AGENTS.md, docs/snowflake-cost-pack-contract.md,
     plans/snowflake-cost-pack-implementation-plan.md, and tests/test_snowflake_cost_pack.py.
     Implement the snowflake-cost-pack functionality in src/dashForge/snowflake_cost.py
     (and update src/dashForge/generate.py, src/dashForge/main.py, and src/dashForge/package_snapshot.py
-    as needed) against the tests authored in the previous step. Do not modify tests/
-    or journeys/ — the test suite and journey manifest were authored separately and
-    judge this step. Run pytest to confirm the new slice tests pass. Keep all writes
-    within src/dashForge/ and playbooks/.
+    as needed) against the tests authored in the previous step. Slice intent: Expose
+    dataForge''s snowflakeCost pack through dashForge''s existing generate CLI and
+    snapshot packager so a buyer demo for any Snowflake cost story (for example idle-warehouse-waste)
+    is produced by one command as a deterministic SQLite database plus a provenance-labeled
+    JSON snapshot marked synthetic. Scenarios are enumerated from dataForge, unknown
+    scenarios fail closed with exit 2, the recommendation queue columns are preserved,
+    and existing packs keep working. Do not modify tests/ or journeys/ — the test
+    suite and journey manifest were authored separately and judge this step. Run pytest
+    to confirm the new slice tests pass. Keep all writes within src/dashForge/ and
+    playbooks/.'
   name: Implement the slice
   on_fail:
     after_retries_exhausted: halt
@@ -378,12 +401,16 @@ steps:
     of what you actually did, and commands_run listing every command you actually
     executed with its real exit_code and optionally a stdout_contains substring you
     actually saw — the orchestrator re-executes the allowlisted ones and fails this
-    step on any mismatch. findings: one entry per failure, each with id, severity
-    (Critical/High/Medium/Low), the journey name (exact manifest journey name), problem,
-    reproduction, expected, actual, optional observations, proposed_fix, and artifacts
-    listing files you captured under artifacts/user-test/ (terminal transcripts, logs,
-    screenshots). Every referenced artifact must exist and be non-empty. Every journey
-    named in the manifest must appear in the result. Maintain artifacts/user-test/findings-log.md
+    step on any mismatch. Every journey must carry at least one commands_run entry
+    whose argv prefix is in the manifest''s command_allowlist; a journey whose only
+    evidence is a shell pipeline or a tool such as jq cannot be re-executed and fails
+    this gate, so verify structure with a targeted python3 -m pytest <test file> -q
+    -k <test name> command instead. findings: one entry per failure, each with id,
+    severity (Critical/High/Medium/Low), the journey name (exact manifest journey
+    name), problem, reproduction, expected, actual, optional observations, proposed_fix,
+    and artifacts listing files you captured under artifacts/user-test/ (terminal
+    transcripts, logs, screenshots). Every referenced artifact must exist and be non-empty.
+    Every journey named in the manifest must appear in the result. Maintain artifacts/user-test/findings-log.md
     as an append-only record: read whatever is already there, keep every existing
     entry byte-for-byte, and append a new dated section for this pass listing each
     finding you filed (or stating that this pass found none). Keep all writes within

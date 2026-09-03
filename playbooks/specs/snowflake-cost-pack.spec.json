@@ -2,7 +2,13 @@
   "schema_version": 1,
   "slice": {
     "id": "snowflake-cost-pack",
-    "title": "Snowflake Cost Pack CLI"
+    "title": "Snowflake Cost Pack CLI",
+    "intent": "Expose dataForge's snowflakeCost pack through dashForge's existing generate CLI and snapshot packager so a buyer demo for any Snowflake cost story (for example idle-warehouse-waste) is produced by one command as a deterministic SQLite database plus a provenance-labeled JSON snapshot marked synthetic. Scenarios are enumerated from dataForge, unknown scenarios fail closed with exit 2, the recommendation queue columns are preserved, and existing packs keep working.",
+    "non_goals": [
+      "frontend, DashboardSpec or scenario-folder work",
+      "live Snowflake access or new dependencies",
+      "edits under dataForge/"
+    ]
   },
   "module": {
     "path": "src/dashForge/snowflake_cost.py",
