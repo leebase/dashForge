@@ -1,0 +1,558 @@
+defaults:
+  retry_policy:
+    max_attempts: 2
+    strategy: rerun_with_validation_feedback
+  routing:
+    primary:
+      harness: antigravity_cli
+      model: gemini-3.8-flash-high
+  worker: antigravity_cli
+delivery_profile:
+  name: code
+name: Snowflake Cost Pack CLI governed delivery
+playbook_id: snowflake_cost_pack_delivery
+roles:
+  slice_reviewer:
+    effort: low
+    harness: antigravity_cli
+    model: gemini-3.1-pro
+  user_tester:
+    effort: low
+    harness: antigravity_cli
+    model: gemini-3.1-pro
+run_policy:
+  on_step_failure: halt
+  require_validation_pass_to_advance: true
+steps:
+- allowed_paths:
+  - docs/
+  - journeys/
+  inputs:
+  - AGENTS.md
+  - docs/snowflake-cost-pack-brief.md
+  - product-definition.md
+  - architecture.md
+  - README.md
+  - context.md
+  - docs/package-dataforge-snapshot-contract.md
+  mission: 'Before writing, read AGENTS.md, docs/snowflake-cost-pack-brief.md, product-definition.md,
+    architecture.md, README.md, context.md, and docs/package-dataforge-snapshot-contract.md,
+    and follow the repo operating rules. Define the problem, required outputs, constraints,
+    validation, routing intent, and acceptance checks for the snowflake-cost-pack
+    slice under docs/snowflake-cost-pack-contract.md under the Overview, Problem,
+    Constraints, and Acceptance Checks headings, with at least 120 non-whitespace
+    characters under each required heading. Enumerate every acceptance check with
+    an explicit ID of the form AC-1, AC-2, AC-3 and so on, one per check. Downstream
+    gates match those IDs literally: the user-simulation gate requires every AC-N
+    in this document to be covered by at least one user journey citing it in traces_to,
+    so an unnumbered or renumbered check is an uncoverable check. Also author the
+    synchronized user journeys manifest in journeys/user_journeys_manifest.json with
+    natural-language user journeys covering every AC-N check in traces_to, valid authority
+    (human, mission, author, or exploratory), and a JSON array of non-empty command
+    strings in command_allowlist. Every allowlisted command and every command a journey
+    records MUST be runnable verbatim from the workspace root with system python3;
+    the package uses a src layout and is not installed, so application commands use
+    exactly the form "env PYTHONPATH=src python3 -m dashForge.main" (the env prefix,
+    never a bare VAR= assignment). The test-suite command is exactly "python3 -m pytest
+    tests/ -q" with NO PYTHONPATH override: the orchestrator re-executes claims in
+    a bounded environment whose own PYTHONPATH is what makes pytest importable, and
+    an override hides it. Journey status values are exactly passed or failed. Keep
+    all writes within docs/ and journeys/.'
+  name: Define the slice contract
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the slice contract under docs/snowflake-cost-pack-contract.md
+      and user journey manifest under journeys/user_journeys_manifest.json so they
+      are concrete, synchronized, and contract contains required headings Overview,
+      Problem, Constraints, and Acceptance Checks with at least 120 non-whitespace
+      characters under each required heading, and keep all writes inside docs/ and
+      journeys/.
+  outputs:
+    required:
+    - path: docs/snowflake-cost-pack-contract.md
+      type: markdown
+    - path: journeys/user_journeys_manifest.json
+      type: json
+  step_id: step_01_define_slice_contract
+  validation:
+    structural:
+    - path: docs/snowflake-cost-pack-contract.md
+      type: file_exists
+    - headings:
+      - Overview
+      - Problem
+      - Constraints
+      - Acceptance Checks
+      min_chars_under_heading: 120
+      path: docs/snowflake-cost-pack-contract.md
+      type: markdown_headings_present
+    - path: journeys/user_journeys_manifest.json
+      type: file_exists
+    - path: journeys/user_journeys_manifest.json
+      type: json_parse
+- allowed_paths:
+  - plans/
+  inputs:
+  - AGENTS.md
+  - docs/snowflake-cost-pack-contract.md
+  - architecture.md
+  - product-definition.md
+  mission: Before writing, read AGENTS.md, docs/snowflake-cost-pack-contract.md, architecture.md,
+    and product-definition.md. Turn the contract into a concrete implementation plan
+    in plans/snowflake-cost-pack-implementation-plan.md covering Architecture, Tests,
+    Verification, and Risks, with at least 120 non-whitespace characters under each
+    required heading. Every acceptance check in the contract must map to a concrete
+    plan item; a traceability judge verifies this and fails the step naming any criterion
+    it cannot map. Keep all writes within plans/.
+  name: Plan the implementation
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the implementation plan in plans/snowflake-cost-pack-implementation-plan.md
+      so it has at least 120 non-whitespace characters under each required heading
+      (Architecture, Tests, Verification, Risks), is concrete about code, tests, verification,
+      routing, and risks, every contract acceptance check maps to a plan item, and
+      keep all writes inside plans/.
+  outputs:
+    required:
+    - path: plans/snowflake-cost-pack-implementation-plan.md
+      type: markdown
+  step_id: step_03_plan_slice_delivery
+  validation:
+    semantic:
+    - judge_harness: antigravity_cli
+      judge_model: gemini-3.8-flash-medium
+      mode: contract_traceability
+      path: plans/snowflake-cost-pack-implementation-plan.md
+      reference_path: docs/snowflake-cost-pack-contract.md
+      type: semantic_check
+    structural:
+    - path: plans/snowflake-cost-pack-implementation-plan.md
+      type: file_exists
+    - headings:
+      - Architecture
+      - Tests
+      - Verification
+      - Risks
+      min_chars_under_heading: 120
+      path: plans/snowflake-cost-pack-implementation-plan.md
+      type: markdown_headings_present
+- allowed_paths:
+  - tests/test_snowflake_cost_pack.py
+  - journeys/
+  inputs:
+  - AGENTS.md
+  - docs/snowflake-cost-pack-contract.md
+  - plans/snowflake-cost-pack-implementation-plan.md
+  - journeys/user_journeys_manifest.json
+  mission: Before writing, read AGENTS.md, docs/snowflake-cost-pack-contract.md, plans/snowflake-cost-pack-implementation-plan.md,
+    and journeys/user_journeys_manifest.json. Author the targeted test suite in tests/test_snowflake_cost_pack.py
+    for the snowflake-cost-pack slice contract before the implementation exists, ensuring
+    tests encode the contract rather than the implementation. The tests may fail until
+    the implementation lands, but they must be syntactically valid and import-guarded
+    where needed. Do not run pytest in this step. Keep all writes within tests/ and
+    journeys/.
+  name: Author the slice tests
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the slice tests so they encode the contract, compile cleanly
+      with python3 -m compileall, and stay inside tests/ and journeys/.
+  outputs:
+    required:
+    - path: tests/test_snowflake_cost_pack.py
+      type: text
+  step_id: step_04_author_slice_tests
+  validation:
+    structural:
+    - path: tests/test_snowflake_cost_pack.py
+      type: file_exists
+    system:
+    - command: python3 -m compileall tests/test_snowflake_cost_pack.py
+      type: command_succeeds
+- allowed_paths:
+  - src/dashForge/
+  - playbooks/
+  inputs:
+  - AGENTS.md
+  - docs/snowflake-cost-pack-contract.md
+  - plans/snowflake-cost-pack-implementation-plan.md
+  - tests/test_snowflake_cost_pack.py
+  - src/dashForge/generate.py
+  - src/dashForge/main.py
+  - src/dashForge/package_snapshot.py
+  - src/dashForge/_dataforge_compat.py
+  mission: Before writing code, read AGENTS.md, docs/snowflake-cost-pack-contract.md,
+    plans/snowflake-cost-pack-implementation-plan.md, and tests/test_snowflake_cost_pack.py.
+    Implement the snowflake-cost-pack functionality in src/dashForge/snowflake_cost.py
+    (and update src/dashForge/generate.py, src/dashForge/main.py, and src/dashForge/package_snapshot.py
+    as needed) against the tests authored in the previous step. Do not modify tests/
+    or journeys/ — the test suite and journey manifest were authored separately and
+    judge this step. Run pytest to confirm the new slice tests pass. Keep all writes
+    within src/dashForge/ and playbooks/.
+  name: Implement the slice
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the implementation until the separately authored slice tests
+      pass cleanly with pytest. Keep all writes inside src/dashForge/ and playbooks/
+      and do not touch tests/ or journeys/.
+  outputs:
+    required:
+    - path: src/dashForge/snowflake_cost.py
+      type: text
+  step_id: step_05_implement_slice
+  validation:
+    structural:
+    - path: src/dashForge/snowflake_cost.py
+      type: file_exists
+    system:
+    - command: python3 -m pytest tests/test_snowflake_cost_pack.py
+      require_collected_tests: true
+      type: command_succeeds
+- allowed_paths:
+  - README.md
+  - docs/user-guide.md
+  inputs:
+  - AGENTS.md
+  - docs/snowflake-cost-pack-contract.md
+  - plans/snowflake-cost-pack-implementation-plan.md
+  - src/dashForge/snowflake_cost.py
+  - tests/test_snowflake_cost_pack.py
+  - README.md
+  - docs/user-guide.md
+  mission: Before writing, read AGENTS.md, docs/snowflake-cost-pack-contract.md, plans/snowflake-cost-pack-implementation-plan.md,
+    src/dashForge/snowflake_cost.py, and tests/test_snowflake_cost_pack.py. Update
+    the user-facing documentation in README.md and docs/user-guide.md. The required
+    exact Markdown headings are Snowflake Cost Pack in README.md and Snowflake Cost
+    Pack in docs/user-guide.md; use those exact heading texts without synonyms, prefixes,
+    or suffixes, with at least 80 non-whitespace characters under each required heading.
+    Keep all writes within README.md and docs/user-guide.md.
+  name: Document the slice
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the slice documentation so the feature is discoverable and
+      understandable from the docs alone, including exact Markdown headings Snowflake
+      Cost Pack in README.md and Snowflake Cost Pack in docs/user-guide.md with at
+      least 80 non-whitespace characters under each required heading. Keep all writes
+      inside README.md and docs/user-guide.md.
+  outputs:
+    required:
+    - path: README.md
+      type: markdown
+    - path: docs/user-guide.md
+      type: markdown
+  step_id: step_06_document_slice
+  validation:
+    structural:
+    - path: README.md
+      type: file_exists
+    - headings:
+      - Snowflake Cost Pack
+      min_chars_under_heading: 80
+      path: README.md
+      type: markdown_headings_present
+    - path: docs/user-guide.md
+      type: file_exists
+    - headings:
+      - Snowflake Cost Pack
+      min_chars_under_heading: 80
+      path: docs/user-guide.md
+      type: markdown_headings_present
+- allowed_paths:
+  - src/dashForge/
+  - tests/test_snowflake_cost_pack.py
+  - playbooks/
+  - README.md
+  - docs/
+  - plans/
+  - tmp/
+  inputs:
+  - AGENTS.md
+  - docs/snowflake-cost-pack-contract.md
+  - plans/snowflake-cost-pack-implementation-plan.md
+  - README.md
+  - docs/user-guide.md
+  - src/dashForge/snowflake_cost.py
+  - tests/test_snowflake_cost_pack.py
+  mission: 'Before writing, read AGENTS.md, docs/snowflake-cost-pack-contract.md,
+    plans/snowflake-cost-pack-implementation-plan.md, README.md, docs/user-guide.md,
+    src/dashForge/snowflake_cost.py, and tests/test_snowflake_cost_pack.py. Repair
+    any remaining slice failures so the implementation, tests, and documentation are
+    all green before review. If this step was re-entered from a failed review verdict,
+    the findings to repair are in your retry feedback — fix those findings first.
+    If it was re-entered from a failed user-simulation gate, read artifacts/user-test/result.json
+    if present: its findings array carries the reproduction, expected vs actual behavior,
+    tester observations, and captured artifacts for every user-visible defect the
+    independent tester found. Reproduce each one yourself before fixing it, fix the
+    product rather than the journey, and do not edit journeys/user_journeys_manifest.json
+    — it is maintained separately and must not be modified by repair steps. Run the
+    full test suite with python3 -m pytest and verify compilation with python3 -m
+    compileall src tests. Keep all writes within src/dashForge/, tests/, playbooks/,
+    README.md, docs/, plans/, and tmp/.'
+  name: Repair and verify the slice
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the slice until full verification is green and the implementation
+      is ready for review. Keep all writes inside the declared paths and do not modify
+      journeys/.
+  outputs:
+    required:
+    - path: src/dashForge/snowflake_cost.py
+      type: text
+    - path: tests/test_snowflake_cost_pack.py
+      type: text
+  step_id: step_07_repair_and_verify_slice
+  validation:
+    structural:
+    - path: src/dashForge/snowflake_cost.py
+      type: file_exists
+    - path: tests/test_snowflake_cost_pack.py
+      type: file_exists
+    system:
+    - command: python3 -m pytest
+      require_collected_tests: true
+      timeout_seconds: 600
+      type: command_succeeds
+    - command: python3 -m compileall src tests
+      type: command_succeeds
+- allowed_paths:
+  - artifacts/user-smoke/
+  inputs:
+  - tests/smoke_manifest.json
+  - tests/smoke_check.py
+  - tests/smoke_start.py
+  mission: Run the canonical smoke manifest for the slice and capture evidence under
+    artifacts/user-smoke/. Validate tests/smoke_manifest.json against tests/smoke_check.py,
+    which runs the Snowflake cost pack slice tests, the snapshot packaging tests,
+    and the dataForge compatibility suite. Keep all writes within artifacts/user-smoke/.
+  name: Run the user smoke gate for the slice
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the slice until the smoke gate passes and produces valid
+      artifacts/user-smoke/result.json matching the hash-pinned smoke manifest and
+      check script.
+  outputs:
+    required:
+    - path: artifacts/user-smoke/result.json
+      type: json
+  step_id: step_08_user_smoke_gate
+  validation:
+    structural:
+    - path: artifacts/user-smoke/result.json
+      type: file_exists
+    - path: artifacts/user-smoke/result.json
+      type: json_parse
+    - path: tests/smoke_manifest.json
+      sha256: e8192445ea7b0ca3f130f7d178e283a0e10984e80a6e3d2e88de69c4475ab08b
+      type: file_hash_matches
+    - path: tests/smoke_check.py
+      sha256: a890e00898e70112bdd5e0f14d1c174c43ca8c4ae6128f44e16a2e3800bcee6c
+      type: file_hash_matches
+  worker: smoke_runner
+- allowed_paths:
+  - artifacts/user-test/
+  - tmp/
+  inputs:
+  - AGENTS.md
+  - docs/snowflake-cost-pack-contract.md
+  - journeys/user_journeys_manifest.json
+  - artifacts/user-smoke/result.json
+  - src/dashForge/snowflake_cost.py
+  mission: 'Before writing, read AGENTS.md, docs/snowflake-cost-pack-contract.md,
+    journeys/user_journeys_manifest.json, artifacts/user-smoke/result.json, and src/dashForge/snowflake_cost.py.
+    Follow the TEST AS LEE protocol directly against a real running instance of the
+    slice. You are an independent evaluator, not a second implementer: observe, reproduce,
+    evidence, and report. Do NOT fix the product. Your allowed_paths deliberately
+    exclude src/ and tests/, so any attempt to repair the slice fails the changed-path
+    policy; a journey failure routes back to step_07_repair_and_verify_slice, which
+    repairs it and re-runs the deterministic tests, the smoke gate, and this step.
+    The only thing you may repair is your own testing environment under tmp/. Start
+    the application the way a real user would. Attempt every journey named in journeys/user_journeys_manifest.json
+    (natural-language goals, not literal commands — decide how to pursue each one
+    yourself, the way a user would). If you find yourself thinking a user probably
+    won''t try that, that is exactly what to test next; add exploratory journeys of
+    your own to the result beyond the manifest''s, and report what they find. For
+    every failed journey, the evaluator must set finding.journey to the exact manifest
+    journey name (journeys[].name), not the journey ID, acceptance-criterion ID, or
+    a paraphrase: the validator joins failed journeys to findings by exact name. Write
+    artifacts/user-test/result.json with two arrays. journeys: every manifest journey
+    by name plus any exploratory ones, each with status, a concrete steps_taken account
+    of what you actually did, and commands_run listing every command you actually
+    executed with its real exit_code and optionally a stdout_contains substring you
+    actually saw — the orchestrator re-executes the allowlisted ones and fails this
+    step on any mismatch. findings: one entry per failure, each with id, severity
+    (Critical/High/Medium/Low), the journey name (exact manifest journey name), problem,
+    reproduction, expected, actual, optional observations, proposed_fix, and artifacts
+    listing files you captured under artifacts/user-test/ (terminal transcripts, logs,
+    screenshots). Every referenced artifact must exist and be non-empty. Every journey
+    named in the manifest must appear in the result. Maintain artifacts/user-test/findings-log.md
+    as an append-only record: read whatever is already there, keep every existing
+    entry byte-for-byte, and append a new dated section for this pass listing each
+    finding you filed (or stating that this pass found none). Keep all writes within
+    artifacts/user-test/ and tmp/.'
+  name: Run the user-simulation gate for the slice
+  on_fail:
+    after_retries_exhausted: halt
+    repair:
+      max_cycles: 2
+      step_id: step_07_repair_and_verify_slice
+    retry_message: 'Repair the user-test report, not the product: every journey named
+      in journeys/user_journeys_manifest.json must appear in artifacts/user-test/result.json
+      with a concrete steps_taken account, commands_run entries whose exit codes and
+      stdout_contains claims actually reproduce, and a structured finding with reproduction/expected/actual/proposed_fix
+      and non-empty artifacts for every failure.'
+  outputs:
+    required:
+    - path: artifacts/user-test/result.json
+      type: json
+    - path: artifacts/user-test/findings-log.md
+      type: markdown
+  role: user_tester
+  step_id: step_08b_user_simulation_gate
+  validation:
+    structural:
+    - path: artifacts/user-test/result.json
+      type: file_exists
+    - path: artifacts/user-test/findings-log.md
+      type: file_exists
+    - path: artifacts/user-test/result.json
+      type: json_parse
+    - contract_path: docs/snowflake-cost-pack-contract.md
+      manifest_path: journeys/user_journeys_manifest.json
+      path: artifacts/user-test/result.json
+      type: user_journeys_all_passed
+    system:
+    - manifest_path: journeys/user_journeys_manifest.json
+      path: artifacts/user-test/result.json
+      timeout_seconds: 120
+      type: user_journeys_execution_verified
+- allowed_paths:
+  - code-reviews/
+  inputs:
+  - AGENTS.md
+  - docs/snowflake-cost-pack-contract.md
+  - plans/snowflake-cost-pack-implementation-plan.md
+  - README.md
+  - docs/user-guide.md
+  - artifacts/user-test/result.json
+  - artifacts/user-test/findings-log.md
+  - journeys/user_journeys_manifest.json
+  - src/dashForge/snowflake_cost.py
+  - tests/test_snowflake_cost_pack.py
+  mission: 'Before writing, read AGENTS.md, docs/snowflake-cost-pack-contract.md,
+    plans/snowflake-cost-pack-implementation-plan.md, README.md, docs/user-guide.md,
+    artifacts/user-test/result.json, artifacts/user-test/findings-log.md, journeys/user_journeys_manifest.json,
+    src/dashForge/snowflake_cost.py, and tests/test_snowflake_cost_pack.py. Review
+    the verified slice and record findings under code-reviews/. Run at least python3
+    -m pytest tests/ -q and list its real exit code in checks_run so checks_run_match
+    has a re-executable check. Write the prose review to code-reviews/review-snowflake-cost-pack.md
+    with the Checks Run and Lens Notes headings, with at least 40 non-whitespace characters
+    under each required heading. Write the machine-readable verdict to code-reviews/review-snowflake-cost-pack.verdict.json
+    using the canonical builtin:review_verdict/v1 schema: verdict must be pass or
+    fail (fail only when at least one finding meets or exceeds the High severity threshold);
+    findings is an array of objects with id, severity (Critical/High/Medium/Low),
+    file, location, problem, and proposed_fix; checks_run is an array of {command,
+    exit_code, summary} objects including allowlisted commands like python3 -m pytest
+    tests/ -q; and lenses is an object mapping lens names to objects that contain
+    a non-empty finding_ids array and/or a non-empty justification string. Review
+    both the implementation and the user-facing defects recorded in artifacts/user-test/findings-log.md.
+    Keep all writes within code-reviews/.'
+  name: Review the verified slice
+  on_fail:
+    after_retries_exhausted: halt
+    repair:
+      max_cycles: 2
+      step_id: step_07_repair_and_verify_slice
+    retry_message: Repair the review artifacts so the prose review has at least 40
+      non-whitespace characters under Checks Run and Lens Notes, the verdict JSON
+      honestly reflects the verified slice, the verdict matches the schema, and every
+      claimed check result matches what the commands actually return. Keep all writes
+      inside code-reviews/.
+  outputs:
+    required:
+    - path: code-reviews/review-snowflake-cost-pack.md
+      type: markdown
+    - path: code-reviews/review-snowflake-cost-pack.verdict.json
+      type: json
+  role: slice_reviewer
+  step_id: step_09_review_verified_slice
+  validation:
+    structural:
+    - path: code-reviews/review-snowflake-cost-pack.md
+      type: file_exists
+    - headings:
+      - Checks Run
+      - Lens Notes
+      min_chars_under_heading: 40
+      path: code-reviews/review-snowflake-cost-pack.md
+      type: markdown_headings_present
+    - path: code-reviews/review-snowflake-cost-pack.verdict.json
+      schema_path: builtin:review_verdict/v1
+      type: json_schema
+    - path: code-reviews/review-snowflake-cost-pack.verdict.json
+      severity_threshold: High
+      type: review_verdict_clean
+    system:
+    - path: code-reviews/review-snowflake-cost-pack.verdict.json
+      timeout_seconds: 600
+      type: checks_run_match
+- allowed_paths:
+  - context.md
+  - result-review.md
+  - sprint-plan.md
+  - WHERE_AM_I.md
+  - architecture.md
+  inputs:
+  - AGENTS.md
+  - code-reviews/review-snowflake-cost-pack.md
+  - code-reviews/review-snowflake-cost-pack.verdict.json
+  - context.md
+  - result-review.md
+  - sprint-plan.md
+  - WHERE_AM_I.md
+  - architecture.md
+  mission: Before writing, read AGENTS.md, code-reviews/review-snowflake-cost-pack.md,
+    code-reviews/review-snowflake-cost-pack.verdict.json, context.md, result-review.md,
+    sprint-plan.md, WHERE_AM_I.md, and architecture.md. Update context.md, result-review.md,
+    sprint-plan.md, and WHERE_AM_I.md for handoff after the review artifacts exist.
+    The handoff must honestly reflect the review verdict — a semantic judge checks
+    the closeout against the verdict artifact and fails this step when they contradict.
+    context.md must include the exact Markdown headings Snapshot and What's Happening
+    Now with at least 80 non-whitespace characters under each required heading. Record
+    any stable architecture decision in architecture.md if needed. Keep all writes
+    within context.md, result-review.md, sprint-plan.md, WHERE_AM_I.md, and architecture.md.
+  name: Close out the sprint and handoff docs
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the handoff docs so the verified and reviewed slice is clearly
+      and honestly recorded for the next session, consistent with the review verdict,
+      with exact Markdown headings Snapshot and What's Happening Now in context.md
+      and at least 80 non-whitespace characters under each required heading. Keep
+      all writes inside the declared paths.
+  outputs:
+    required:
+    - path: result-review.md
+      type: markdown
+    - path: context.md
+      type: markdown
+  step_id: step_10_closeout_handoff_docs
+  validation:
+    semantic:
+    - judge_harness: antigravity_cli
+      judge_model: gemini-3.8-flash-medium
+      path: context.md
+      question: Does the updated handoff state in context.md accurately and honestly
+        describe the delivered slice as recorded in the reference review verdict,
+        without contradicting the verdict, omitting its gating findings, or claiming
+        verification results the verdict does not support?
+      reference_path: code-reviews/review-snowflake-cost-pack.verdict.json
+      type: semantic_check
+    structural:
+    - path: result-review.md
+      type: file_exists
+    - path: context.md
+      type: file_exists
+    - headings:
+      - Snapshot
+      - What's Happening Now
+      min_chars_under_heading: 80
+      path: context.md
+      type: markdown_headings_present

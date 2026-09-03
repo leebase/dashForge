@@ -13,8 +13,8 @@ import sys
 
 TEST_FILES = [
     "tests/test_dataforge_compat.py",
-    "tests/test_package_dataforge_snapshot.py",
     "tests/test_package_snapshot.py",
+    "tests/test_snowflake_cost_pack.py",
 ]
 
 

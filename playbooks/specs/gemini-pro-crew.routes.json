@@ -1,0 +1,5 @@
+{
+  "primary": {"harness": "antigravity_cli", "model": "gemini-3.8-flash-high"},
+  "reviewer": {"harness": "antigravity_cli", "model": "gemini-3.1-pro", "effort": "low"},
+  "judge": {"harness": "antigravity_cli", "model": "gemini-3.8-flash-medium"}
+}

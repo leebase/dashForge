@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "slice": {
+    "id": "snowflake-cost-pack",
+    "title": "Snowflake Cost Pack CLI"
+  },
+  "module": {
+    "path": "src/dashForge/snowflake_cost.py",
+    "touch_also": [
+      "src/dashForge/generate.py",
+      "src/dashForge/main.py",
+      "src/dashForge/package_snapshot.py"
+    ]
+  },
+  "test_path": "tests/test_snowflake_cost_pack.py",
+  "context_inputs": [
+    "docs/snowflake-cost-pack-brief.md",
+    "product-definition.md",
+    "architecture.md",
+    "README.md",
+    "context.md",
+    "docs/package-dataforge-snapshot-contract.md"
+  ],
+  "implementation_inputs": [
+    "src/dashForge/generate.py",
+    "src/dashForge/main.py",
+    "src/dashForge/package_snapshot.py",
+    "src/dashForge/_dataforge_compat.py"
+  ],
+  "docs": [
+    {
+      "path": "README.md",
+      "heading": "Snowflake Cost Pack"
+    },
+    {
+      "path": "docs/user-guide.md",
+      "heading": "Snowflake Cost Pack"
+    }
+  ],
+  "smoke": {
+    "worker": "smoke_runner",
+    "manifest": "tests/smoke_manifest.json",
+    "check_script": "tests/smoke_check.py",
+    "extra_inputs": [
+      "tests/smoke_start.py"
+    ],
+    "description": "runs the Snowflake cost pack slice tests, the snapshot packaging tests, and the dataForge compatibility suite"
+  }
+}
