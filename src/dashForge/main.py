@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from .package_snapshot import GENERATORS, package_snapshot
+from dashForge.package_snapshot import GENERATORS, package_snapshot
 
 
 def build_parser() -> argparse.ArgumentParser:

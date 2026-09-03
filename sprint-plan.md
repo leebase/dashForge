@@ -4,7 +4,23 @@
 >
 > This file should stay concrete. If the strategy changes, update `project-plan.md`. If product direction changes, update `product-definition.md` or `architecture.md`.
 
----
+## Idle Warehouse Waste Slice — 2026-09-02
+
+**Status:** Complete
+
+- [x] Canonical snapshot ingestion and schema validation for all 7 canonical datasets (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`) conforming to `SQLiteSnapshot` specification (AC-1).
+- [x] Provenance tracing and synthetic disclosure metadata embedded in generated snapshots (AC-1).
+- [x] Deterministic CLI generation pipeline supporting `--pack snowflakeCost --scenario idle-warehouse-waste` with fail-closed overwrite protection requiring `--force` (AC-2).
+- [x] Formalized `DashboardSpec` contract and claim ledger verification linking metrics and narrative directly to dataset evidence (AC-3).
+- [x] DataAdapter runtime query and aggregation routing across all 7 datasets (AC-4).
+- [x] Catalog registrations for scenario `snowflakeCost:idle-warehouse-waste` and starter template `tpl.snowflakeCost.idle-warehouse-waste` (AC-5).
+- [x] Preserved `recommendation_queue` table schema with all 6 governance columns (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, `guardrail`) and safety guardrails (AC-6).
+- [x] Standalone executive presentation and follow-up export workflow with clear synthetic data disclosures (AC-7).
+- [x] Backwards compatibility for existing packs (`healthcare`, `financial`, `saas`); zero changes to sibling project `dataForge`; full regression suite passes with 109 tests (AC-8).
+- [x] Passed governed review with verdict `pass`, recommendation `ready`, and 0 findings in `code-reviews/review-idle-warehouse-waste.verdict.json`.
+- [x] Preserved validator evidence: all compileall and pytest checks passed (final full test suite: 109 passed in 15.60s, exit status 0; targeted suite: 35 passed in 0.93s, exit status 0; compileall exit status 0).
+
+This slice delivers the complete, verified `idle-warehouse-waste` vertical slice for Snowflake Cost optimization, providing deterministic 7-dataset packaging, provenance tracking, recommendation queue governance, and standalone presentation capabilities for offline executive workshops.
 
 ## Snowflake Cost Pack Slice — 2026-09-02
 

@@ -4,6 +4,50 @@
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
 
+## 2026-09-02 — Idle Warehouse Waste Slice Passed Governed Review
+
+### What Was Built
+
+Implemented and verified the `idle-warehouse-waste` vertical slice for Snowflake Cost optimization under pack `snowflakeCost`:
+
+- **Canonical Snapshot Ingestion & Schema Conformance (`src/dashForge/package_snapshot.py`, `src/dashForge/snowflake_cost.py`)**: Generated deterministic SQLite database and canonical `SQLiteSnapshot` JSON adhering strictly to `frontend/src/core/data/sqliteSnapshot.ts`. Produces all seven canonical datasets (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`) with validated types (`string`, `number`, `date`, `boolean`) and roles (`dimension`, `measure`, `date`, `id`) (AC-1).
+- **Provenance Metadata & Synthetic Disclosure (`src/dashForge/snowflake_cost.py`, `src/dashForge/package_snapshot.py`)**: Enriched snapshot metadata includes complete provenance tracing: `packId` (`snowflakeCost`), `scenarioId` (`idle-warehouse-waste`), `seed`, `dataForgeStoryContractPath` (`stories/snowflake/idle-warehouse-waste.md`), generator version, ISO-8601 generation timestamp, `synthetic: true`, and disclosure text `"Synthetic demo data"` (AC-1).
+- **Deterministic CLI Generation Pipeline & Fail-Closed Overwrite Protection (`src/dashForge/main.py`)**: Supported `python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste` emitting bit-for-bit reproducible assets given identical seeds. Enforced fail-closed target protection aborting with exit status 2 and diagnostic messaging when destination paths exist without `--force` or on invalid/missing CLI arguments (AC-2).
+- **DashboardSpec Contract Formalization & Claim Ledger Verification**: Formalized `DashboardSpec` contracts and claim ledger bindings for `idle-warehouse-waste`, connecting executive narrative and KPI metrics directly to verified dataset evidence (AC-3).
+- **DataAdapter Runtime Seam & Seven-Dataset Query Routing (`frontend/src/core/data/`)**: Verified that query, aggregate, and schema inspection functions route cleanly across all seven datasets via `DataAdapter` (AC-4).
+- **Scenario & Template Catalog Registrations (`frontend/src/mock-data/`)**: Registered scenario `snowflakeCost:idle-warehouse-waste` and starter template `tpl.snowflakeCost.idle-warehouse-waste` in runtime catalogs (AC-5).
+- **Prioritized Recommendation Queue Governance & Safety Guardrails (`src/dashForge/snowflake_cost.py`)**: Retained `recommendation_queue` table with all governance and severity columns (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, `guardrail`) and safety guardrails intact (AC-6).
+- **Standalone Executive Presentation, Follow-Up Export & Synthetic Disclosures**: Validated standalone presentation flow and follow-up export capability with prominent synthetic disclosures (AC-7).
+- **Backwards Compatibility & Sibling Project Isolation (AC-8)**: All existing packs (`healthcare`, `financial`, `saas`) remain fully operational with reproducible generation. No changes were made to sibling project `dataForge`, and no external runtime dependencies were introduced.
+- **Targeted Test Suite (`tests/test_idle_warehouse_waste.py`)**: 35 unit and integration tests validating snapshot schema, provenance metadata, CLI generation, fail-closed overwrite protection, DashboardSpec contracts, DataAdapter routing, catalog registration, recommendation queue governance, and backwards compatibility.
+
+### Why It Matters
+
+Idle warehouse waste is one of the largest and most frequent sources of cloud overspending in enterprise Snowflake deployments (often accounting for 20-30% of compute credits). Anblicks consultants can now demonstrate realistic, reproducible waste patterns and governance-ready recommendation actions in executive discovery workshops completely offline, with zero live Snowflake credentials, zero cloud costs, and zero network dependencies, backed by verifiable claim ledgers and synthetic data transparency.
+
+### Review Verdict & Independent Evidence
+
+- **Review Verdict**: `pass` with 0 findings in `code-reviews/review-idle-warehouse-waste.verdict.json` and `code-reviews/review-idle-warehouse-waste.md`.
+- **Recommendation**: `ready`
+- **Readiness Criteria**: All verified true (`producer_route_executed`, `repository_identity_verified`, `validator_authority_verified`, `semantic_judge_route_executed`, `evaluator_route_executed`).
+- **Review Lenses**:
+  - *Implementation Lens*: The implementation correctly produces deterministic SQLite databases and canonical JSON snapshots. It strictly adheres to the required schema, integrates provenance metadata, implements the necessary DataAdapter queries, and correctly handles recommendation queue governance columns as expected.
+  - *User-Facing Defects Lens*: No user-facing defects were found in the findings log. The simulated user tests passed successfully, confirming the standalone presentation flow and CLI commands work flawlessly as specified in the user journeys.
+- **Review Checks Run** (from `code-reviews/review-idle-warehouse-waste.verdict.json`):
+  - `python3 -m compileall tests/test_idle_warehouse_waste.py`: exit code 0
+  - `python3 -m pytest tests/test_idle_warehouse_waste.py`: exit code 0
+  - `python3 -m pytest`: exit code 0
+  - `python3 -m compileall src tests`: exit code 0
+  - `python3 -m pytest tests/ -q`: exit code 0 ("Ran full test suite in quiet mode. 109 tests passed in 15.50s.")
+- **Preserved System Validator Evidence** (from `/home/lee/projects/dashForge-agent-orch-runs/4eac224f1b93/steps/step_10_closeout_handoff_docs/attempt-1/preserved-validator-evidence.json`):
+  - Validator Result 1 (`step_04_author_slice_tests` attempt 1): `python3 -m compileall tests/test_idle_warehouse_waste.py`, exit status 0, duration 0.160322s, passed: True.
+  - Validator Result 2 (`step_05_implement_slice` attempt 1): `python3 -m pytest tests/test_idle_warehouse_waste.py`, exit status 0, duration 1.668309s, passed: True (35 passed in 0.93s; counts: passed 35, failed 0, skipped 0).
+  - Validator Result 3 (`step_05_implement_slice` attempt 2): `python3 -m pytest tests/test_idle_warehouse_waste.py`, exit status 0, duration 1.658117s, passed: True (35 passed in 0.93s; counts: passed 35, failed 0, skipped 0).
+  - Validator Result 4 (`step_07_repair_and_verify_slice` attempt 1): `python3 -m pytest`, exit status 0, duration 16.329853s, passed: True (109 passed in 15.60s; counts: passed 109, failed 0, skipped 0).
+  - Validator Result 5 (`step_07_repair_and_verify_slice` attempt 1): `python3 -m compileall src tests`, exit status 0, duration 0.05708s, passed: True.
+
+---
+
 ## 2026-09-02 — Snowflake Cost Pack Slice Passed Governed Review
 
 ### What Was Built

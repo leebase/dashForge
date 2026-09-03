@@ -2,11 +2,47 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.10  
+**Version:** 1.11  
 **Date:** September 2, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.10 records dynamic scenario discovery, provenance metadata,
-and recommendation queue preservation for the Snowflake Cost optimization pack.
+**Revision notes:** v1.11 records the canonical 7-dataset snapshot schema formalization,
+provenance metadata, and recommendation queue governance for the idle-warehouse-waste
+vertical slice under the snowflakeCost pack.
+
+---
+## 2026-09-02 — Idle Warehouse Waste vertical slice formalization and governance
+
+**Decision:** DashForge formalizes the `idle-warehouse-waste` vertical slice under
+the `snowflakeCost` pack, establishing canonical 7-dataset snapshot schemas,
+provenance metadata enrichment, recommendation queue governance, and
+`DataAdapter` query routing for standalone executive cost optimization presentations.
+
+**Contract:**
+- **Seven Canonical Datasets**: The slice requires and produces seven datasets:
+  `executive_summary`, `warehouse_metering_history`, `query_history`,
+  `metering_history`, `database_storage_usage_history`, `show_warehouses`, and
+  `recommendation_queue`. Each dataset defines typed columns (`string`, `number`,
+  `date`, `boolean`) and semantic roles (`dimension`, `measure`, `date`, `id`).
+- **Recommendation Queue Governance**: The `recommendation_queue` table enforces
+  governance columns (`recommendation_id`, `executive_severity`, `suggested_owner`,
+  `recommended_action`, `evidence_detail`, `guardrail`) and safety guardrails,
+  enabling actionable executive recommendations without ungrounded automated changes.
+- **Provenance & Synthetic Disclosures**: Generated snapshots include provenance
+  tracking (`packId`: `snowflakeCost`, `scenarioId`: `idle-warehouse-waste`,
+  `seed`, `dataForgeStoryContractPath`: `stories/snowflake/idle-warehouse-waste.md`,
+  `generatorVersion`, `generationTimestamp`, `synthetic: true`, and disclosure
+  `"Synthetic demo data"`).
+- **DataAdapter Query Routing**: The shared `DataAdapter` provides seamless
+  querying, aggregation, and schema inspection across all seven datasets for
+  both runtime widgets and standalone executive dashboard views.
+- **Fail-Closed Overwrite & Zero External Dependencies**: Preserves fail-closed
+  overwrite protection requiring `--force` and maintains zero external runtime
+  dependencies with sibling project `dataForge` remaining untouched.
+
+**Consequences:** Anblicks consultants can present an end-to-end, believable
+Snowflake cost optimization narrative for idle warehouse waste during client
+workshops completely offline, demonstrating clear financial impact and governed
+recommendations with bit-for-bit reproducibility.
 
 ---
 ## 2026-09-02 — Snowflake Cost Pack integration and dynamic scenario discovery

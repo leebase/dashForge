@@ -216,6 +216,76 @@ and not a replacement for the closed healthcare proof.
 
 ---
 
+## Idle Warehouse Waste Accelerator
+
+The **Idle Warehouse Waste Accelerator** is an enterprise consulting delivery weapon within DashForge, realizing the end-to-end Snowflake Cost Management solution (`snowflakeCost:idle-warehouse-waste`). Designed for high-stakes pre-sales and architectural discovery workshops with CFOs, CIOs, VPs of Data, and FinOps practice leaders, it enables Anblicks consultants to deliver an authoritative, data-driven cloud cost optimization presentation without requiring live customer credentials or cloud network connectivity.
+
+### The Delivery Problem It Solves
+
+Enterprise consulting teams routinely struggle to establish credibility during early-stage cloud financial operations (FinOps) discussions. Prospective clients cannot provide access to production Snowflake accounts due to stringent infosec, data privacy, and governance restrictions. Conversely, generic wireframes, PowerPoint slides, or simplistic toy mockups fail to convey the analytical depth needed to win enterprise trust.
+
+The Idle Warehouse Waste Accelerator resolves this dilemma by pairing deterministic, relational Snowflake infrastructure telemetry from sibling project `dataForge` with DashForge's standalone presentation runtime. Consultants can walk into an executive meeting and immediately present an interactive, operational analysis of unmonitored compute resources burning financial credits with zero active query workload.
+
+### Architecture and Data Seams
+
+The accelerator strictly enforces DashForge's core architecture and decoupled repository boundaries:
+
+1. **Read-Only dataForge Ingestion**: Ingests deterministic dataForge exports adhering strictly to the canonical `SQLiteSnapshot` TypeScript contract (`frontend/src/core/data/sqliteSnapshot.ts`) generated via `dashForge.package_snapshot.package_snapshot`. Sibling project `dataForge` remains strictly read-only.
+2. **Seven Relational Datasets**: The scenario package bundles seven comprehensive datasets mirroring Snowflake Account Usage telemetry: `executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, and `recommendation_queue`.
+3. **Canonical Runtime Seams**: Proves the standard `DashboardSpec` specification schema and `DataAdapter` query interface (`createDashboardDataAdapter`, `SyntheticDataArtifactAdapter`, `StaticDataAdapter`, `SQLiteDataAdapter`). Widgets and presentational components query data exclusively through adapter interfaces without secondary or bespoke renderers.
+4. **Verifiable Claim Ledger**: Every top-line KPI, chart trend, and recommendation is anchored to the upstream work-package digest (`sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390`) with verifiable dataset observation evidence.
+5. **Catalog Registrations**: Formally registered in `scenarioCatalog` as `snowflakeCost:idle-warehouse-waste` and `templateCatalog` as `tpl.snowflakeCost.idle-warehouse-waste` (seed `9101`, story contract `stories/snowflake/idle-warehouse-waste.md`).
+
+### Executive Buyer Narrative Flow
+
+The accelerator structures the executive workshop around a clear, decision-oriented narrative arc:
+
+- **Headline Opportunity**: Surfaces an immediate potential monthly savings of **726 compute credits** identified across unmonitored infrastructure.
+- **Idle Warehouse Identification**: Pinpoints **2 compute warehouses** actively running 24/7 with zero active query load during monitored periods.
+- **Credit Concentration**: Illustrates warehouse cost distribution, revealing that `FINANCE_REPORTING_WH` accounts for over 50% of total compute credit consumption.
+- **Control Gap Analysis**: Exposes critical operational vulnerabilities, including disabled auto-suspend (`auto_suspend = 0`), excessive suspension timeouts (≥3600 seconds), and unassigned resource monitors.
+
+### Prioritized Recommendation Queue and Governance Guardrails
+
+To drive actionable consulting outcomes, the accelerator presents a prioritized optimization queue directly populated from the `recommendation_queue` dataset, preserving all six governance fields:
+
+- `recommendation_id`: Unique tracking identifier (e.g., `IWW-001`, `IWW-002`).
+- `executive_severity`: Priority rating (`P0`, `P1`).
+- `suggested_owner`: Target organizational owner (e.g., Finance Systems Lead, Analytics Engineering Lead).
+- `recommended_action`: Specific technical remediation (e.g., configuring aggressive auto-suspend, assigning resource monitors).
+- `evidence_detail`: Quantified telemetry rationale supporting the action.
+- `guardrail`: Explicit protective operational constraint.
+
+**Directional Validation Guardrail**: All recommendations are explicitly framed as directional pending formal confirmation with designated warehouse owners. DashForge strictly prohibits automated or destructive execution without human stakeholder approval.
+
+### Workshop Deliverables and Compliance Disclosures
+
+- **Offline Standalone Execution**: Operates as a zero-dependency standalone dashboard deliverable with zero external cloud connectivity requirements.
+- **Same-Day Follow-Up Export**: Generates an exportable executive follow-up artifact (HTML/PDF summary) capturing key metrics, recommended actions, designated owners, and claim citations for immediate post-workshop stakeholder alignment.
+- **Prominent Synthetic Disclosures**: Unsuppressed `"Synthetic demo data"` badges, quality disclosures, and provenance metadata (`packId: "snowflakeCost"`, `scenarioId: "idle-warehouse-waste"`, `synthetic: true`) are displayed prominently across all presentation views and export deliverables.
+- **Backwards Compatibility**: Guarantees zero regressions across existing industry packs (`healthcare`, `financial`, `saas`), templates, and builder surfaces.
+
+### Operator CLI Workflow and Generation Pipeline
+
+Anblicks consultants and operators can package the Idle Warehouse Waste scenario for client workshops using the canonical DashForge CLI:
+
+```bash
+env PYTHONPATH=src python3 -m dashForge.main generate \
+  --pack snowflakeCost \
+  --scenario idle-warehouse-waste \
+  --seed 9101 \
+  --output /path/to/idle-warehouse-waste.sqlite \
+  --snapshot-output /path/to/idle-warehouse-waste.snapshot.json \
+  --force
+```
+
+- **Fail-Closed Overwrite Protection**: The CLI enforces safety guards; omitting `--force` when output paths already exist fails closed with exit code 2 and actionable diagnostics without Python stack traces.
+- **Dynamic Scenario Enumeration**: Scenarios are discovered dynamically from sibling project `dataForge` via `dashForge.snowflake_cost.get_snowflake_cost_scenarios()` without hardcoding in DashForge source code.
+- **Bit-for-Bit Determinism**: Generations with identical seed (default `9101`) produce identical SHA-256 digests across both SQLite databases and JSON snapshots.
+- **Programmatic Python API**: `src/dashForge/idle_warehouse_waste.py` provides high-level bindings including `generate_idle_warehouse_assets()`, `validate_idle_warehouse_database()`, `get_headline_opportunity()`, `get_warehouse_concentration()`, and `build_executive_follow_up()`.
+
+---
+
 ## 9. Success Criteria
 
 ### MVP success (3 months post-launch):

@@ -1,6 +1,6 @@
 """Compatibility wrapper for the extracted dataForge generator module."""
 
-from .package_snapshot import (
+from dashForge.package_snapshot import (
     DATASET_EXPORTS_BY_PACK,
     clamp,
     default_seed_for,
@@ -19,7 +19,7 @@ from .package_snapshot import (
     stable_factor,
     stable_fraction,
 )
-from .snowflake_cost import get_snowflake_cost_scenarios
+from dashForge.snowflake_cost import get_snowflake_cost_scenarios
 
 __all__ = [
     "DATASET_EXPORTS_BY_PACK",

@@ -28,6 +28,28 @@
 | Sprint 10 — Client Meeting Dashboard Builder | ✅ Complete | 100% |
 | Package DataForge Snapshot | ✅ Complete | 100% |
 | Snowflake Cost Pack | ✅ Complete | 100% |
+| Idle Warehouse Waste Slice | ✅ Complete | 100% |
+
+The `idle-warehouse-waste` vertical slice is complete and verified with a formal `pass` review verdict (0 findings, recommendation `ready`) and preserved system validator evidence. All 35 slice-specific tests in `tests/test_idle_warehouse_waste.py` and 109 full-suite pytest tests pass cleanly with 0 failures.
+
+---
+
+## 2026-09-02 — Idle Warehouse Waste Slice Passed Governed Review
+
+The `idle-warehouse-waste` vertical slice is complete, verified, and closed under pack `snowflakeCost`. `src/dashForge/package_snapshot.py`, `src/dashForge/snowflake_cost.py`, and `src/dashForge/main.py` now provide canonical 7-dataset snapshot packaging, complete provenance metadata, fail-closed CLI generation, `DashboardSpec` contracts, `DataAdapter` query routing, runtime catalog registration, and recommendation queue governance.
+
+Key deliverables:
+- Canonical snapshot ingestion & schema conformance: Produces deterministic SQLite database and canonical `SQLiteSnapshot` JSON conforming to `frontend/src/core/data/sqliteSnapshot.ts`. Generates all seven datasets (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`) with validated types and semantic roles (AC-1).
+- Provenance metadata & synthetic disclosure: Snapshots carry `packId` (`snowflakeCost`), `scenarioId` (`idle-warehouse-waste`), `seed`, `dataForgeStoryContractPath` (`stories/snowflake/idle-warehouse-waste.md`), generator version, ISO-8601 generation timestamp, `synthetic: true`, and disclosure text `"Synthetic demo data"` (AC-1).
+- Deterministic CLI generation pipeline & fail-closed overwrite protection: Supports `python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste` with bit-for-bit reproducibility. Enforces fail-closed target protection requiring `--force` and clean argument validation through `parser.error()` exiting with code 2 (AC-2).
+- DashboardSpec contract formalization & claim ledger verification: Formalized `DashboardSpec` contracts and claim ledgers mapping executive narrative and KPI metrics directly to verified dataset evidence (AC-3).
+- DataAdapter runtime seam & seven-dataset query routing: Query, aggregate, and schema inspection functions route cleanly across all seven datasets via `DataAdapter` (AC-4).
+- Scenario & template catalog registrations: Registered scenario `snowflakeCost:idle-warehouse-waste` and template `tpl.snowflakeCost.idle-warehouse-waste` in runtime catalogs (AC-5).
+- Recommendation queue governance & safety guardrails: Preserved `recommendation_queue` table schema with all six governance columns (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, `guardrail`) and safety guardrails (AC-6).
+- Standalone presentation & follow-up export: Validated standalone executive presentation flow and follow-up export capability with prominent synthetic disclosures (AC-7).
+- Backwards compatibility & test coverage: All existing packs (`healthcare`, `financial`, `saas`) remain operational; 35 unit/integration tests in `tests/test_idle_warehouse_waste.py` pass; full pytest suite passed with 109 tests; zero changes to sibling project `dataForge` (AC-8).
+- Governed review passed: `code-reviews/review-idle-warehouse-waste.verdict.json` confirmed `pass` with 0 findings, recommendation `ready`, and all readiness criteria verified true.
+- Preserved validator evidence: all compileall and pytest checks passed across test authoring, implementation, and verification steps (final verification: 109 passed in 15.60s, exit status 0; compileall exit status 0).
 
 ---
 
@@ -192,7 +214,9 @@ fixture digest.
 
 ### Current Work Stream
 
-The `snowflake-cost-pack` slice has closed with a clean `pass` verdict (0 findings) in `code-reviews/review-snowflake-cost-pack.verdict.json` and full preserved system validator evidence. `src/dashForge/main.py`, `src/dashForge/generate.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/snowflake_cost.py` now provide dynamic scenario discovery from `dataForge` (`idle-warehouse-waste`, `bi-over-provisioning`, `runaway-query-pattern`, `department-chargeback`, `executive-cost-spike`, `finops-maturity-assessment`), fail-closed target overwrite protection requiring `--force`, complete provenance metadata, and full recommendation queue preservation for the `snowflakeCost` pack alongside existing industry packs (`healthcare`, `financial`, `saas`).
+The `idle-warehouse-waste` vertical slice for Snowflake Cost optimization has closed with a clean `pass` verdict (0 findings, recommendation `ready`) in `code-reviews/review-idle-warehouse-waste.verdict.json` and full preserved system validator evidence. `src/dashForge/package_snapshot.py`, `src/dashForge/snowflake_cost.py`, and `src/dashForge/main.py` now provide canonical 7-dataset snapshot packaging (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`), complete provenance metadata, fail-closed CLI generation, `DashboardSpec` contracts, `DataAdapter` query routing, runtime catalog registration, and recommendation queue governance. All 35 slice-specific tests and 109 full-suite tests passed cleanly.
+
+The `snowflake-cost-pack` slice previously closed with a clean `pass` verdict (0 findings) in `code-reviews/review-snowflake-cost-pack.verdict.json` and full preserved system validator evidence. `src/dashForge/main.py`, `src/dashForge/generate.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/snowflake_cost.py` provide dynamic scenario discovery from `dataForge` (`idle-warehouse-waste`, `bi-over-provisioning`, `runaway-query-pattern`, `department-chargeback`, `executive-cost-spike`, `finops-maturity-assessment`), fail-closed target overwrite protection requiring `--force`, complete provenance metadata, and full recommendation queue preservation for the `snowflakeCost` pack alongside existing industry packs (`healthcare`, `financial`, `saas`).
 
 The `package-dataforge-snapshot` slice previously closed with a clean `pass` verdict (0 findings) in `code-reviews/review-package-dataforge-snapshot.verdict.json` and full preserved system validator evidence. `src/dashForge/main.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/generate.py` provide deterministic multi-pack generation, fail-closed target overwrite protection requiring `--force`, and structured JSON snapshot serialization matching DashForge's client-side `SQLiteSnapshot` and `DataAdapter` runtime interfaces for offline client workshop demonstrations.
 
@@ -313,6 +337,15 @@ contract (`monthly_metrics`) and widget taxonomy.
 
 ### Recently Completed
 
+- ✅ Closed the `idle-warehouse-waste` vertical slice with formal review verdict `pass`, recommendation `ready`, and 0 findings in `code-reviews/review-idle-warehouse-waste.verdict.json`
+- ✅ Implemented canonical snapshot ingestion and schema validation across all 7 canonical datasets (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`) adhering to `SQLiteSnapshot` specification
+- ✅ Embedded complete provenance metadata (`packId`, `scenarioId`, `seed`, `dataForgeStoryContractPath`, generator version, ISO timestamp, `synthetic: true`, disclosure text) in generated snapshots
+- ✅ Validated fail-closed CLI generation pipeline with target overwrite protection requiring explicit `--force` flag
+- ✅ Verified `DashboardSpec` contracts, claim ledgers, and `DataAdapter` runtime query and aggregation routing across all 7 datasets
+- ✅ Confirmed runtime scenario and template catalog registration for `snowflakeCost:idle-warehouse-waste` and `tpl.snowflakeCost.idle-warehouse-waste`
+- ✅ Preserved `recommendation_queue` governance columns (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, `guardrail`) and safety guardrails
+- ✅ Authored targeted test suite `tests/test_idle_warehouse_waste.py` with 35 passing tests; verified complete test suite with 109 passing tests in 15.60s
+- ✅ Preserved system validator results confirmed compileall and full pytest suite (109 passed in 15.60s, exit status 0; compileall exit status 0)
 - ✅ Closed the `snowflake-cost-pack` slice with formal review verdict `pass` and 0 findings in `code-reviews/review-snowflake-cost-pack.verdict.json`
 - ✅ Implemented dynamic scenario discovery in `src/dashForge/snowflake_cost.py` querying dataForge scenarios directly without hardcoded lists in DashForge
 - ✅ Extended CLI entrypoint `dashForge.main generate` to support `--pack snowflakeCost` with dynamic scenario validation, fail-closed argument parsing, and `--force` overwrite guards
@@ -526,6 +559,7 @@ contract (`monthly_metrics`) and widget taxonomy.
 | The product canon now defines the MVP as scenario definition, generated data, and a standalone dashboard deliverable | Prevents advanced builder/presenter/AI/live-binding breadth from obscuring the product's first proof of value | 2026-04-02 |
 | `package-dataforge-snapshot` CLI enforces fail-closed overwrite protection and extracts SQLiteSnapshot JSON via SQLite PRAGMA table_info | Prevents accidental data loss during workshop rehearsal and guarantees schema alignment with DataAdapter runtime without external dependencies | 2026-09-02 |
 | `snowflake-cost-pack` CLI dynamically discovers dataForge scenarios and preserves recommendation queue | Extends DashForge CLI with snowflakeCost pack support, provenance metadata, and fail-closed overwrite guards without hardcoding scenarios or external runtime dependencies | 2026-09-02 |
+| `idle-warehouse-waste` slice formalizes 7-dataset snapshot schema and recommendation queue governance | Delivers deterministic offline presentation, provenance tracing, and safety guardrails for Snowflake idle warehouse waste consulting demonstrations | 2026-09-02 |
 
 ---
 

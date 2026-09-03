@@ -11,7 +11,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-from ._dataforge_compat import load_dataforge_module
+from dashForge._dataforge_compat import load_dataforge_module
 
 _generate = load_dataforge_module("generate")
 
@@ -132,7 +132,7 @@ def export_sqlite_snapshot(
                 }
             )
         if metadata.get("packId") == "snowflakeCost":
-            from .snowflake_cost import validate_recommendation_queue_schema
+            from dashForge.snowflake_cost import validate_recommendation_queue_schema
             validate_recommendation_queue_schema(connection)
     finally:
         connection.close()
@@ -144,7 +144,7 @@ def export_sqlite_snapshot(
         "datasets": datasets,
     }
     if metadata.get("packId") == "snowflakeCost":
-        from .snowflake_cost import enrich_snowflake_cost_provenance
+        from dashForge.snowflake_cost import enrich_snowflake_cost_provenance
         snapshot = enrich_snowflake_cost_provenance(
             snapshot,
             metadata["scenarioId"],
@@ -224,7 +224,7 @@ def package_snapshot(
         raise ValueError(f'Unknown pack "{pack}".')
 
     if pack == "snowflakeCost":
-        from .snowflake_cost import validate_snowflake_cost_scenario
+        from dashForge.snowflake_cost import validate_snowflake_cost_scenario
         validate_snowflake_cost_scenario(actual_scenario)
 
     output = Path(actual_output)
@@ -247,7 +247,7 @@ def package_snapshot(
         snapshot_output_path=snapshot_path,
     )
     if pack == "snowflakeCost":
-        from .snowflake_cost import validate_recommendation_queue_schema
+        from dashForge.snowflake_cost import validate_recommendation_queue_schema
         with sqlite3.connect(output) as conn:
             validate_recommendation_queue_schema(conn)
     return result
