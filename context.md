@@ -27,8 +27,25 @@
 | Sprint 9 — Production binding | ✅ Complete | 100% |
 | Sprint 10 — Client Meeting Dashboard Builder | ✅ Complete | 100% |
 | Package DataForge Snapshot | ✅ Complete | 100% |
+| Snowflake Cost Pack | ✅ Complete | 100% |
 
 ---
+
+## 2026-09-02 — Snowflake Cost Pack Slice Passed Governed Review
+
+The `snowflake-cost-pack` slice is complete and verified. `src/dashForge/main.py`, `src/dashForge/generate.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/snowflake_cost.py` now provide dynamic scenario discovery, deterministic relational generation, provenance metadata enrichment, and recommendation queue packaging for the `snowflakeCost` pack alongside existing industry packs.
+
+Key deliverables:
+- CLI command: `python3 -m dashForge.main generate` supporting `--pack snowflakeCost` alongside `healthcare`, `financial`, and `saas` (AC-1).
+- Dynamic scenario discovery: dynamically queries scenarios (`idle-warehouse-waste`, `bi-over-provisioning`, `runaway-query-pattern`, `department-chargeback`, `executive-cost-spike`, `finops-maturity-assessment`) from `dataForge` without hardcoding in DashForge (AC-2).
+- Fail-closed error handling: unknown scenarios, invalid packs, or missing arguments fail closed with exit status 2 and clear diagnostic messages via `parser.error()`, eliminating unhandled Python tracebacks (AC-2, AC-3).
+- Fail-closed overwrite protection: target existence checks abort with exit status 2 unless `--force` is provided (AC-4).
+- Deterministic relational packaging: bit-for-bit reproducible generation emitting SQLite databases and canonical `SQLiteSnapshot` JSON conforming to `frontend/src/core/data/sqliteSnapshot.ts` (AC-5).
+- Provenance and synthetic disclosure: exported snapshot metadata includes `packId`, `scenarioId`, `seed`, `dataForgeStoryContractPath`, generator version, ISO-8601 timestamp, `synthetic: true`, and disclosure text `"Synthetic demo data"` (AC-6).
+- Recommendation queue preservation: retains `recommendation_queue` table with all governance and severity columns (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, `guardrail`) intact (AC-7).
+- Backwards compatibility & test coverage: `tests/test_snowflake_cost_pack.py` passed with 34 tests; full pytest suite passed with 74 tests without modifying sibling project `dataForge` (AC-8).
+- Governed review passed: `code-reviews/review-snowflake-cost-pack.verdict.json` confirmed `pass` with 0 findings, fulfilling all acceptance criteria AC-1 through AC-8.
+- Preserved validator evidence: all compileall and pytest checks passed across test authoring, implementation, and verification steps (final verification: 74 passed in 15.14s, exit status 0; compileall exit status 0).
 
 ## 2026-09-02 — Package DataForge Snapshot Slice Passed Governed Review
 
@@ -175,7 +192,9 @@ fixture digest.
 
 ### Current Work Stream
 
-The `package-dataforge-snapshot` slice has closed with a clean `pass` verdict (0 findings) in `code-reviews/review-package-dataforge-snapshot.verdict.json` and full preserved system validator evidence. `src/dashForge/main.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/generate.py` provide deterministic multi-pack generation, fail-closed target overwrite protection requiring `--force`, and structured JSON snapshot serialization matching DashForge's client-side `SQLiteSnapshot` and `DataAdapter` runtime interfaces for offline client workshop demonstrations.
+The `snowflake-cost-pack` slice has closed with a clean `pass` verdict (0 findings) in `code-reviews/review-snowflake-cost-pack.verdict.json` and full preserved system validator evidence. `src/dashForge/main.py`, `src/dashForge/generate.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/snowflake_cost.py` now provide dynamic scenario discovery from `dataForge` (`idle-warehouse-waste`, `bi-over-provisioning`, `runaway-query-pattern`, `department-chargeback`, `executive-cost-spike`, `finops-maturity-assessment`), fail-closed target overwrite protection requiring `--force`, complete provenance metadata, and full recommendation queue preservation for the `snowflakeCost` pack alongside existing industry packs (`healthcare`, `financial`, `saas`).
+
+The `package-dataforge-snapshot` slice previously closed with a clean `pass` verdict (0 findings) in `code-reviews/review-package-dataforge-snapshot.verdict.json` and full preserved system validator evidence. `src/dashForge/main.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/generate.py` provide deterministic multi-pack generation, fail-closed target overwrite protection requiring `--force`, and structured JSON snapshot serialization matching DashForge's client-side `SQLiteSnapshot` and `DataAdapter` runtime interfaces for offline client workshop demonstrations.
 
 The active commercial proof path is now Snowflake Cost Optimization, bounded to
 the governed `idle-warehouse-waste` story. Auto-Orch run `ee6fac7897f9`
@@ -294,6 +313,14 @@ contract (`monthly_metrics`) and widget taxonomy.
 
 ### Recently Completed
 
+- ✅ Closed the `snowflake-cost-pack` slice with formal review verdict `pass` and 0 findings in `code-reviews/review-snowflake-cost-pack.verdict.json`
+- ✅ Implemented dynamic scenario discovery in `src/dashForge/snowflake_cost.py` querying dataForge scenarios directly without hardcoded lists in DashForge
+- ✅ Extended CLI entrypoint `dashForge.main generate` to support `--pack snowflakeCost` with dynamic scenario validation, fail-closed argument parsing, and `--force` overwrite guards
+- ✅ Preserved `recommendation_queue` table schema with all governance and severity columns intact
+- ✅ Enriched snapshot exports with complete provenance tracing (`packId`, `scenarioId`, `seed`, `dataForgeStoryContractPath`, generator version, ISO timestamp, `synthetic: true`, and disclosure text)
+- ✅ Maintained bit-for-bit determinism and backwards compatibility for existing packs (`healthcare`, `financial`, `saas`) with zero modifications to `dataForge`
+- ✅ Authored targeted test suite `tests/test_snowflake_cost_pack.py` with 34 passing tests; verified full test suite with 74 passing tests
+- ✅ Preserved system validator results confirmed compileall and full pytest suite (74 passed in 15.14s, exit status 0; compileall exit status 0)
 - ✅ Closed the `package-dataforge-snapshot` slice with formal review verdict `pass` and 0 findings in `code-reviews/review-package-dataforge-snapshot.verdict.json`
 - ✅ Implemented deterministic `package_snapshot.py` utility to inspect SQLite tables via `PRAGMA table_info` and export `SQLiteSnapshot` JSON conforming to `frontend/src/core/data/sqliteSnapshot.ts`
 - ✅ Added fail-closed overwrite protection in `src/dashForge/main.py` requiring explicit `--force` flag
@@ -498,6 +525,7 @@ contract (`monthly_metrics`) and widget taxonomy.
 | The standalone MVP entry point now opens directly into the ED throughput dashboard and keeps builder mode opt-in | Aligns the default app experience with the clarified MVP without introducing a second renderer or breaking the existing authoring surface | 2026-04-02 |
 | The product canon now defines the MVP as scenario definition, generated data, and a standalone dashboard deliverable | Prevents advanced builder/presenter/AI/live-binding breadth from obscuring the product's first proof of value | 2026-04-02 |
 | `package-dataforge-snapshot` CLI enforces fail-closed overwrite protection and extracts SQLiteSnapshot JSON via SQLite PRAGMA table_info | Prevents accidental data loss during workshop rehearsal and guarantees schema alignment with DataAdapter runtime without external dependencies | 2026-09-02 |
+| `snowflake-cost-pack` CLI dynamically discovers dataForge scenarios and preserves recommendation queue | Extends DashForge CLI with snowflakeCost pack support, provenance metadata, and fail-closed overwrite guards without hardcoding scenarios or external runtime dependencies | 2026-09-02 |
 
 ---
 

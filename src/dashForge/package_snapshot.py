@@ -20,6 +20,7 @@ default_seed_for = _generate.default_seed_for
 generate_financial_database = _generate.generate_financial_database
 generate_healthcare_database = _generate.generate_healthcare_database
 generate_saas_database = _generate.generate_saas_database
+generate_snowflake_cost_database = _generate.generate_snowflake_cost_database
 get_pack_scenario = _generate.get_pack_scenario
 humanize_label = _generate.humanize_label
 infer_column_role = _generate.infer_column_role
@@ -32,6 +33,7 @@ GENERATORS = {
     "healthcare": generate_healthcare_database,
     "financial": generate_financial_database,
     "saas": generate_saas_database,
+    "snowflakeCost": generate_snowflake_cost_database,
 }
 
 DATASET_EXPORTS_BY_PACK: dict[str, tuple[tuple[str, str], ...]] = {
@@ -129,6 +131,9 @@ def export_sqlite_snapshot(
                     "rows": rows,
                 }
             )
+        if metadata.get("packId") == "snowflakeCost":
+            from .snowflake_cost import validate_recommendation_queue_schema
+            validate_recommendation_queue_schema(connection)
     finally:
         connection.close()
 
@@ -138,6 +143,13 @@ def export_sqlite_snapshot(
         "seed": int(metadata["seed"]),
         "datasets": datasets,
     }
+    if metadata.get("packId") == "snowflakeCost":
+        from .snowflake_cost import enrich_snowflake_cost_provenance
+        snapshot = enrich_snowflake_cost_provenance(
+            snapshot,
+            metadata["scenarioId"],
+            int(metadata["seed"]),
+        )
     snapshot_path = Path(snapshot_output_path)
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
     snapshot_path.write_text(
@@ -211,6 +223,10 @@ def package_snapshot(
     if pack not in GENERATORS:
         raise ValueError(f'Unknown pack "{pack}".')
 
+    if pack == "snowflakeCost":
+        from .snowflake_cost import validate_snowflake_cost_scenario
+        validate_snowflake_cost_scenario(actual_scenario)
+
     output = Path(actual_output)
     snapshot_path = Path(actual_snapshot) if actual_snapshot else None
 
@@ -230,6 +246,10 @@ def package_snapshot(
         seed=actual_seed,
         snapshot_output_path=snapshot_path,
     )
+    if pack == "snowflakeCost":
+        from .snowflake_cost import validate_recommendation_queue_schema
+        with sqlite3.connect(output) as conn:
+            validate_recommendation_queue_schema(conn)
     return result
 
 
@@ -242,6 +262,7 @@ __all__ = [
     "generate_financial_database",
     "generate_healthcare_database",
     "generate_saas_database",
+    "generate_snowflake_cost_database",
     "get_pack_scenario",
     "humanize_label",
     "infer_column_role",

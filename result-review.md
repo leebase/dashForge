@@ -4,6 +4,46 @@
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
 
+## 2026-09-02 — Snowflake Cost Pack Slice Passed Governed Review
+
+### What Was Built
+
+Implemented and verified the `snowflake-cost-pack` slice, integrating the `snowflakeCost` optimization pack from sibling project `dataForge` into DashForge's canonical CLI entrypoint, generation dispatch, and snapshot packaging pipeline:
+
+- **CLI Entrypoint & Dynamic Scenario Discovery (`src/dashForge/main.py`, `src/dashForge/snowflake_cost.py`)**: Extended `python3 -m dashForge.main generate` to accept `--pack snowflakeCost` alongside existing packs (`healthcare`, `financial`, `saas`). Dynamic scenario discovery loads all scenarios directly from `dataForge` (`idle-warehouse-waste`, `bi-over-provisioning`, `runaway-query-pattern`, `department-chargeback`, `executive-cost-spike`, `finops-maturity-assessment`) without hardcoding scenario lists in DashForge (AC-1, AC-2).
+- **Fail-Closed Error Handling & Input Validation (`src/dashForge/main.py`)**: Unknown scenario identifiers, invalid packs, or missing required parameters fail closed with exit status 2 and clear diagnostic messages routed via `parser.error()`, preventing unhandled Python tracebacks (AC-2, AC-3).
+- **Fail-Closed Overwrite Guard (`src/dashForge/main.py`)**: Enforces target file protection; if `--output` or `--snapshot-output` exists on disk and `--force` is omitted, the CLI aborts with exit status 2 and diagnostic message `Output path already exists. Pass --force to overwrite` (AC-4).
+- **Deterministic Generation & Schema Conformance (`src/dashForge/package_snapshot.py`, `src/dashForge/generate.py`)**: Bit-for-bit reproducible SQLite generation and snapshot extraction given identical seeds. Emits JSON snapshots adhering strictly to the canonical `SQLiteSnapshot` contract in `frontend/src/core/data/sqliteSnapshot.ts` (AC-5).
+- **Provenance Metadata & Synthetic Disclosure (`src/dashForge/package_snapshot.py`, `src/dashForge/snowflake_cost.py`)**: Enriched snapshot metadata includes complete provenance tracing back to dataForge: `packId` (`snowflakeCost`), `scenarioId`, `seed`, `dataForgeStoryContractPath`, generator version, ISO-8601 generation timestamp, `synthetic: true`, and disclosure text `"Synthetic demo data"` (AC-6).
+- **Recommendation Queue Preservation (`src/dashForge/snowflake_cost.py`)**: Preserves the `recommendation_queue` dataset across generation and packaging, retaining `recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, and `guardrail` columns intact (AC-7).
+- **Backwards Compatibility & Zero External Dependencies (AC-8)**: All existing packs (`healthcare`, `financial`, `saas`) remain fully operational with reproducible generation. No changes were made to sibling project `dataForge`, and no external runtime dependencies were introduced.
+- **Targeted Test Suite (`tests/test_snowflake_cost_pack.py`)**: 34 unit and CLI regression tests validating CLI options, dynamic discovery, determinism, overwrite protection, metadata enrichment, and recommendation queue preservation.
+
+### Why It Matters
+
+Enterprise data leaders (CFOs, CIOs, FinOps heads) demand realistic, credible operational evidence when discussing cloud warehouse waste. Because enterprise security policies frequently restrict live Snowflake production access during initial pre-sales discovery workshops, consultants need realistic, relational data demonstrating common waste patterns (idle warehouses, runaway queries, unassigned compute) that run entirely offline. This slice enables Anblicks consultants to generate complete, reproducible Snowflake cost optimization packages and JSON snapshots with a single command, ready for downstream executive dashboard presentation without cloud credentials, external dependencies, or unhandled tracebacks.
+
+### Review Verdict & Independent Evidence
+
+- **Review Verdict**: `pass` with 0 findings in `code-reviews/review-snowflake-cost-pack.verdict.json` and `code-reviews/review-snowflake-cost-pack.md`.
+- **Recommendation**: "Ready for autonomous re-arm"
+- **Review Lenses**:
+  - *Implementation Lens*: The implementation in `src/dashForge/snowflake_cost.py` properly queries and exports the required scenario metadata from the `dataForge` module without hardcoding any values. Correctly satisfies the contract, dynamically discovering scenarios and accurately populating metadata.
+  - *Testing Lens*: The test suite covers the necessary paths including scenario discovery, missing argument handling, and backwards compatibility. All tests passed.
+- **Review Checks Run**:
+  - `python3 -m pytest tests/ -q`: exit code 0 ("74 passed in 14.82s")
+  - `python3 -m compileall tests/test_snowflake_cost_pack.py`: exit code 0 (Validator result 1)
+  - `python3 -m pytest tests/test_snowflake_cost_pack.py`: exit code 0 (Validator result 2)
+  - `python3 -m pytest`: exit code 0 (Validator result 3)
+  - `python3 -m compileall src tests`: exit code 0 (Validator result 4)
+- **Preserved System Validator Evidence** (from `/home/lee/projects/dashForge-agent-orch-runs/128115135b9a/steps/step_10_closeout_handoff_docs/attempt-1/preserved-validator-evidence.json`):
+  - Validator Result 1 (`step_04_author_slice_tests` attempt 1): `python3 -m compileall tests/test_snowflake_cost_pack.py`, exit status 0, duration 0.171223s, passed: True.
+  - Validator Result 2 (`step_05_implement_slice` attempt 1): `python3 -m pytest tests/test_snowflake_cost_pack.py`, exit status 0, duration 1.734029s, passed: True (34 passed in 0.99s; counts: passed 34, failed 0, skipped 0).
+  - Validator Result 3 (`step_07_repair_and_verify_slice` attempt 1): `python3 -m pytest`, exit status 0, duration 15.886203s, passed: True (74 passed in 15.14s; counts: passed 74, failed 0, skipped 0).
+  - Validator Result 4 (`step_07_repair_and_verify_slice` attempt 1): `python3 -m compileall src tests`, exit status 0, duration 0.051591s, passed: True.
+
+---
+
 ## 2026-09-02 — Package DataForge Snapshot Slice Passed Governed Review
 
 ### What Was Built

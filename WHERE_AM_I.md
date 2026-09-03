@@ -13,7 +13,7 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / first employee handoff |
-| **Overall Status** | 🟢 Package DataForge Snapshot slice complete and passed governed review; CLI provides deterministic multi-pack generation and fail-closed snapshot export for offline workshops; broader commercial expansion remains buyer-gated |
+| **Overall Status** | 🟢 Snowflake Cost Pack slice complete and passed governed review; CLI dynamically discovers dataForge scenarios and delivers deterministic packaging for snowflakeCost with provenance metadata and recommendation queues; broader commercial expansion remains buyer-gated |
 | **Last Updated** | 2026-09-02 |
 
 ---
@@ -33,6 +33,7 @@
 | Planning and canon docs | ✅ Done | Product, architecture, planning, and handoff docs now agree on the narrower standalone MVP definition |
 | Trusted employee handoff | ✅ Done | DashForge validates a platform-received `synthetic-data-work-package/1.0` and emits a digest-pinned `meeting-dashboard-package/1.0` with binding and claim evidence |
 | Package DataForge Snapshot | ✅ Done | Deterministic SQLite & JSON snapshot packaging CLI with fail-closed overwrite protection, multi-pack support, and DataAdapter schema alignment |
+| Snowflake Cost Pack | ✅ Done | Dynamic scenario discovery and snapshot packaging for snowflakeCost with provenance metadata and recommendation queue preservation |
 
 ### Current Phase Goals
 
@@ -66,6 +67,7 @@
 | Sprint 9 — Production binding | Implementation, verify, repair, and review/handoff complete | ✅ Complete |
 | Sprint 10 — Client Meeting Dashboard Builder | Trusted DataForge receipt, dashboard validation, claim ledger, and meeting package | ✅ Complete |
 | Package DataForge Snapshot | Deterministic SQLite & JSON snapshot packaging CLI with fail-closed protection, multi-pack support, and DataAdapter schema alignment | ✅ Complete |
+| Snowflake Cost Pack | Dynamic discovery, generation, and snapshot packaging for snowflakeCost with recommendation queue and provenance metadata | ✅ Complete |
 
 ---
 
@@ -115,6 +117,7 @@ Decisions that affect product direction:
 | Snowflake Cost Optimization is the sole commercial proof path until buyer evidence supports expansion | Concentrates near-term consulting revenue effort and prevents a platform rewrite or duplicate UI/runtime | 2026-07-16 |
 | Client Meeting Dashboard Builder is the first DashForge product employee | Consumes a trusted DataForge work package and reuses DashboardSpec/DataAdapter/runtime seams; platform owns receipt and approval | 2026-08-09 |
 | Package DataForge Snapshot CLI enforces fail-closed overwrite protection and extracts SQLiteSnapshot JSON via SQLite PRAGMA table_info | Prevents accidental data loss during workshop rehearsal and guarantees schema alignment with DataAdapter runtime without external dependencies | 2026-09-02 |
+| Snowflake Cost Pack dynamically discovers dataForge scenarios and preserves recommendation queue | Extends DashForge CLI with snowflakeCost pack support, provenance metadata, and fail-closed overwrite guards without hardcoding scenarios or external runtime dependencies | 2026-09-02 |
 
 ---
 

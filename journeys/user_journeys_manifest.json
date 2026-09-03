@@ -1,145 +1,178 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "schema_version": 1,
-  "contract": "docs/package-dataforge-snapshot-contract.md",
-  "objective": "Package DataForge scenario generation outputs into deterministic SQLite databases and portable JSON snapshots for offline DashForge runtime ingestion.",
+  "contract": "docs/snowflake-cost-pack-contract.md",
+  "objective": "Expose dataForge's snowflakeCost pack through dashForge's generate CLI and snapshot packager, producing deterministic SQLite databases and JSON snapshots with provenance and recommendation queues for Snowflake cost buyer demos.",
   "command_allowlist": [
     "env PYTHONPATH=src python3 -m dashForge.main",
     "python3 -m pytest tests/ -q"
   ],
   "journeys": [
     {
-      "id": "journey-generate-healthcare-snapshot",
-      "name": "Generate deterministic healthcare SQLite database and JSON snapshot",
-      "goal": "An author or operator generates a deterministic healthcare flu-season scenario SQLite database and derived JSON snapshot for offline workshop presentation.",
+      "id": "journey-snowflake-cost-idle-warehouse-generation",
+      "name": "Generate deterministic Snowflake cost idle warehouse SQLite database and JSON snapshot",
+      "goal": "An author or consultant generates a deterministic Snowflake cost database and JSON snapshot for the idle-warehouse-waste scenario with seed 9101, producing reproducible SQLite tables, canonical snapshot datasets, and rich provenance metadata for an executive buyer demo.",
       "authority": "author",
       "status": "passed",
       "exploratory": false,
       "source_refs": [
         "src/dashForge/main.py",
-        "src/dashForge/generate.py",
-        "docs/package-dataforge-snapshot-contract.md"
+        "src/dashForge/snowflake_cost.py",
+        "src/dashForge/package_snapshot.py",
+        "docs/snowflake-cost-pack-contract.md"
       ],
       "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --seed 3101 --output /tmp/flu-season.sqlite --snapshot-output /tmp/flu-season.snapshot.json --force"
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force"
       ],
       "steps": [
-        "Run env PYTHONPATH=src python3 -m dashForge.main generate with --pack healthcare --scenario flu-season --seed 3101 --output /tmp/flu-season.sqlite --snapshot-output /tmp/flu-season.snapshot.json --force.",
-        "Verify exit code is 0 and both the SQLite file and snapshot JSON file are created.",
-        "Verify the snapshot contains expected dataset IDs and valid column definitions matching DataAdapter schema."
-      ],
-      "traces_to": [
-        "AC-1",
-        "AC-3",
-        "AC-4",
-        "AC-6"
-      ]
-    },
-    {
-      "id": "journey-fail-closed-overwrite-protection",
-      "name": "Fail closed when target database or snapshot output path already exists without force flag",
-      "goal": "An operator confirms that existing output files are protected against accidental overwrites by failing closed unless --force is explicitly provided.",
-      "authority": "author",
-      "status": "passed",
-      "exploratory": false,
-      "source_refs": [
-        "src/dashForge/main.py",
-        "docs/package-dataforge-snapshot-contract.md"
-      ],
-      "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --output /tmp/flu-season.sqlite",
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --output /tmp/flu-season.sqlite --force"
-      ],
-      "steps": [
-        "Attempt to generate to an existing output path without passing --force using env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --output /tmp/flu-season.sqlite.",
-        "Confirm the command exits with non-zero status and reports an informative error message regarding existing output files.",
-        "Re-run with --force using env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --output /tmp/flu-season.sqlite --force and confirm successful overwrite."
+        "Execute env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force.",
+        "Confirm the command exits with code 0 and creates both the SQLite database file and the snapshot JSON file.",
+        "Verify the exported snapshot conforms to the SQLiteSnapshot schema, containing the 7 expected dataset exports with intact row records.",
+        "Verify provenance metadata fields (packId, scenarioId, seed, dataForgeStoryContractPath, generatorVersion, generationTimestamp, synthetic, disclosure) and recommendation queue severity and action columns."
       ],
       "traces_to": [
         "AC-1",
         "AC-2",
-        "AC-8"
+        "AC-4",
+        "AC-5",
+        "AC-6",
+        "AC-7"
       ]
     },
     {
-      "id": "journey-financial-and-saas-snapshot-generation",
-      "name": "Generate financial services and SaaS pack scenario databases and snapshots",
-      "goal": "A mission verifies that financial services and SaaS packs generate deterministic SQLite databases and JSON snapshots across supported scenarios.",
+      "id": "journey-snowflake-cost-fail-closed-overwrite",
+      "name": "Fail closed when target database or snapshot output path already exists without force flag",
+      "goal": "An operator confirms that existing output files are protected against accidental overwrites by failing closed with exit code 2 unless --force is explicitly provided.",
+      "authority": "author",
+      "status": "passed",
+      "exploratory": false,
+      "source_refs": [
+        "src/dashForge/main.py",
+        "src/dashForge/package_snapshot.py",
+        "docs/snowflake-cost-pack-contract.md"
+      ],
+      "commands": [
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --output /tmp/idle-warehouse-waste.sqlite",
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --output /tmp/idle-warehouse-waste.sqlite --force"
+      ],
+      "steps": [
+        "Attempt to generate to an existing output path without passing --force using env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --output /tmp/idle-warehouse-waste.sqlite.",
+        "Confirm the command exits with status 2 and outputs a clean diagnostic error indicating that output files already exist.",
+        "Re-run the command with --force using env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --output /tmp/idle-warehouse-waste.sqlite --force and confirm successful generation."
+      ],
+      "traces_to": [
+        "AC-1",
+        "AC-3",
+        "AC-4"
+      ]
+    },
+    {
+      "id": "journey-snowflake-cost-dynamic-scenarios",
+      "name": "Generate multiple Snowflake cost pack scenarios dynamically discovered from dataForge",
+      "goal": "A mission verifies that the CLI discovers scenarios dynamically from dataForge rather than hardcoding them, generating deterministic databases and snapshots across multiple cost stories such as bi-over-provisioning and finops-maturity-assessment.",
       "authority": "mission",
       "status": "passed",
       "exploratory": false,
       "source_refs": [
         "src/dashForge/main.py",
-        "src/dashForge/generate.py",
-        "docs/package-dataforge-snapshot-contract.md"
+        "src/dashForge/snowflake_cost.py",
+        "docs/snowflake-cost-pack-contract.md"
       ],
       "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack financial --scenario market-downturn --seed 5301 --output /tmp/financial.sqlite --snapshot-output /tmp/financial.snapshot.json --force",
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack saas --scenario churn-crisis --seed 8301 --output /tmp/saas.sqlite --snapshot-output /tmp/saas.snapshot.json --force"
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario bi-over-provisioning --seed 9102 --output /tmp/bi-over-provisioning.sqlite --snapshot-output /tmp/bi-over-provisioning.snapshot.json --force",
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario finops-maturity-assessment --seed 9106 --output /tmp/finops-maturity.sqlite --snapshot-output /tmp/finops-maturity.snapshot.json --force"
       ],
       "steps": [
-        "Execute env PYTHONPATH=src python3 -m dashForge.main generate with --pack financial --scenario market-downturn --seed 5301 --output /tmp/financial.sqlite --snapshot-output /tmp/financial.snapshot.json --force.",
-        "Execute env PYTHONPATH=src python3 -m dashForge.main generate with --pack saas --scenario churn-crisis --seed 8301 --output /tmp/saas.sqlite --snapshot-output /tmp/saas.snapshot.json --force.",
-        "Confirm both pack generators produce valid SQLite tables and snapshot JSON structures."
+        "Execute env PYTHONPATH=src python3 -m dashForge.main generate with --pack snowflakeCost --scenario bi-over-provisioning --seed 9102 --output /tmp/bi-over-provisioning.sqlite --snapshot-output /tmp/bi-over-provisioning.snapshot.json --force.",
+        "Execute env PYTHONPATH=src python3 -m dashForge.main generate with --pack snowflakeCost --scenario finops-maturity-assessment --seed 9106 --output /tmp/finops-maturity.sqlite --snapshot-output /tmp/finops-maturity.snapshot.json --force.",
+        "Confirm both dynamically discovered scenarios succeed with exit code 0 and produce valid SQLite tables and snapshot JSON structures."
       ],
       "traces_to": [
         "AC-1",
-        "AC-3",
-        "AC-4",
-        "AC-6"
+        "AC-2",
+        "AC-5"
       ]
     },
     {
-      "id": "journey-invalid-inputs-and-error-handling",
-      "name": "Handle missing arguments and invalid scenario identifiers gracefully without tracebacks",
-      "goal": "A human user verifies that invalid CLI invocations (e.g. unknown scenario or missing arguments) produce clean diagnostic error messages and non-zero exit codes without unhandled Python tracebacks.",
+      "id": "journey-snowflake-cost-recommendations-and-provenance",
+      "name": "Verify recommendation queue schema and synthetic disclosure provenance metadata",
+      "goal": "A human consultant or reviewer inspects the generated snapshot artifacts for idle-warehouse-waste to ensure governance columns (executive_severity, suggested_owner, recommended_action, evidence_detail, guardrail) and synthetic disclosure metadata are fully preserved.",
+      "authority": "human",
+      "status": "passed",
+      "exploratory": false,
+      "source_refs": [
+        "src/dashForge/snowflake_cost.py",
+        "src/dashForge/package_snapshot.py",
+        "docs/snowflake-cost-pack-contract.md"
+      ],
+      "commands": [
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force"
+      ],
+      "steps": [
+        "Run env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force.",
+        "Inspect the exported snapshot JSON metadata to confirm synthetic: true and disclosure: 'Synthetic demo data' are present alongside dataForge story contract path and timestamp.",
+        "Inspect the recommendation_queue dataset to confirm executive_severity, suggested_owner, recommended_action, evidence_detail, and guardrail columns are present with valid data."
+      ],
+      "traces_to": [
+        "AC-1",
+        "AC-5",
+        "AC-6",
+        "AC-7"
+      ]
+    },
+    {
+      "id": "journey-snowflake-cost-invalid-inputs-handling",
+      "name": "Handle invalid scenario identifiers and missing CLI arguments gracefully without tracebacks",
+      "goal": "A human user verifies that invalid scenario names, unsupported packs, or missing required parameters fail closed with exit code 2 and concise diagnostic error messages without raw Python tracebacks.",
       "authority": "human",
       "status": "passed",
       "exploratory": false,
       "source_refs": [
         "src/dashForge/main.py",
-        "docs/package-dataforge-snapshot-contract.md"
+        "docs/snowflake-cost-pack-contract.md"
       ],
       "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario unknown-scenario --output /tmp/unknown.sqlite",
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario non-existent-cost-scenario --output /tmp/non-existent.sqlite",
         "env PYTHONPATH=src python3 -m dashForge.main"
       ],
       "steps": [
-        "Run env PYTHONPATH=src python3 -m dashForge.main generate with an invalid or unknown scenario identifier.",
-        "Run env PYTHONPATH=src python3 -m dashForge.main without required arguments.",
-        "Verify non-zero exit code and diagnostic stderr message without unhandled tracebacks."
+        "Run env PYTHONPATH=src python3 -m dashForge.main generate with an unknown scenario name under --pack snowflakeCost.",
+        "Confirm the command exits with exit code 2 and outputs a clean diagnostic error without unhandled tracebacks.",
+        "Run env PYTHONPATH=src python3 -m dashForge.main without arguments and verify exit code 2 with standard usage diagnostics."
       ],
       "traces_to": [
         "AC-1",
-        "AC-5",
-        "AC-7",
-        "AC-8"
+        "AC-2",
+        "AC-3"
       ]
     },
     {
-      "id": "journey-test-suite-and-data-adapter-verification",
-      "name": "Execute automated generator and snapshot test suite verifying data adapter compatibility",
-      "goal": "A human reviewer executes the automated test suite to confirm determinism, snapshot structure, and compatibility with the DashForge data adapter.",
+      "id": "journey-existing-packs-regression-and-test-suite",
+      "name": "Verify regression immunity for existing packs and execute full automated test suite",
+      "goal": "A human reviewer executes existing pack generation and the complete automated test suite to confirm backwards compatibility and data adapter schema conformance with no regressions.",
       "authority": "human",
       "status": "passed",
       "exploratory": false,
       "source_refs": [
-        "tests/test_generate.py",
-        "tests/test_dataforge_compat.py",
+        "src/dashForge/main.py",
         "tests/test_package_snapshot.py",
-        "docs/package-dataforge-snapshot-contract.md"
+        "tests/test_dataforge_compat.py",
+        "tests/test_snowflake_cost_pack.py",
+        "docs/snowflake-cost-pack-contract.md"
       ],
       "commands": [
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --seed 3101 --output /tmp/healthcare-flu.sqlite --snapshot-output /tmp/healthcare-flu.snapshot.json --force",
         "python3 -m pytest tests/ -q"
       ],
       "steps": [
-        "Run python3 -m pytest tests/ -q.",
-        "Confirm all test cases pass cleanly, verifying determinism, dataset export resolution, and schema compatibility."
+        "Generate a healthcare pack scenario using env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --seed 3101 --output /tmp/healthcare-flu.sqlite --snapshot-output /tmp/healthcare-flu.snapshot.json --force and verify exit code 0.",
+        "Execute python3 -m pytest tests/ -q with no PYTHONPATH override from workspace root.",
+        "Confirm all automated tests pass cleanly, verifying determinism, dataset export resolution, and schema compatibility across all packs."
       ],
       "traces_to": [
-        "AC-3",
-        "AC-6",
-        "AC-7"
+        "AC-1",
+        "AC-5",
+        "AC-8"
       ]
     }
   ]

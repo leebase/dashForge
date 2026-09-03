@@ -312,7 +312,7 @@ env PYTHONPATH=src python3 -m dashForge.main generate \
 ```
 
 Key CLI flags include:
-- `--pack`: Target mock-data pack (`healthcare`, `financial`, `saas`). Defaults to `healthcare`.
+- `--pack`: Target mock-data pack (`healthcare`, `financial`, `saas`, `snowflakeCost`). Defaults to `healthcare`.
 - `--scenario`: Scenario identifier within the pack (required).
 - `--seed`: Optional integer seed for deterministic output reproducibility.
 - `--output`: Output filesystem path for the generated SQLite database (required).
@@ -339,10 +339,109 @@ result = package_snapshot(
 
 ### Core Contracts & Guarantees
 
-- **Multi-Pack Determinism**: Supports canonical industry packs (`healthcare`, `financial`, `saas`) with guaranteed reproducible database rows and JSON snapshots given identical seeds.
+- **Multi-Pack Determinism**: Supports canonical industry packs (`healthcare`, `financial`, `saas`, `snowflakeCost`) with guaranteed reproducible database rows and JSON snapshots given identical seeds.
 - **Fail-Closed Overwrite Protection**: Fails closed with non-zero exit code (exit code 2 in CLI) or `FileExistsError` in programmatic calls if any target file already exists on disk without explicit force instructions.
 - **Runtime Schema Interoperability**: Exported JSON snapshots conform strictly to the `SQLiteSnapshot` contract (`packId`, `scenarioId`, `seed`, `datasets` containing column types, semantic roles `["dimension", "measure", "date", "id"]`, and row records) ingested by DashForge's `DataAdapter` and `createDashboardDataAdapter` runtime.
 - **Clean Diagnostic Reporting**: Invalid packs, unknown scenarios, or missing arguments produce clear usage diagnostics without unhandled stack traces.
+
+## Snowflake Cost Pack
+
+The `snowflakeCost` pack bridges dataForge's Snowflake cost optimization scenarios into DashForge's packaging CLI (`dashForge.main generate`) and snapshot engine (`dashForge.package_snapshot.package_snapshot`). This allows consultants to deliver believable, interactive FinOps demonstrations during executive discovery sessions without connecting to live client Snowflake accounts.
+
+### CLI Usage
+
+Generate a normalized SQLite database and schema-compliant JSON snapshot with a single command:
+
+```bash
+cd /home/lee/projects/dashForge
+env PYTHONPATH=src python3 -m dashForge.main generate \
+  --pack snowflakeCost \
+  --scenario idle-warehouse-waste \
+  --seed 9101 \
+  --output /tmp/idle-warehouse-waste.sqlite \
+  --snapshot-output /tmp/idle-warehouse-waste.snapshot.json \
+  --force
+```
+
+### Dynamic Scenario Discovery
+
+DashForge discovers scenarios dynamically at runtime from sibling project `dataForge` via `get_snowflake_cost_scenarios()` rather than hardcoding scenario identifiers in DashForge sources. The pack includes:
+- `idle-warehouse-waste`: Warehouses running with zero query workload burning credits.
+- `bi-over-provisioning`: Oversized cluster sizes dedicated to intermittent BI dashboard queries.
+- `runaway-query-pattern`: Unindexed table scans and inefficient joins causing unexpected credit consumption.
+- `department-chargeback`: Attribution of credit spend across organizational business units.
+- `executive-cost-spike`: Unanticipated monthly cost surges requiring FinOps triage and root-cause analysis.
+- `finops-maturity-assessment`: Account-wide review of governance policies, resource monitors, and optimization opportunities.
+
+Unknown scenario identifiers fail closed with exit status 2 and a clean diagnostic error message, preventing Python tracebacks during client meetings.
+
+### Exported Datasets & Schema Preservation
+
+Generation produces 7 relational tables in SQLite and 7 corresponding dataset objects in the `SQLiteSnapshot` JSON export:
+1. `executive_summary`: High-level monthly compute vs. storage spend and projected optimization savings.
+2. `warehouse_metering_history`: Hourly credit consumption by warehouse cluster.
+3. `query_history`: Granular query execution telemetry, runtime seconds, and user attribution.
+4. `metering_history`: Daily account-level credit utilization.
+5. `database_storage_usage_history`: Daily storage bytes across active tables, stages, and failsafe/time-travel.
+6. `show_warehouses`: Warehouse configuration parameters including size, auto-suspend, and auto-resume settings.
+7. `recommendation_queue`: Prioritized executive action items with all governance columns preserved intact:
+   - `recommendation_id`: Unique identifier (e.g., `IWW-001`).
+   - `executive_severity`: Priority rating (`P0`, `P1`, `P2`, `P3`).
+   - `suggested_owner`: Target team or role responsible for implementation.
+   - `recommended_action`: Actionable optimization or remediation step.
+   - `evidence_detail`: Telemetry metrics and rationale supporting the finding.
+   - `guardrail`: Operational safeguard to avoid business disruption or SLA violation.
+
+### Provenance & Synthetic Data Disclosure
+
+Snapshot JSON files embed governed provenance metadata to guarantee auditability and disclose synthetic data origin:
+- `packId`: `"snowflakeCost"`
+- `scenarioId`: Active scenario identifier (e.g., `"idle-warehouse-waste"`)
+- `seed`: Integer seed ensuring bit-for-bit reproducibility
+- `dataForgeStoryContractPath`: Relative story contract path (`stories/snowflake/<scenario>.md`)
+- `generatorVersion`: Pack version integer
+- `generationTimestamp`: ISO-8601 UTC timestamp
+- `synthetic`: Explicit boolean `True`
+- `disclosure`: Human-readable label `"Synthetic demo data"`
+
+### Programmatic Python Interface
+
+The `dashForge.snowflake_cost` module exposes scenario discovery and schema validation helpers:
+
+```python
+from dashForge.snowflake_cost import (
+    get_snowflake_cost_scenarios,
+    validate_snowflake_cost_scenario,
+    validate_recommendation_queue_schema,
+    enrich_snowflake_cost_provenance,
+)
+
+# Dynamically query available scenarios
+scenarios = get_snowflake_cost_scenarios()
+
+# Validate a scenario definition
+scenario_data = validate_snowflake_cost_scenario("idle-warehouse-waste")
+```
+
+Package programmatic snapshots:
+
+```python
+from pathlib import Path
+from dashForge.package_snapshot import package_snapshot
+
+result = package_snapshot(
+    pack="snowflakeCost",
+    scenario="idle-warehouse-waste",
+    seed=9101,
+    output_path=Path("/tmp/idle-warehouse-waste.sqlite"),
+    snapshot_output_path=Path("/tmp/idle-warehouse-waste.snapshot.json"),
+    force=True,
+)
+```
+
+### Fail-Closed Overwrite Protection
+
+Generation enforces fail-closed overwrite safety. If `--output` or `--snapshot-output` targets exist on disk and `--force` is omitted, the command exits with code 2 and an actionable diagnostic: `Output path already exists. Pass --force to overwrite: <path>`.
 
 ## Key Project Docs
 
@@ -357,6 +456,8 @@ result = package_snapshot(
 - `code-reviews/review-mvp-standalone-dashboard.md`: formal standalone MVP review
 - `docs/package-dataforge-snapshot-contract.md`: DataForge snapshot packaging slice contract
 - `plans/package-dataforge-snapshot-implementation-plan.md`: DataForge snapshot packaging implementation plan
+- `docs/snowflake-cost-pack-contract.md`: Snowflake Cost Pack slice contract
+- `plans/snowflake-cost-pack-implementation-plan.md`: Snowflake Cost Pack implementation plan
 - `scenarios/healthcare/ed-throughput-crunch-contract.md`: ED throughput scenario contract
 - `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`: ED throughput execution runbook
 - `playbooks/ed_throughput_crunch_demo_workflow.yaml`: scenario package governance workflow

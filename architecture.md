@@ -2,13 +2,49 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.9  
+**Version:** 1.10  
 **Date:** September 2, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.9 records the deterministic DataForge snapshot packaging
-utility and fail-closed CLI bridge for offline dashboard execution.
+**Revision notes:** v1.10 records dynamic scenario discovery, provenance metadata,
+and recommendation queue preservation for the Snowflake Cost optimization pack.
 
 ---
+## 2026-09-02 — Snowflake Cost Pack integration and dynamic scenario discovery
+
+**Decision:** DashForge integrates the `snowflakeCost` optimization pack via
+`src/dashForge/snowflake_cost.py`, extending `dashForge.main generate`,
+`dashForge.generate`, and `dashForge.package_snapshot` to support dynamic
+scenario discovery, deterministic snapshot export, and recommendation queue
+preservation without modifying sibling project `dataForge`.
+
+**Contract:**
+- **Dynamic Scenario Enumeration**: Discovers available scenarios directly
+  from `dataForge` (`idle-warehouse-waste`, `bi-over-provisioning`,
+  `runaway-query-pattern`, `department-chargeback`, `executive-cost-spike`,
+  `finops-maturity-assessment`) without hardcoding lists in DashForge source code.
+  Unknown scenario identifiers fail closed with exit status 2.
+- **Fail-Closed Argument Validation & Overwrite Guard**: Missing required options,
+  invalid packs, or existing destination paths without `--force` abort with exit
+  status 2 and clean diagnostics via `parser.error()`.
+- **Canonical Snapshot Conformance**: Snapshot exports adhere strictly to the
+  canonical `SQLiteSnapshot` TypeScript contract in
+  `frontend/src/core/data/sqliteSnapshot.ts`. No secondary format is introduced.
+- **Provenance & Synthetic Disclosure**: Enriched metadata embedded in snapshot
+  exports records `packId` (`snowflakeCost`), `scenarioId`, `seed`,
+  `dataForgeStoryContractPath`, generator version, ISO-8601 timestamp,
+  `synthetic: true`, and disclosure text `"Synthetic demo data"`.
+- **Recommendation Queue Preservation**: The `recommendation_queue` table
+  preserves all columns (`recommendation_id`, `executive_severity`,
+  `suggested_owner`, `recommended_action`, `evidence_detail`, `guardrail`)
+  intact to power downstream dashboard recommendation views.
+- **Zero External Runtime Dependencies**: Uses Python standard library only.
+  Sibling repository `dataForge` remains strictly read-only.
+
+**Consequences:** DashForge consultants and operators can generate client-ready
+Snowflake cost optimization SQLite databases and JSON snapshots for offline
+executive discovery workshops with zero external dependencies, live credentials,
+or unhandled tracebacks.
+
 ## 2026-09-02 — Deterministic DataForge snapshot packaging and fail-closed CLI
 
 **Decision:** The `package-dataforge-snapshot` slice establishes a formal CLI

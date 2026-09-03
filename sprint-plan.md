@@ -6,6 +6,23 @@
 
 ---
 
+## Snowflake Cost Pack Slice — 2026-09-02
+
+**Status:** Complete
+
+- [x] CLI entrypoint `dashForge.main generate` accepts `--pack snowflakeCost` alongside existing packs (`healthcare`, `financial`, `saas`), supporting `--scenario`, `--seed`, `--output`, `--snapshot-output`, and `--force` (AC-1).
+- [x] Dynamic scenario discovery from dataForge (`idle-warehouse-waste`, `bi-over-provisioning`, `runaway-query-pattern`, `department-chargeback`, `executive-cost-spike`, `finops-maturity-assessment`) without hardcoding scenario lists in DashForge (AC-2).
+- [x] Fail-closed error handling exiting with status 2 and clean diagnostic messages on invalid arguments or missing required options (AC-3).
+- [x] Fail-closed overwrite protection requiring explicit `--force` flag when output paths exist (AC-4).
+- [x] Deterministic bit-for-bit relational generation and canonical `SQLiteSnapshot` JSON packaging via `src/dashForge/package_snapshot.py` (AC-5).
+- [x] Provenance tracing and synthetic demo disclosure metadata embedded in exported snapshots (AC-6).
+- [x] Full preservation of `recommendation_queue` table schema and governance columns (AC-7).
+- [x] Backwards compatibility and regression immunity for existing packs; complete test suite passes cleanly with zero changes to sibling project `dataForge` (AC-8).
+- [x] Passed governed review with verdict `pass` and 0 findings in `code-reviews/review-snowflake-cost-pack.verdict.json`.
+- [x] Preserved validator evidence: all compileall and pytest checks passed (final full test suite: 74 passed in 15.14s, exit status 0; targeted suite: 34 passed in 0.99s, exit status 0).
+
+This slice delivers dynamic discovery, deterministic generation, provenance metadata, and recommendation queue packaging for the Snowflake Cost optimization pack within DashForge's canonical CLI and runtime snapshot bridge.
+
 ## Package DataForge Snapshot Slice — 2026-09-02
 
 **Status:** Complete

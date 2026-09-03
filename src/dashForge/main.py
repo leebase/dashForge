@@ -24,7 +24,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate_parser.add_argument(
         "--pack",
         default="healthcare",
-        choices=["healthcare", "financial", "saas"],
+        choices=["healthcare", "financial", "saas", "snowflakeCost"],
         help="Mock-data pack to generate.",
     )
     generate_parser.add_argument(
