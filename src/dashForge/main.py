@@ -1,17 +1,7 @@
 import argparse
 from pathlib import Path
 
-from .generate import (
-    generate_financial_database,
-    generate_healthcare_database,
-    generate_saas_database,
-)
-
-GENERATORS = {
-    "healthcare": generate_healthcare_database,
-    "financial": generate_financial_database,
-    "saas": generate_saas_database,
-}
+from .package_snapshot import GENERATORS, package_snapshot
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -25,7 +15,7 @@ def build_parser() -> argparse.ArgumentParser:
         version="%(prog)s 0.1.0",
     )
 
-    subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest="command", required=True)
 
     generate_parser = subparsers.add_parser(
         "generate",
@@ -70,40 +60,26 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command != "generate":
-        parser.print_help()
-        return 0
-
-    output_path = Path(args.output)
-    snapshot_path = Path(args.snapshot_output) if args.snapshot_output else None
-    existing_paths = [
-        path for path in [output_path, snapshot_path] if path and path.exists()
-    ]
-    if existing_paths and not args.force:
-        parser.error(
-            "Output path already exists. Pass --force to overwrite: "
-            + ", ".join(str(path) for path in existing_paths)
-        )
+        parser.error(f"Unknown command: {args.command}")
 
     try:
-        generate_database = GENERATORS[args.pack]
-    except KeyError:
-        parser.error(f'Unknown pack "{args.pack}".')
-
-    try:
-        result = generate_database(
-            scenario_id=args.scenario,
-            output_path=output_path,
+        result = package_snapshot(
+            pack=args.pack,
+            scenario=args.scenario,
+            output_path=args.output,
+            snapshot_output_path=args.snapshot_output,
             seed=args.seed,
-            snapshot_output_path=snapshot_path,
+            force=args.force,
         )
-    except ValueError as error:
+    except (FileExistsError, ValueError) as error:
         parser.error(str(error))
+
     print(
         "Generated "
         f'{result["packId"]}/{result["scenarioId"]} '
         f'seed {result["seed"]} -> {result["outputPath"]}'
     )
-    if result["snapshotOutputPath"]:
+    if result.get("snapshotOutputPath"):
         print(f'Snapshot -> {result["snapshotOutputPath"]}')
     return 0
 

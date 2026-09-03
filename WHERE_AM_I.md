@@ -13,8 +13,8 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / first employee handoff |
-| **Overall Status** | 🟢 Client Meeting Dashboard Builder now consumes a trusted DataForge work package and emits a cited meeting package; broader commercial expansion remains buyer-gated |
-| **Last Updated** | 2026-08-09 |
+| **Overall Status** | 🟢 Package DataForge Snapshot slice complete and passed governed review; CLI provides deterministic multi-pack generation and fail-closed snapshot export for offline workshops; broader commercial expansion remains buyer-gated |
+| **Last Updated** | 2026-09-02 |
 
 ---
 
@@ -32,6 +32,7 @@
 | Shared DashboardSpec runtime | ✅ Done | The standalone path, builder, presenter, export, and live-binding surfaces all stay on the same `DashboardSpec` plus `DataAdapter` seams |
 | Planning and canon docs | ✅ Done | Product, architecture, planning, and handoff docs now agree on the narrower standalone MVP definition |
 | Trusted employee handoff | ✅ Done | DashForge validates a platform-received `synthetic-data-work-package/1.0` and emits a digest-pinned `meeting-dashboard-package/1.0` with binding and claim evidence |
+| Package DataForge Snapshot | ✅ Done | Deterministic SQLite & JSON snapshot packaging CLI with fail-closed overwrite protection, multi-pack support, and DataAdapter schema alignment |
 
 ### Current Phase Goals
 
@@ -64,6 +65,7 @@
 | Sprint 8 — AI generation | Implementation, verify, repair, and review/handoff complete | ✅ Complete |
 | Sprint 9 — Production binding | Implementation, verify, repair, and review/handoff complete | ✅ Complete |
 | Sprint 10 — Client Meeting Dashboard Builder | Trusted DataForge receipt, dashboard validation, claim ledger, and meeting package | ✅ Complete |
+| Package DataForge Snapshot | Deterministic SQLite & JSON snapshot packaging CLI with fail-closed protection, multi-pack support, and DataAdapter schema alignment | ✅ Complete |
 
 ---
 
@@ -112,6 +114,7 @@ Decisions that affect product direction:
 | Mock-data creation now lives in sibling project `dataForge`, with dashForge retaining compatibility wrappers for historical generator entrypoints | Clarifies repo ownership while preserving the existing CLI/test surface during transition | 2026-04-03 |
 | Snowflake Cost Optimization is the sole commercial proof path until buyer evidence supports expansion | Concentrates near-term consulting revenue effort and prevents a platform rewrite or duplicate UI/runtime | 2026-07-16 |
 | Client Meeting Dashboard Builder is the first DashForge product employee | Consumes a trusted DataForge work package and reuses DashboardSpec/DataAdapter/runtime seams; platform owns receipt and approval | 2026-08-09 |
+| Package DataForge Snapshot CLI enforces fail-closed overwrite protection and extracts SQLiteSnapshot JSON via SQLite PRAGMA table_info | Prevents accidental data loss during workshop rehearsal and guarantees schema alignment with DataAdapter runtime without external dependencies | 2026-09-02 |
 
 ---
 

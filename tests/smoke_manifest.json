@@ -1,0 +1,12 @@
+{
+  "steps": [
+    {"name": "start helper", "path": "tests/smoke_start.py", "command": ["python3", "tests/smoke_start.py"]},
+    {"name": "smoke check", "path": "tests/smoke_check.py", "command": ["python3", "tests/smoke_check.py"]}
+  ],
+  "start_command": ["python3", "tests/smoke_start.py"],
+  "check_command": ["python3", "tests/smoke_check.py"],
+  "startup_delay_seconds": 0,
+  "startup_timeout_seconds": 10,
+  "poll_interval_seconds": 0.25,
+  "check_timeout_seconds": 600
+}

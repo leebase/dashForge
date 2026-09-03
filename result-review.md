@@ -3,6 +3,45 @@
 > **Running log of completed work.** Newest entries at the top.
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
+
+## 2026-09-02 — Package DataForge Snapshot Slice Passed Governed Review
+
+### What Was Built
+
+Implemented and verified the `package-dataforge-snapshot` slice, providing the CLI entrypoint, snapshot extraction pipeline, and compatibility dispatch layer for deterministic scenario packaging:
+
+- **CLI Entrypoint (`src/dashForge/main.py`)**: Supports the `generate` subcommand with `--pack` (`healthcare`, `financial`, `saas`), `--scenario` (required), `--seed` (optional deterministic integer), `--output` (required SQLite path), `--snapshot-output` (optional JSON snapshot export path), and `--force` (AC-1).
+- **Fail-Closed Overwrite Guard (`src/dashForge/main.py`)**: Verifies target file existence before executing generation or writing output. If `--output` or `--snapshot-output` exists and `--force` is omitted, the command fails closed with exit status 2 and diagnostic error `Output path already exists. Pass --force to overwrite` (AC-2).
+- **Snapshot Extraction Pipeline (`src/dashForge/package_snapshot.py`)**: Uses Python standard library `sqlite3` to inspect table schemas via `PRAGMA table_info`, infer column data types (`string`, `number`, `date`, `boolean`) and semantic roles (`dimension`, `measure`, `date`, `id`), and serialize all table rows into formatted JSON matching the `SQLiteSnapshot` contract in `frontend/src/core/data/sqliteSnapshot.ts` (AC-3, AC-6).
+- **Multi-Pack Determinism (`src/dashForge/generate.py`)**: Supports all canonical industry packs (`healthcare`, `financial`, `saas`) and scenarios with reproducible SQLite databases and JSON snapshots given identical seeds (AC-4).
+- **Graceful Error Handling (`src/dashForge/main.py`)**: Intercepts argument and generation errors (`ValueError`, `KeyError`, `FileExistsError`) and routes them cleanly through `parser.error(...)` with exit status 2, eliminating unhandled Python tracebacks (AC-5).
+- **Targeted Test Suite (`tests/test_package_snapshot.py`)**: 29 unit and CLI regression tests covering argument validation, overwrite protection, schema integrity, multi-pack dispatch, determinism, and graceful error handling.
+- **User Journey Synchronization (`journeys/user_journeys_manifest.json`)**: Synchronized user journeys mapping natural-language goals to AC-1 through AC-8 with non-empty allowlists (AC-7).
+- **Governed Scope Boundary**: Retained strict write confinement across slice execution (AC-8).
+
+### Why It Matters
+
+DashForge dashboards must run reliably during high-stakes client workshops on laptops with zero network connectivity. While sibling project `dataForge` owns mock-data generation, DashForge's client-side runtime (`DataAdapter`, `sqliteSnapshot.ts`) requires structured JSON snapshot artifacts with typed columns and semantic roles. This slice provides the deterministic bridge from generated SQLite databases to runtime-ready JSON snapshots while protecting operators from accidental file overwrites or embarrassing Python tracebacks during live demonstrations.
+
+### Review Verdict & Independent Evidence
+
+- **Review Verdict**: `pass` with 0 findings in `code-reviews/review-package-dataforge-snapshot.verdict.json` and `code-reviews/review-package-dataforge-snapshot.md`.
+- **Review Lenses**:
+  - *Architecture*: The CLI properly separates argument parsing from backend generation, intercepting errors gracefully and cleanly printing valid results.
+  - *Requirements*: Meets AC-1 to AC-8, handling fail-closed execution without the `--force` flag properly and verifying compatibility with DataAdapter structure.
+- **Review Checks**:
+  - `python3 -m pytest tests/ -q`: exit code 0 ("All 54 tests passed successfully in 18.79s, verifying package snapshot behavior.")
+  - Agent-Orch `user_tester` simulation: exit code 0.
+- **Preserved System Validator Evidence** (from `/home/lee/projects/dashForge-agent-orch-runs/4d2628b340b6/steps/step_10_closeout_handoff_docs/attempt-1/preserved-validator-evidence.json`):
+  - Validator Result 1 (`step_04_author_slice_tests` attempt 1): `python3 -m compileall tests/test_package_snapshot.py`, exit status 0, duration 0.168963s, passed: True.
+  - Validator Result 2 (`step_05_implement_slice` attempt 1): `python3 -m pytest tests/test_package_snapshot.py`, exit status 0, duration 10.963935s, passed: True (29 passed in 10.23s; counts: passed 29, failed 0, skipped 0).
+  - Validator Result 3 (`step_07_repair_and_verify_slice` attempt 1): `python3 -m pytest`, exit status 0, duration 19.798888s, passed: True (53 passed in 19.05s; counts: passed 53, failed 0, skipped 0).
+  - Validator Result 4 (`step_07_repair_and_verify_slice` attempt 1): `python3 -m compileall src tests`, exit status 0, duration 0.057053s, passed: True.
+  - Validator Result 5 (`step_07_repair_and_verify_slice` attempt 2): `python3 -m pytest`, exit status 0, duration 19.335459s, passed: True (54 passed in 18.61s; counts: passed 54, failed 0, skipped 0).
+  - Validator Result 6 (`step_07_repair_and_verify_slice` attempt 2): `python3 -m compileall src tests`, exit status 0, duration 0.050162s, passed: True.
+
+---
+
 ## 2026-08-11 — Unified DashForge/DataForge operator guide
 
 ### What Was Built

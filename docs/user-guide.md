@@ -16,6 +16,7 @@ field-service heat-wave story. It is synthetic demo data, not a client result.
 | Goal | Use |
 |---|---|
 | View the ready-made executive dashboard | DashForge web app |
+| Package DataForge scenario SQLite and JSON snapshots | DashForge `package_snapshot` or `dashForge generate` |
 | Generate a clean SQLite database and optional JSON snapshot | DataForge `generate` |
 | Validate an approved scenario contract | DataForge `validate-scenario` |
 | Produce the full evidence-bearing upstream package | DataForge `employee-run` |
@@ -270,6 +271,61 @@ python3 scripts/export_snowflake_cost_dashboard_csvs.py \
   --sqlite /tmp/idle-warehouse-waste.sqlite \
   --output-dir /tmp/idle-warehouse-waste-dashboard-csv
 ```
+
+## DataForge Snapshot Packaging
+
+DashForge includes tooling and programmatic interfaces to package synthetic scenario generation outputs into bounded SQLite database files and runtime-compatible JSON snapshots (`SQLiteSnapshot`). These snapshot artifacts allow DashForge's standalone frontend runtime (`frontend/src/core/data/sqliteSnapshot.ts`) to execute dashboards completely offline during enterprise client discovery sessions without requiring live network connectivity or running database servers.
+
+### Command-Line Generation
+
+The packaging CLI entrypoint is available via `env PYTHONPATH=src python3 -m dashForge.main generate`:
+
+```bash
+cd /home/lee/projects/dashForge
+env PYTHONPATH=src python3 -m dashForge.main generate \
+  --pack healthcare \
+  --scenario flu-season \
+  --seed 3101 \
+  --output /tmp/flu-season.sqlite \
+  --snapshot-output /tmp/flu-season.snapshot.json
+```
+
+#### CLI Options
+
+- `--pack`: Industry pack name (`healthcare`, `financial`, `saas`). Defaults to `healthcare`.
+- `--scenario`: Scenario identifier within the selected pack (e.g., `flu-season`, `quality-improvement`, `cost-pressure`, `market-downturn`, `advisor-attrition`, `growth-quarter`, `churn-crisis`, `product-led-growth`, `scaling-success`). Required.
+- `--seed`: Optional integer seed for deterministic data generation.
+- `--output`: Filesystem path where the generated SQLite database will be written. Required.
+- `--snapshot-output`: Optional filesystem path for the exported JSON snapshot artifact.
+- `--force`: Overwrite existing output files. Without this flag, generation fails closed with exit code 2 if target files already exist on disk.
+
+### Programmatic Python Interface
+
+The `dashForge.package_snapshot` module exposes the `package_snapshot` function for programmatic workflow integration:
+
+```python
+from pathlib import Path
+from dashForge.package_snapshot import package_snapshot
+
+result = package_snapshot(
+    pack="healthcare",
+    scenario="flu-season",
+    output_path=Path("/tmp/flu-season.sqlite"),
+    snapshot_output_path=Path("/tmp/flu-season.snapshot.json"),
+    seed=3101,
+    force=True,
+)
+```
+
+### Snapshot Structure & Runtime Compatibility
+
+Exported snapshot JSON files conform to the `SQLiteSnapshot` contract consumed by `createDashboardDataAdapter` and `StandaloneDashboardApp`:
+
+- **Top-Level Metadata**: Contains `packId`, `scenarioId`, `seed`, and `datasets` collection.
+- **Dataset Schema**: Each dataset object contains `datasetId`, `rowCount`, `columns`, and `rows`.
+- **Typed Columns**: Each column definition specifies `name`, `type` (`string`, `number`, `date`, `boolean`), semantic `role` (`dimension`, `measure`, `date`, `id`), and human-readable `label`.
+- **Relational Consistency**: Row records match the SQLite table contents with consistent business aggregations across multi-level drill-downs.
+- **Fail-Closed Overwrite Protection**: The tool checks file existence before generation, preventing accidental data loss unless `--force` / `force=True` is explicitly supplied.
 
 ## 5. Connect generated output to DashForge
 

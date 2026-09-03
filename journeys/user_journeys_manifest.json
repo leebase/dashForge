@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": 1,
+  "contract": "docs/package-dataforge-snapshot-contract.md",
+  "objective": "Package DataForge scenario generation outputs into deterministic SQLite databases and portable JSON snapshots for offline DashForge runtime ingestion.",
+  "command_allowlist": [
+    "env PYTHONPATH=src python3 -m dashForge.main",
+    "python3 -m pytest tests/ -q"
+  ],
+  "journeys": [
+    {
+      "id": "journey-generate-healthcare-snapshot",
+      "name": "Generate deterministic healthcare SQLite database and JSON snapshot",
+      "goal": "An author or operator generates a deterministic healthcare flu-season scenario SQLite database and derived JSON snapshot for offline workshop presentation.",
+      "authority": "author",
+      "status": "passed",
+      "exploratory": false,
+      "source_refs": [
+        "src/dashForge/main.py",
+        "src/dashForge/generate.py",
+        "docs/package-dataforge-snapshot-contract.md"
+      ],
+      "commands": [
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --seed 3101 --output /tmp/flu-season.sqlite --snapshot-output /tmp/flu-season.snapshot.json --force"
+      ],
+      "steps": [
+        "Run env PYTHONPATH=src python3 -m dashForge.main generate with --pack healthcare --scenario flu-season --seed 3101 --output /tmp/flu-season.sqlite --snapshot-output /tmp/flu-season.snapshot.json --force.",
+        "Verify exit code is 0 and both the SQLite file and snapshot JSON file are created.",
+        "Verify the snapshot contains expected dataset IDs and valid column definitions matching DataAdapter schema."
+      ],
+      "traces_to": [
+        "AC-1",
+        "AC-3",
+        "AC-4",
+        "AC-6"
+      ]
+    },
+    {
+      "id": "journey-fail-closed-overwrite-protection",
+      "name": "Fail closed when target database or snapshot output path already exists without force flag",
+      "goal": "An operator confirms that existing output files are protected against accidental overwrites by failing closed unless --force is explicitly provided.",
+      "authority": "author",
+      "status": "passed",
+      "exploratory": false,
+      "source_refs": [
+        "src/dashForge/main.py",
+        "docs/package-dataforge-snapshot-contract.md"
+      ],
+      "commands": [
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --output /tmp/flu-season.sqlite",
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --output /tmp/flu-season.sqlite --force"
+      ],
+      "steps": [
+        "Attempt to generate to an existing output path without passing --force using env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --output /tmp/flu-season.sqlite.",
+        "Confirm the command exits with non-zero status and reports an informative error message regarding existing output files.",
+        "Re-run with --force using env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --output /tmp/flu-season.sqlite --force and confirm successful overwrite."
+      ],
+      "traces_to": [
+        "AC-1",
+        "AC-2",
+        "AC-8"
+      ]
+    },
+    {
+      "id": "journey-financial-and-saas-snapshot-generation",
+      "name": "Generate financial services and SaaS pack scenario databases and snapshots",
+      "goal": "A mission verifies that financial services and SaaS packs generate deterministic SQLite databases and JSON snapshots across supported scenarios.",
+      "authority": "mission",
+      "status": "passed",
+      "exploratory": false,
+      "source_refs": [
+        "src/dashForge/main.py",
+        "src/dashForge/generate.py",
+        "docs/package-dataforge-snapshot-contract.md"
+      ],
+      "commands": [
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack financial --scenario market-downturn --seed 5301 --output /tmp/financial.sqlite --snapshot-output /tmp/financial.snapshot.json --force",
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack saas --scenario churn-crisis --seed 8301 --output /tmp/saas.sqlite --snapshot-output /tmp/saas.snapshot.json --force"
+      ],
+      "steps": [
+        "Execute env PYTHONPATH=src python3 -m dashForge.main generate with --pack financial --scenario market-downturn --seed 5301 --output /tmp/financial.sqlite --snapshot-output /tmp/financial.snapshot.json --force.",
+        "Execute env PYTHONPATH=src python3 -m dashForge.main generate with --pack saas --scenario churn-crisis --seed 8301 --output /tmp/saas.sqlite --snapshot-output /tmp/saas.snapshot.json --force.",
+        "Confirm both pack generators produce valid SQLite tables and snapshot JSON structures."
+      ],
+      "traces_to": [
+        "AC-1",
+        "AC-3",
+        "AC-4",
+        "AC-6"
+      ]
+    },
+    {
+      "id": "journey-invalid-inputs-and-error-handling",
+      "name": "Handle missing arguments and invalid scenario identifiers gracefully without tracebacks",
+      "goal": "A human user verifies that invalid CLI invocations (e.g. unknown scenario or missing arguments) produce clean diagnostic error messages and non-zero exit codes without unhandled Python tracebacks.",
+      "authority": "human",
+      "status": "passed",
+      "exploratory": false,
+      "source_refs": [
+        "src/dashForge/main.py",
+        "docs/package-dataforge-snapshot-contract.md"
+      ],
+      "commands": [
+        "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario unknown-scenario --output /tmp/unknown.sqlite",
+        "env PYTHONPATH=src python3 -m dashForge.main"
+      ],
+      "steps": [
+        "Run env PYTHONPATH=src python3 -m dashForge.main generate with an invalid or unknown scenario identifier.",
+        "Run env PYTHONPATH=src python3 -m dashForge.main without required arguments.",
+        "Verify non-zero exit code and diagnostic stderr message without unhandled tracebacks."
+      ],
+      "traces_to": [
+        "AC-1",
+        "AC-5",
+        "AC-7",
+        "AC-8"
+      ]
+    },
+    {
+      "id": "journey-test-suite-and-data-adapter-verification",
+      "name": "Execute automated generator and snapshot test suite verifying data adapter compatibility",
+      "goal": "A human reviewer executes the automated test suite to confirm determinism, snapshot structure, and compatibility with the DashForge data adapter.",
+      "authority": "human",
+      "status": "passed",
+      "exploratory": false,
+      "source_refs": [
+        "tests/test_generate.py",
+        "tests/test_dataforge_compat.py",
+        "tests/test_package_snapshot.py",
+        "docs/package-dataforge-snapshot-contract.md"
+      ],
+      "commands": [
+        "python3 -m pytest tests/ -q"
+      ],
+      "steps": [
+        "Run python3 -m pytest tests/ -q.",
+        "Confirm all test cases pass cleanly, verifying determinism, dataset export resolution, and schema compatibility."
+      ],
+      "traces_to": [
+        "AC-3",
+        "AC-6",
+        "AC-7"
+      ]
+    }
+  ]
+}

@@ -10,7 +10,7 @@
 |-----------|-------|
 | **Phase** | Conditional commissioning behind DataForge |
 | **Mode** | 2 (Implementation with approval) |
-| **Last Updated** | 2026-08-11 |
+| **Last Updated** | 2026-09-02 |
 
 ### Sprint Status
 
@@ -26,8 +26,23 @@
 | Sprint 8 — AI generation | ✅ Complete | 100% |
 | Sprint 9 — Production binding | ✅ Complete | 100% |
 | Sprint 10 — Client Meeting Dashboard Builder | ✅ Complete | 100% |
+| Package DataForge Snapshot | ✅ Complete | 100% |
 
 ---
+
+## 2026-09-02 — Package DataForge Snapshot Slice Passed Governed Review
+
+The `package-dataforge-snapshot` slice is complete and verified. `src/dashForge/main.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/generate.py` now provide deterministic scenario packaging and snapshot extraction for DashForge's client-side runtime.
+
+Key deliverables:
+- CLI command: `python3 -m dashForge.main generate` supporting `--pack`, `--scenario`, `--seed`, `--output`, `--snapshot-output`, and `--force` (AC-1).
+- Fail-closed overwrite protection: target existence check aborts with exit code 2 and diagnostic message unless `--force` is supplied (AC-2).
+- Relational snapshot serialization: `package_snapshot.py` inspects SQLite tables via `PRAGMA table_info`, infers types/roles (`dimension`, `measure`, `date`, `id`), and formats JSON conforming to `SQLiteSnapshot` in `frontend/src/core/data/sqliteSnapshot.ts` (AC-3, AC-6).
+- Canonical multi-pack determinism: supports `healthcare`, `financial`, and `saas` packs with bit-for-bit reproducibility given identical seeds (AC-4).
+- Resilient error handling: intercepts errors cleanly via `parser.error()`, eliminating raw Python tracebacks (AC-5).
+- Test coverage: `tests/test_package_snapshot.py` passed with 29 tests; full pytest suite passed with 54 tests.
+- Governed review passed: `code-reviews/review-package-dataforge-snapshot.verdict.json` confirmed `pass` with 0 findings, fulfilling all acceptance criteria AC-1 through AC-8.
+- Preserved validator evidence: compileall and pytest passed across test authoring, implementation, and repair steps (final verification: 54 passed in 18.61s; compileall exit status 0).
 
 ## 2026-08-11 — Unified DashForge/DataForge operator guide
 
@@ -160,6 +175,8 @@ fixture digest.
 
 ### Current Work Stream
 
+The `package-dataforge-snapshot` slice has closed with a clean `pass` verdict (0 findings) in `code-reviews/review-package-dataforge-snapshot.verdict.json` and full preserved system validator evidence. `src/dashForge/main.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/generate.py` provide deterministic multi-pack generation, fail-closed target overwrite protection requiring `--force`, and structured JSON snapshot serialization matching DashForge's client-side `SQLiteSnapshot` and `DataAdapter` runtime interfaces for offline client workshop demonstrations.
+
 The active commercial proof path is now Snowflake Cost Optimization, bounded to
 the governed `idle-warehouse-waste` story. Auto-Orch run `ee6fac7897f9`
 completed the standalone buyer-demo slice through the existing
@@ -277,6 +294,13 @@ contract (`monthly_metrics`) and widget taxonomy.
 
 ### Recently Completed
 
+- ✅ Closed the `package-dataforge-snapshot` slice with formal review verdict `pass` and 0 findings in `code-reviews/review-package-dataforge-snapshot.verdict.json`
+- ✅ Implemented deterministic `package_snapshot.py` utility to inspect SQLite tables via `PRAGMA table_info` and export `SQLiteSnapshot` JSON conforming to `frontend/src/core/data/sqliteSnapshot.ts`
+- ✅ Added fail-closed overwrite protection in `src/dashForge/main.py` requiring explicit `--force` flag
+- ✅ Supported canonical multi-pack generation (`healthcare`, `financial`, `saas`) with reproducible outputs given identical seeds
+- ✅ Handled invalid CLI inputs, unknown packs, and unknown scenarios gracefully through `parser.error(...)` without unhandled Python tracebacks
+- ✅ Authored targeted test suite `tests/test_package_snapshot.py` with 29 passing tests; verified full test suite with 54 passing tests
+- ✅ Preserved system validator results confirmed compileall and full pytest suite (54 passed in 18.61s, exit status 0)
 - ✅ Broke mock-data creation out into `/Users/lee/projects/dataForge`, moving
   the real generator CLI, pack assets, and generator tests there while keeping
   dashForge compatibility wrappers for the old Python entrypoints
@@ -473,6 +497,7 @@ contract (`monthly_metrics`) and widget taxonomy.
 | `code-reviews/review-sprint-09.md` is the formal Sprint 9 closeout artifact | Completes the governed handoff requirement for the Sprint 1-9 delivery ladder | 2026-04-01 |
 | The standalone MVP entry point now opens directly into the ED throughput dashboard and keeps builder mode opt-in | Aligns the default app experience with the clarified MVP without introducing a second renderer or breaking the existing authoring surface | 2026-04-02 |
 | The product canon now defines the MVP as scenario definition, generated data, and a standalone dashboard deliverable | Prevents advanced builder/presenter/AI/live-binding breadth from obscuring the product's first proof of value | 2026-04-02 |
+| `package-dataforge-snapshot` CLI enforces fail-closed overwrite protection and extracts SQLiteSnapshot JSON via SQLite PRAGMA table_info | Prevents accidental data loss during workshop rehearsal and guarantees schema alignment with DataAdapter runtime without external dependencies | 2026-09-02 |
 
 ---
 

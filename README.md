@@ -293,6 +293,57 @@ port binding. In this sandbox, `npm run dev -- --host 127.0.0.1` fails with
 standalone default experience and the closed Sprint 9
 live-binding/builder/preview/presenter/export workflow.
 
+## DataForge Snapshot Packaging
+
+DashForge provides both a CLI entrypoint (`python3 -m dashForge.main generate`) and a programmatic Python API (`dashForge.package_snapshot.package_snapshot`) to package scenario generation outputs into bounded SQLite databases and schema-compliant JSON snapshots (`SQLiteSnapshot`). These snapshot artifacts allow DashForge's client-side runtime to execute interactive dashboard deliverables completely offline during client discovery workshops without requiring live database connections or backend servers.
+
+### CLI Generation
+
+The packaging CLI entrypoint supports multi-pack scenario generation with deterministic seed control and fail-closed overwrite protection:
+
+```bash
+cd /home/lee/projects/dashForge
+env PYTHONPATH=src python3 -m dashForge.main generate \
+  --pack healthcare \
+  --scenario flu-season \
+  --seed 3101 \
+  --output /tmp/flu-season.sqlite \
+  --snapshot-output /tmp/flu-season.snapshot.json
+```
+
+Key CLI flags include:
+- `--pack`: Target mock-data pack (`healthcare`, `financial`, `saas`). Defaults to `healthcare`.
+- `--scenario`: Scenario identifier within the pack (required).
+- `--seed`: Optional integer seed for deterministic output reproducibility.
+- `--output`: Output filesystem path for the generated SQLite database (required).
+- `--snapshot-output`: Optional filesystem path for the exported `SQLiteSnapshot` JSON file.
+- `--force`: Explicitly allow overwriting existing output files; without this flag, generation fails closed if destination files already exist.
+
+### Programmatic Python Interface
+
+The `dashForge.package_snapshot` module exposes the `package_snapshot` function:
+
+```python
+from pathlib import Path
+from dashForge.package_snapshot import package_snapshot
+
+result = package_snapshot(
+    pack="healthcare",
+    scenario="flu-season",
+    output_path=Path("/tmp/flu-season.sqlite"),
+    snapshot_output_path=Path("/tmp/flu-season.snapshot.json"),
+    seed=3101,
+    force=True,
+)
+```
+
+### Core Contracts & Guarantees
+
+- **Multi-Pack Determinism**: Supports canonical industry packs (`healthcare`, `financial`, `saas`) with guaranteed reproducible database rows and JSON snapshots given identical seeds.
+- **Fail-Closed Overwrite Protection**: Fails closed with non-zero exit code (exit code 2 in CLI) or `FileExistsError` in programmatic calls if any target file already exists on disk without explicit force instructions.
+- **Runtime Schema Interoperability**: Exported JSON snapshots conform strictly to the `SQLiteSnapshot` contract (`packId`, `scenarioId`, `seed`, `datasets` containing column types, semantic roles `["dimension", "measure", "date", "id"]`, and row records) ingested by DashForge's `DataAdapter` and `createDashboardDataAdapter` runtime.
+- **Clean Diagnostic Reporting**: Invalid packs, unknown scenarios, or missing arguments produce clear usage diagnostics without unhandled stack traces.
+
 ## Key Project Docs
 
 - `AGENTS.md`: operating rules for AI agents
@@ -304,6 +355,8 @@ live-binding/builder/preview/presenter/export workflow.
 - `docs/mvp-standalone-dashboard-contract.md`: bounded standalone MVP contract
 - `plans/mvp-standalone-dashboard-plan.md`: standalone MVP implementation plan
 - `code-reviews/review-mvp-standalone-dashboard.md`: formal standalone MVP review
+- `docs/package-dataforge-snapshot-contract.md`: DataForge snapshot packaging slice contract
+- `plans/package-dataforge-snapshot-implementation-plan.md`: DataForge snapshot packaging implementation plan
 - `scenarios/healthcare/ed-throughput-crunch-contract.md`: ED throughput scenario contract
 - `scenarios/healthcare/ed-throughput-crunch-build-checklist.md`: ED throughput execution runbook
 - `playbooks/ed_throughput_crunch_demo_workflow.yaml`: scenario package governance workflow

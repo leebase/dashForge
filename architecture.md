@@ -2,14 +2,47 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.8  
-**Date:** August 10, 2026  
+**Version:** 1.9  
+**Date:** September 2, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.8 records the reusable field-service presentation
-default on the existing DataForge artifact, `DashboardSpec`, `DataAdapter`, and
-standalone-runtime seams.
+**Revision notes:** v1.9 records the deterministic DataForge snapshot packaging
+utility and fail-closed CLI bridge for offline dashboard execution.
 
 ---
+## 2026-09-02 — Deterministic DataForge snapshot packaging and fail-closed CLI
+
+**Decision:** The `package-dataforge-snapshot` slice establishes a formal CLI
+bridge (`src/dashForge/main.py`) and snapshot packaging utility
+(`src/dashForge/package_snapshot.py`) to generate bounded SQLite databases and
+extract portable `SQLiteSnapshot` JSON files for DashForge's client-side runtime.
+
+**Contract:**
+- **CLI Interface**: `python3 -m dashForge.main generate` accepts `--pack`
+  (`healthcare`, `financial`, `saas`), `--scenario` (required), `--seed`
+  (deterministic integer), `--output` (required SQLite path),
+  `--snapshot-output` (optional JSON snapshot path), and `--force`.
+- **Fail-Closed Overwrite Guard**: The CLI evaluates whether target output paths
+  exist before execution begins. If `--output` or `--snapshot-output` exists
+  and `--force` is not specified, execution aborts with exit status 2 and an
+  informative diagnostic error, preventing accidental loss of prepared workshop
+  data.
+- **Snapshot Schema Conformance**: `package_snapshot.py` inspects SQLite tables
+  via `PRAGMA table_info`, infers column types (`string`, `number`, `date`,
+  `boolean`) and semantic roles (`dimension`, `measure`, `date`, `id`), and
+  exports JSON matching the TypeScript `SQLiteSnapshot` type in
+  `frontend/src/core/data/sqliteSnapshot.ts`.
+- **Zero Runtime Dependencies**: The packaging pipeline relies exclusively on
+  the Python standard library (`argparse`, `sqlite3`, `json`, `pathlib`).
+- **Graceful Error Handling**: Input validation and generation errors
+  (`ValueError`, `KeyError`, `FileExistsError`) are caught and routed to
+  `parser.error()`, preventing unhandled tracebacks in front of executive
+  audiences.
+
+**Consequences:** DashForge can generate and package multi-pack scenario data
+into portable snapshot artifacts for zero-network, offline executive workshop
+demonstrations without external database dependencies or risk of unhandled
+tracebacks.
+
 ## 2026-08-10 — Field-service showcase is the presentation default
 
 **Decision:** `frontend/src/App.tsx` now opens
