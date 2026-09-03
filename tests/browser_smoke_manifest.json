@@ -1,24 +1,9 @@
 {
-  "start_command": [
-    "python3",
-    "-m",
-    "http.server",
-    "4173",
-    "--bind",
-    "127.0.0.1",
-    "--directory",
-    "frontend/dist"
-  ],
-  "url": "http://127.0.0.1:4173/",
-  "ready_selector": "[data-readiness='controlled'] [data-action='same-day-executive-follow-up']:not(:disabled)",
-  "action": {
-    "type": "click",
-    "selector": "[data-action='same-day-executive-follow-up']"
-  },
-  "success": {
-    "selector": "[data-status='executive-follow-up']",
-    "text_contains": "Follow-up artifact is ready"
-  },
+  "start_command": ["python3", "-m", "http.server", "4173", "--bind", "127.0.0.1", "--directory", "frontend/dist"],
+  "url": "http://127.0.0.1:4173/?scenario=idle-warehouse-waste",
+  "ready_selector": "[data-scenario='idle-warehouse-waste'][data-readiness='controlled'] [data-disclosure='synthetic-demo-data']",
+  "action": {"type": "click", "selector": "[data-action='open-recommendation-queue']"},
+  "success": {"selector": "[data-status='recommendation-queue']", "text_contains": "FINANCE_REPORTING_WH"},
   "startup_timeout_seconds": 15,
   "interaction_timeout_seconds": 10
 }
