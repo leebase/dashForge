@@ -13,8 +13,8 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / first employee handoff |
-| **Overall Status** | 🟢 Idle Warehouse Waste slice complete and passed governed review; 7-dataset snapshot packaging, provenance tracking, recommendation queue governance, and standalone presentation verified across 109 passing tests; broader commercial expansion remains buyer-gated |
-| **Last Updated** | 2026-09-02 |
+| **Overall Status** | 🟢 Snowflake idle-warehouse accelerator accepted after supervised backend/frontend/build/browser validation; broader commercial expansion remains buyer-gated |
+| **Last Updated** | 2026-09-04 |
 
 ---
 
@@ -46,7 +46,7 @@
 | Deliver the standalone default dashboard surface | ✅ Done | The app opens directly into the packaged ED throughput scenario via the shared runtime contracts |
 | Preserve advanced builder/presenter/AI/live-binding work as secondary surfaces | ✅ Done | Those capabilities remain available in-repo without redefining the MVP success bar |
 | Break mock-data creation into its own workspace project | ✅ Done | `dataForge` now owns generator code, pack assets, and tests; dashForge keeps compatibility wrappers only |
-| Run one host-environment browser smoke of the standalone/live-binding workflow | 🟡 Planned | Still blocked in this sandbox by localhost `listen EPERM`; remains a manual host-only follow-up |
+| Run one host-environment browser smoke of the standalone/live-binding workflow | ✅ Done | Real Playwright Chromium loaded the fresh production build, clicked the recommendation queue, and observed controlled Snowflake evidence without browser errors |
 | Choose the next bounded scenario-building slice | 🟡 Planned | The next slice should package the ED throughput pattern into reusable skills/workflows rather than widen the MVP informally |
 | Prove the Snowflake Cost Optimization consulting path | ✅ Done | `idle-warehouse-waste` now runs through the existing standalone runtime to recommendations and follow-up export; run `ee6fac7897f9` passed the Medium+ review gate |
 | Obtain a real Snowflake buyer signal before more product work | 🟡 Gated | A send, reply, booked call/demo, proposal, approved client data, revenue event, or explicit Lee decision must clear the gate |
@@ -77,7 +77,7 @@
 
 | Risk/Blocker | Impact | Status |
 |-------------|--------|--------|
-| One real host-environment standalone/live-binding smoke is still missing | The default MVP surface and Sprint 9 UI are implemented and reviewed in-repo, but sandbox port denial still prevents a true browser run here | 🟡 Planned |
+| Two Low development-tool dependency advisories remain | `@babel/core` source-map handling and Windows-only esbuild dev-server behavior remain below the acceptance threshold; full runtime/build audit has no Moderate-or-higher finding | 🟢 Monitored |
 | SQLite is still snapshot-backed in the frontend runtime | The generator path is real, but later work must decide when to add direct browser SQLite | 🟡 Planned |
 | Legacy Python compatibility wrappers remain in dashForge after the dataForge split | Generator ownership is clearer now, but future cleanup should decide how long the compatibility path stays in-repo | 🟡 Planned |
 | Broader live-binding work beyond REST could sprawl without a new contract | Sprint 9 is intentionally bounded; later adapters or brokering work should start under a new roadmap slice | 🟡 Planned |

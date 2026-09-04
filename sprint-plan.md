@@ -4,6 +4,17 @@
 >
 > This file should stay concrete. If the strategy changes, update `project-plan.md`. If product direction changes, update `product-definition.md` or `architecture.md`.
 
+## Snowflake Accelerator Revival — 2026-09-04
+
+**Status:** Complete — independently accepted
+
+- [x] Backend and frontend implementation reviewed in separate worktrees; invalid/aliased output targets repaired fail-closed.
+- [x] Real React recommendation-queue action, disclosure marker, and browser scenario routing replace the discarded build shim/source-read monkeypatch.
+- [x] Reproducible `npm ci`, production build, full Python/frontend suites, deterministic assets, and real Chromium interaction pass.
+- [x] Full dependency audit has 0 Critical, High, or Moderate findings (2 Low development-tool advisories remain).
+- [x] Nine-step governed playbook separates test authorship, dependencies/audit, backend, frontend, build, browser, user validation, and independent review; strict lint and preflight pass.
+- [x] Timeout partials remain preserved for evidence but are excluded from the accepted implementation.
+
 ## Idle Warehouse Waste Slice — 2026-09-02
 
 **Status:** Complete

@@ -4,6 +4,19 @@
 >
 > Each entry documents what was built, why it matters, and how to verify it works.
 
+## 2026-09-04 — Snowflake Accelerator Revival Supervised Acceptance
+
+### What Changed
+
+- Replaced the failed monolithic delivery shape with `playbooks/snowflake-accelerator-revival.golden.yaml`: separate backend-test, frontend-test, dependency/audit, backend, frontend, build/integration, browser, user-validation, and independent-review checkpoints; strict lint and preflight pass with no timeout above 180 seconds.
+- Added fail-closed output validation so aliased SQLite/snapshot targets, directories, invalid parents, existing targets, and invalid scenarios exit 2 without traceback or unintended writes.
+- Added source-backed idle-scenario routing, synthetic disclosure marker, and an accessible recommendation-queue action that reveals governed `FINANCE_REPORTING_WH` evidence while preserving same-day follow-up.
+- Updated existing dependencies within their current major versions. Full audit now reports zero Critical, High, or Moderate findings; two Low development-tool advisories remain.
+
+### Acceptance Evidence
+
+Independent Luna Max validation passed: 112 Python tests, 68 smoke checks, 108 frontend tests across 35 files, production build (868 modules), strict playbook validation/preflight, deterministic seed-9101 SQLite (`4441c33…beeb1ed`) and snapshot (`048f8d23…98f47fb`) hashes, and a real Playwright Chromium click through controlled readiness, disclosure, recommendation queue, directional guardrail, and same-day follow-up. No High or Medium findings remain. Preservation commits `105aba4` and `1dec421` were reviewed but not merged because they contain brittle or unrelated candidate work.
+
 ## 2026-09-02 — Idle Warehouse Waste Slice Passed Governed Review
 
 ### What Was Built

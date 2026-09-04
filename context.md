@@ -10,7 +10,7 @@
 |-----------|-------|
 | **Phase** | Conditional commissioning behind DataForge |
 | **Mode** | 2 (Implementation with approval) |
-| **Last Updated** | 2026-09-02 |
+| **Last Updated** | 2026-09-04 |
 
 ### Sprint Status
 
@@ -30,7 +30,13 @@
 | Snowflake Cost Pack | ✅ Complete | 100% |
 | Idle Warehouse Waste Slice | ✅ Complete | 100% |
 
-The `idle-warehouse-waste` vertical slice is complete and verified with a formal `pass` review verdict (0 findings, recommendation `ready`) and preserved system validator evidence. All 35 slice-specific tests in `tests/test_idle_warehouse_waste.py` and 109 full-suite pytest tests pass cleanly with 0 failures.
+The `idle-warehouse-waste` vertical slice is complete after supervised revival and independent Luna Max acceptance. The current gates pass 112 Python tests, 68 Python smoke checks, 108 frontend tests across 35 files, a production build, and a real Chromium recommendation-queue interaction. Backend outputs now reject aliased or invalid targets before writing; browser selectors and queue behavior come from React source; the full dependency audit has no Critical, High, or Moderate findings (two Low development-tool advisories remain). Future governed delivery uses the nine-step `playbooks/snowflake-accelerator-revival.golden.yaml` decomposition rather than the failed monolithic implementation unit.
+
+---
+
+## 2026-09-04 — Snowflake Accelerator Revival Accepted
+
+The supervised recovery retained the shipped backend and frontend foundation, rejected both preservation branches as product inputs, and added only evidence-backed repairs: fail-closed artifact-path validation, a real source-backed recommendation-queue interaction, same-major dependency security updates, and a lint-clean backend/frontend/build/browser/review playbook. Independent validation reproduced deterministic seed-9101 SQLite and snapshot hashes, all seven datasets and recommendation governance fields, clean failure exits, and the complete browser flow. Branches `preserve/9449c2cd9b93-timeout` and `preserve/5baf286d5c4d-governed-outputs` remain forensic evidence and are not merged.
 
 ---
 
