@@ -62,7 +62,16 @@ type ExportState =
   | { status: "error"; error: string };
 
 function resolveInitialSpec(initialSpec?: DashboardSpec) {
-  return syncPresenterDraft(initialSpec ?? createDefaultStandaloneDashboardSpec());
+  const requestedScenario =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("scenario")
+      : null;
+  const sourceSpec =
+    requestedScenario === DEFAULT_STANDALONE_SCENARIO_ID
+      ? createDefaultStandaloneDashboardSpec()
+      : initialSpec ?? createDefaultStandaloneDashboardSpec();
+
+  return syncPresenterDraft(sourceSpec);
 }
 
 function narrativeSurfaceId(sectionKey: string): string {
@@ -166,7 +175,9 @@ export function StandaloneDashboardApp({
   const [pdfExportState, setPdfExportState] = useState<ExportState>({
     status: "idle",
   });
+  const [recommendationQueueOpen, setRecommendationQueueOpen] = useState(false);
   const dashboardStageRef = useRef<HTMLElement | null>(null);
+  const recommendationQueueRef = useRef<HTMLElement | null>(null);
   const theme = resolveDashboardTheme(spec.theme);
   const adapterResult = useMemo(
     () => createDashboardDataAdapter(spec),
@@ -295,6 +306,25 @@ export function StandaloneDashboardApp({
   const presentationIsReady =
     !isIdleWarehouseWaste || presentationState.status === "ready";
 
+  useEffect(() => {
+    if (!recommendationQueueOpen || !buyerEvidence) {
+      return;
+    }
+
+    const recommendationQueue = recommendationQueueRef.current;
+    if (!recommendationQueue) {
+      return;
+    }
+
+    recommendationQueue.focus({ preventScroll: true });
+    if (typeof recommendationQueue.scrollIntoView === "function") {
+      recommendationQueue.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [buyerEvidence, recommendationQueueOpen]);
+
   function handlePrintDashboard() {
     if (!adapterResult.ok || qualityIsBlocking || !presentationIsReady) {
       setPdfExportState({
@@ -358,6 +388,7 @@ export function StandaloneDashboardApp({
           : "standalone-dashboard"
       }
       data-demo={isIdleWarehouseWaste ? "idle-warehouse-waste" : scenarioId}
+      data-scenario={scenarioId}
       data-readiness={qualityIsBlocking ? "blocking" : "controlled"}
     >
       <header className="hero standalone-hero">
@@ -369,6 +400,7 @@ export function StandaloneDashboardApp({
           </p>
           <p
             className="standalone-provenance"
+            data-disclosure="synthetic-demo-data"
             data-provenance="synthetic-demo-data"
           >
             <strong>Synthetic demo data</strong>
@@ -419,6 +451,22 @@ export function StandaloneDashboardApp({
             snapshot through the shared DashboardSpec and DataAdapter path.
           </p>
           <div className="standalone-actions">
+            {isIdleWarehouseWaste ? (
+              <button
+                aria-controls="recommendation-queue"
+                aria-expanded={recommendationQueueOpen}
+                className="button"
+                data-action="open-recommendation-queue"
+                data-testid="open-recommendation-queue"
+                disabled={!adapterResult.ok || qualityIsBlocking}
+                onClick={() => setRecommendationQueueOpen(true)}
+                type="button"
+              >
+                {recommendationQueueOpen
+                  ? "Recommendation queue opened"
+                  : "Open recommendation queue"}
+              </button>
+            ) : null}
             {isIdleWarehouseWaste ? (
               <button
                 className="button"
@@ -644,11 +692,15 @@ export function StandaloneDashboardApp({
         </section>
       ) : null}
 
-      {isIdleWarehouseWaste && buyerEvidence ? (
+      {isIdleWarehouseWaste && recommendationQueueOpen ? (
         <section
           aria-label="Prioritized recommendations"
           className="standalone-recommendations"
+          data-status="recommendation-queue"
+          id="recommendation-queue"
+          ref={recommendationQueueRef}
           role="region"
+          tabIndex={-1}
         >
           <div className="standalone-recommendations__header">
             <p className="eyebrow">Action Queue</p>
@@ -659,40 +711,46 @@ export function StandaloneDashboardApp({
               policy.
             </p>
           </div>
-          <ol className="standalone-recommendations__list">
-            {buyerEvidence.recommendations.map((row) => {
-              const recommendationId = String(row.recommendation_id ?? "");
-              return (
-                <li key={recommendationId || String(row.scope_name)}>
-                  <div className="standalone-recommendations__item-head">
-                    <span className="standalone-recommendations__priority">
-                      {String(row.executive_severity ?? "")}
-                    </span>
-                    <strong>{String(row.scope_name ?? "")}</strong>
-                    <span>{String(row.recommendation_type ?? "")}</span>
-                  </div>
-                  <p>{String(row.recommended_action ?? "")}</p>
-                  <p>
-                    Suggested owner:{" "}
-                    {String(row.suggested_owner ?? "unassigned")} · Savings high{" "}
-                    {String(
-                      row.estimated_monthly_credit_savings_high ?? "n/a",
-                    )}{" "}
-                    credits · performance risk{" "}
-                    {String(row.performance_risk ?? "review")}
-                  </p>
-                  <p className="standalone-recommendations__guardrail">
-                    Safety: {String(row.guardrail ?? "Validate before change")}
-                  </p>
-                  <ClaimCitation
-                    claim={buyerEvidence.claimBySurfaceId.get(
-                      `recommendation:${recommendationId}`,
-                    )}
-                  />
-                </li>
-              );
-            })}
-          </ol>
+          {buyerEvidence ? (
+            <ol className="standalone-recommendations__list">
+              {buyerEvidence.recommendations.map((row) => {
+                const recommendationId = String(row.recommendation_id ?? "");
+                return (
+                  <li key={recommendationId || String(row.scope_name)}>
+                    <div className="standalone-recommendations__item-head">
+                      <span className="standalone-recommendations__priority">
+                        {String(row.executive_severity ?? "")}
+                      </span>
+                      <strong>{String(row.scope_name ?? "")}</strong>
+                      <span>{String(row.recommendation_type ?? "")}</span>
+                    </div>
+                    <p>{String(row.recommended_action ?? "")}</p>
+                    <p>
+                      Suggested owner:{" "}
+                      {String(row.suggested_owner ?? "unassigned")} · Savings high{" "}
+                      {String(
+                        row.estimated_monthly_credit_savings_high ?? "n/a",
+                      )}{" "}
+                      credits · performance risk{" "}
+                      {String(row.performance_risk ?? "review")}
+                    </p>
+                    <p className="standalone-recommendations__guardrail">
+                      Safety: {String(row.guardrail ?? "Validate before change")}
+                    </p>
+                    <ClaimCitation
+                      claim={buyerEvidence.claimBySurfaceId.get(
+                        `recommendation:${recommendationId}`,
+                      )}
+                    />
+                  </li>
+                );
+              })}
+            </ol>
+          ) : (
+            <p className="standalone-runtime-state" role="status">
+              Resolving verified recommendation observations…
+            </p>
+          )}
         </section>
       ) : null}
 

@@ -9,6 +9,7 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { DataAdapter } from "../../core/data/DataAdapter";
+import { createFieldServiceShowcaseDashboardSpec } from "./fieldServiceShowcaseDashboard";
 import { createDefaultStandaloneDashboardSpec } from "./standaloneDashboard";
 
 const { dashboardRendererSpy } = vi.hoisted(() => ({
@@ -53,6 +54,24 @@ describe("StandaloneDashboardApp", () => {
     cleanup();
     dashboardRendererSpy.mockClear();
     vi.restoreAllMocks();
+    window.history.replaceState({}, "", "/");
+  });
+
+  it("uses the idle scenario requested by the browser URL", async () => {
+    window.history.replaceState({}, "", "/?scenario=idle-warehouse-waste");
+
+    render(
+      <StandaloneDashboardApp
+        initialSpec={createFieldServiceShowcaseDashboardSpec()}
+      />,
+    );
+
+    const demoRoot = screen.getByTestId("idle-warehouse-waste-demo");
+    expect(demoRoot).toHaveAttribute("data-scenario", "idle-warehouse-waste");
+    expect(demoRoot).toHaveAttribute("data-readiness", "controlled");
+    expect(
+      await screen.findByText("Dashboard renderer mock"),
+    ).toBeInTheDocument();
   });
 
   it("renders controlled artifact evidence and citations through the shared runtime", async () => {
@@ -62,7 +81,11 @@ describe("StandaloneDashboardApp", () => {
 
     const demoRoot = screen.getByTestId("idle-warehouse-waste-demo");
     expect(demoRoot).toHaveAttribute("data-demo", "idle-warehouse-waste");
+    expect(demoRoot).toHaveAttribute("data-scenario", "idle-warehouse-waste");
     expect(demoRoot).toHaveAttribute("data-readiness", "controlled");
+    expect(
+      demoRoot.querySelector('[data-disclosure="synthetic-demo-data"]'),
+    ).toHaveTextContent("Synthetic demo data");
     expect(screen.getAllByText("Synthetic demo data")).not.toHaveLength(0);
     expect(
       screen.getByRole("heading", {
@@ -87,22 +110,6 @@ describe("StandaloneDashboardApp", () => {
       screen.getByText("tpl.snowflakeCost.idle-warehouse-waste"),
     ).toBeInTheDocument();
 
-    const recommendations = await screen.findByRole("region", {
-      name: /prioritized recommendations/i,
-    });
-    expect(within(recommendations).getByText(/P0/i)).toBeInTheDocument();
-    expect(
-      within(recommendations).getByText(/owner validation/i),
-    ).toBeInTheDocument();
-    expect(
-      within(recommendations).getByText(/directional until validated/i),
-    ).toBeInTheDocument();
-    expect(
-      within(recommendations).getByText(/confirm finance reporting schedules/i),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/726/)).toBeInTheDocument();
-    expect(screen.getAllByText(/dataset observation/i).length).toBeGreaterThan(0);
-
     expect(await screen.findByText("Dashboard renderer mock")).toBeInTheDocument();
     expect(screen.getByText("artifact")).toBeInTheDocument();
     expect(screen.getByText("snowflakeCost")).toBeInTheDocument();
@@ -125,6 +132,42 @@ describe("StandaloneDashboardApp", () => {
       listDatasets: expect.any(Function),
       query: expect.any(Function),
     });
+
+    const openRecommendationQueue = screen.getByTestId(
+      "open-recommendation-queue",
+    );
+    expect(openRecommendationQueue).toBeEnabled();
+    expect(openRecommendationQueue).toHaveAttribute(
+      "data-action",
+      "open-recommendation-queue",
+    );
+    expect(openRecommendationQueue).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.queryByRole("region", { name: /prioritized recommendations/i }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(openRecommendationQueue);
+
+    expect(openRecommendationQueue).toHaveAttribute("aria-expanded", "true");
+    const recommendations = await screen.findByRole("region", {
+      name: /prioritized recommendations/i,
+    });
+    expect(recommendations).toHaveAttribute(
+      "data-status",
+      "recommendation-queue",
+    );
+    expect(within(recommendations).getByText(/P0/i)).toBeInTheDocument();
+    expect(
+      within(recommendations).getByText(/owner validation/i),
+    ).toBeInTheDocument();
+    expect(
+      within(recommendations).getByText(/directional until validated/i),
+    ).toBeInTheDocument();
+    expect(
+      within(recommendations).getByText(/confirm finance reporting schedules/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/726/)).toBeInTheDocument();
+    expect(screen.getAllByText(/dataset observation/i).length).toBeGreaterThan(0);
 
     expect(screen.getByText(/real\/client mode disabled/i)).toBeInTheDocument();
     expect(
