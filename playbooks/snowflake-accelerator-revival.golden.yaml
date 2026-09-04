@@ -1,0 +1,471 @@
+schema_version: 1
+playbook_id: snowflake_accelerator_revival
+name: Snowflake Accelerator Revival governed decomposition
+authoring_notes:
+  - Decompose the failed accelerator unit into backend, frontend, dependency/build, user-visible, and independent acceptance gates.
+  - Preserve the current app contracts and pinned browser smoke manifest; do not use preservation branches as product inputs.
+defaults:
+  worker: antigravity_cli
+  retry_policy:
+    max_attempts: 2
+    strategy: rerun_with_validation_feedback
+  routing:
+    primary:
+      harness: antigravity_cli
+      model: gemini-3.8-flash-high
+run_policy:
+  on_step_failure: halt
+  require_validation_pass_to_advance: true
+delivery_profile:
+  name: code
+roles:
+  user_tester:
+    harness: antigravity_cli
+    model: gemini-3.1-pro
+    effort: low
+  slice_reviewer:
+    harness: antigravity_cli
+    model: gemini-3.1-pro
+    effort: low
+steps:
+  - step_id: step_01_author_slice_tests
+    name: Author disjoint backend and frontend regression tests
+    depends_on: []
+    inputs:
+      - AGENTS.md
+      - docs/idle-warehouse-dashboard-brief.md
+      - docs/idle-warehouse-waste-contract.md
+      - plans/idle-warehouse-waste-implementation-plan.md
+      - journeys/user_journeys_manifest.json
+      - tests/browser_smoke_manifest.json
+      - src/dashForge/idle_warehouse_waste.py
+      - src/dashForge/package_snapshot.py
+      - frontend/src/features/runtime/StandaloneDashboardApp.tsx
+      - frontend/src/features/runtime/idleWarehousePresentation.ts
+    allowed_paths:
+      - tests/test_snowflake_cost_pack.py
+      - tests/test_package_snapshot.py
+      - frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+    outputs:
+      required:
+        - path: tests/test_snowflake_cost_pack.py
+          type: text
+        - path: tests/test_package_snapshot.py
+          type: text
+        - path: frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+          type: text
+    mission: >-
+      Read AGENTS.md, the idle warehouse brief and contract, the implementation plan,
+      the current user-journey manifest, the pinned browser smoke manifest, and the
+      current backend/frontend sources. Author focused regression tests before
+      implementation: backend tests must cover snapshot target validation, provenance,
+      the seven datasets, and recommendation governance; the frontend test must cover
+      scenario selection, the persistent Synthetic demo data disclosure, recommendation
+      queue opening, FINANCE_REPORTING_WH ordering, and directional guardrails. Keep
+      test authorship disjoint from implementation: do not edit src/, frontend runtime
+      implementation files, journeys/, or the smoke manifest, and do not run pytest in
+      this step. Checkpoint: all three test files exist and the Python tests compile.
+      Keep writes inside the three declared test paths.
+    validation:
+      structural:
+        - type: file_exists
+          path: tests/test_snowflake_cost_pack.py
+        - type: file_exists
+          path: tests/test_package_snapshot.py
+        - type: file_exists
+          path: frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+      system:
+        - type: command_succeeds
+          command: python3 -m compileall tests/test_snowflake_cost_pack.py tests/test_package_snapshot.py
+          timeout_seconds: 60
+    on_fail:
+      retry_message: >-
+        Repair only the separately authored backend/frontend tests. Keep their scopes
+        disjoint from implementation, do not edit the journey or smoke manifests, and
+        make the Python tests compile with the declared compileall command.
+      after_retries_exhausted: halt
+
+  - step_id: step_02_prepare_frontend_dependencies
+    name: Prepare the locked frontend dependency tree
+    depends_on:
+      - step_01_author_slice_tests
+    inputs:
+      - AGENTS.md
+      - frontend/package.json
+      - frontend/package-lock.json
+    allowed_paths:
+      - frontend/node_modules
+    outputs:
+      required:
+        - path: frontend/node_modules/.package-lock.json
+          type: json
+    mission: >-
+      Read the repository dependency policy and package manifests. If the locked
+      frontend dependency tree is absent or does not match package-lock.json, recreate
+      it reproducibly with npm --prefix frontend ci; never use npm install, add a
+      dependency, or edit package manifests. If it is already valid, preserve the
+      lockfile-defined tree. Checkpoint: the npm-generated node_modules lock metadata
+      exists and parses as JSON. Keep writes inside frontend/node_modules only.
+    validation:
+      structural:
+        - type: file_exists
+          path: frontend/node_modules/.package-lock.json
+        - type: json_parse
+          path: frontend/node_modules/.package-lock.json
+      system:
+        - type: command_succeeds
+          command: npm --prefix frontend ci
+          timeout_seconds: 180
+    on_fail:
+      retry_message: >-
+        Restore only the lockfile-defined frontend dependency tree with npm ci. Do not
+        use npm install, change package manifests, add dependencies, or write outside
+        frontend/node_modules.
+      after_retries_exhausted: halt
+
+  - step_id: step_03_backend_implementation_verification
+    name: Implement and verify the backend accelerator slice
+    depends_on:
+      - step_01_author_slice_tests
+    inputs:
+      - AGENTS.md
+      - docs/idle-warehouse-dashboard-brief.md
+      - docs/idle-warehouse-waste-contract.md
+      - plans/idle-warehouse-waste-implementation-plan.md
+      - tests/test_snowflake_cost_pack.py
+      - tests/test_package_snapshot.py
+      - src/dashForge/snowflake_cost.py
+      - src/dashForge/generate.py
+      - src/dashForge/main.py
+      - src/dashForge/idle_warehouse_waste.py
+      - src/dashForge/package_snapshot.py
+    allowed_paths:
+      - src/dashForge/idle_warehouse_waste.py
+      - src/dashForge/package_snapshot.py
+    outputs:
+      required:
+        - path: src/dashForge/idle_warehouse_waste.py
+          type: text
+        - path: src/dashForge/package_snapshot.py
+          type: text
+    mission: >-
+      Read the current backend contract, plan, and separately authored backend tests.
+      Implement only the backend snapshot/idle-warehouse boundary in
+      src/dashForge/idle_warehouse_waste.py and src/dashForge/package_snapshot.py:
+      preserve the canonical SQLite snapshot, provenance, deterministic seed behavior,
+      fail-closed output-target validation, and recommendation governance. Do not edit
+      frontend code, tests, journeys, manifests, dataForge, or add dependencies.
+      Checkpoint: the focused backend tests pass and both changed modules compile.
+      Keep writes inside the two declared backend files.
+    validation:
+      structural:
+        - type: file_exists
+          path: src/dashForge/idle_warehouse_waste.py
+        - type: file_exists
+          path: src/dashForge/package_snapshot.py
+      system:
+        - type: command_succeeds
+          command: python3 -m compileall src/dashForge/idle_warehouse_waste.py src/dashForge/package_snapshot.py
+          timeout_seconds: 60
+        - type: command_succeeds
+          command: python3 -m pytest tests/test_snowflake_cost_pack.py tests/test_package_snapshot.py -q
+          require_collected_tests: true
+          timeout_seconds: 180
+    on_fail:
+      retry_message: >-
+        Repair only the backend implementation against the separately authored focused
+        tests. Keep the two-file scope, preserve the existing snapshot/API contracts,
+        and rerun compileall plus both focused pytest files; do not edit frontend,
+        tests, journeys, manifests, dataForge, or dependency files.
+      after_retries_exhausted: halt
+
+  - step_id: step_04_frontend_implementation_verification
+    name: Implement and verify the frontend accelerator slice
+    depends_on:
+      - step_01_author_slice_tests
+      - step_02_prepare_frontend_dependencies
+    inputs:
+      - AGENTS.md
+      - docs/idle-warehouse-dashboard-brief.md
+      - docs/idle-warehouse-waste-contract.md
+      - plans/idle-warehouse-waste-implementation-plan.md
+      - journeys/user_journeys_manifest.json
+      - tests/browser_smoke_manifest.json
+      - frontend/src/core/data/DataAdapter.ts
+      - frontend/src/core/data/createDashboardDataAdapter.ts
+      - frontend/src/core/spec/dashboardSpec.ts
+      - frontend/src/mock-data/scenarioCatalog.ts
+      - frontend/src/mock-data/templateCatalog.ts
+      - frontend/src/mock-data/snowflakeCostIdleWarehouseWaste.ts
+      - frontend/src/mock-data/snowflakeCostIdleWarehouseWastePreviewData.json
+      - frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+      - frontend/src/features/runtime/StandaloneDashboardApp.tsx
+      - frontend/src/features/runtime/idleWarehousePresentation.ts
+    allowed_paths:
+      - frontend/src/features/runtime/StandaloneDashboardApp.tsx
+      - frontend/src/features/runtime/idleWarehousePresentation.ts
+    outputs:
+      required:
+        - path: frontend/src/features/runtime/StandaloneDashboardApp.tsx
+          type: text
+        - path: frontend/src/features/runtime/idleWarehousePresentation.ts
+          type: text
+    mission: >-
+      Read the current frontend contract, baseline runtime seams, scenario/catalog
+      assets, browser smoke manifest, and separately authored frontend test. Implement
+      only the buyer-visible idle-warehouse-waste runtime in the two declared runtime
+      files, using the existing DashboardSpec/DataAdapter seams. Preserve the scenario
+      root/readiness markers, persistent Synthetic demo data disclosure, recommendation
+      queue action and governance fields, directional-until-validated framing, and
+      same-day follow-up path. Do not edit backend code, tests, journeys, manifests,
+      catalogs, snapshot assets, or add dependencies. Checkpoint: the focused frontend
+      test passes. Keep writes inside the two declared frontend files.
+    validation:
+      structural:
+        - type: file_exists
+          path: frontend/src/features/runtime/StandaloneDashboardApp.tsx
+        - type: file_exists
+          path: frontend/src/features/runtime/idleWarehousePresentation.ts
+      system:
+        - type: command_succeeds
+          command: npm --prefix frontend test -- --run src/features/runtime/StandaloneDashboardApp.test.tsx
+          timeout_seconds: 180
+    on_fail:
+      retry_message: >-
+        Repair only the two frontend runtime files against the separately authored
+        focused test and existing DataAdapter/DashboardSpec contracts. Keep the
+        disclosure, queue, guardrail, and follow-up behavior; do not edit tests,
+        backend, manifests, catalogs, assets, or dependencies.
+      after_retries_exhausted: halt
+
+  - step_id: step_05_build_and_integration_verification
+    name: Build the production bundle and run integration regression checks
+    depends_on:
+      - step_02_prepare_frontend_dependencies
+      - step_03_backend_implementation_verification
+      - step_04_frontend_implementation_verification
+    inputs:
+      - AGENTS.md
+      - docs/idle-warehouse-dashboard-brief.md
+      - docs/idle-warehouse-waste-contract.md
+      - tests/test_snowflake_cost_pack.py
+      - tests/test_package_snapshot.py
+      - frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+      - frontend/src/features/runtime/StandaloneDashboardApp.tsx
+      - frontend/src/features/runtime/idleWarehousePresentation.ts
+      - frontend/package.json
+      - frontend/package-lock.json
+    allowed_paths:
+      - frontend/dist
+    outputs:
+      required:
+        - path: frontend/dist/index.html
+          type: text
+    mission: >-
+      Act only as the build/integration gate after backend and frontend checkpoints
+      pass. Do not modify application source, tests, manifests, package manifests, or
+      dependencies. Run the production build separately from implementation with npm
+      --prefix frontend run build, then run the complete Python regression suite with
+      python3 -m pytest tests/ -q (without a PYTHONPATH override). Checkpoint: the
+      production bundle contains frontend/dist/index.html and the full suite is green.
+      Keep generated writes inside frontend/dist.
+    validation:
+      structural:
+        - type: file_exists
+          path: frontend/dist/index.html
+      system:
+        - type: command_succeeds
+          command: npm --prefix frontend run build
+          timeout_seconds: 180
+        - type: command_succeeds
+          command: python3 -m pytest tests/ -q
+          require_collected_tests: true
+          timeout_seconds: 180
+    on_fail:
+      retry_message: >-
+        Repair the build/integration gate only by diagnosing the already-scoped backend
+        or frontend implementation checkpoints. Re-run the production build and full
+        pytest command; do not write application source, tests, manifests, package
+        manifests, or dependencies in this gate.
+      after_retries_exhausted: halt
+
+  - step_id: step_06_browser_smoke_validation
+    name: Validate the pinned buyer-visible browser flow
+    depends_on:
+      - step_05_build_and_integration_verification
+    worker: browser_smoke_runner
+    inputs:
+      - tests/browser_smoke_manifest.json
+      - tests/browser_smoke_check.py
+      - frontend/dist/index.html
+    allowed_paths:
+      - artifacts/user-smoke
+    outputs:
+      required:
+        - path: artifacts/user-smoke/result.json
+          type: json
+    mission: >-
+      Run the current pinned browser smoke manifest against the production bundle and
+      capture evidence under artifacts/user-smoke/. Verify the idle-warehouse-waste
+      scenario, controlled readiness, Synthetic demo data disclosure, recommendation
+      queue action, and FINANCE_REPORTING_WH success marker. Do not edit the smoke
+      manifest, check script, bundle, source, or tests. Checkpoint: result.json is
+      valid smoke evidence and the exact pinned oracle files remain unchanged. Keep
+      writes inside artifacts/user-smoke/.
+    validation:
+      structural:
+        - type: file_exists
+          path: artifacts/user-smoke/result.json
+        - type: json_parse
+          path: artifacts/user-smoke/result.json
+        - type: file_hash_matches
+          path: tests/browser_smoke_manifest.json
+          sha256: 2c5258f3a8046d06fb3d052f25c83046d7729e221aa6ad0c70f64cf39ca2aa29
+        - type: file_hash_matches
+          path: tests/browser_smoke_check.py
+          sha256: 63dc50d5318d67020b26e814bde5bc981a1c1bf1823b428d1d0a0e871ca3f421
+    on_fail:
+      retry_message: >-
+        Repair only the smoke evidence and rerun the pinned browser manifest. Do not
+        edit either pinned oracle or any application/test path; keep writes under
+        artifacts/user-smoke/.
+      after_retries_exhausted: halt
+
+  - step_id: step_07_user_visible_validation
+    name: Independently exercise the declared user journeys
+    depends_on:
+      - step_06_browser_smoke_validation
+    role: user_tester
+    inputs:
+      - AGENTS.md
+      - docs/idle-warehouse-dashboard-brief.md
+      - docs/idle-warehouse-waste-contract.md
+      - journeys/user_journeys_manifest.json
+      - tests/browser_smoke_manifest.json
+      - artifacts/user-smoke/result.json
+      - frontend/dist/index.html
+      - frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+    allowed_paths:
+      - artifacts/user-test
+      - tmp
+    outputs:
+      required:
+        - path: artifacts/user-test/result.json
+          type: json
+        - path: artifacts/user-test/findings-log.md
+          type: markdown
+    mission: >-
+      Read the contract, buyer brief, current journeys manifest, current browser smoke
+      manifest, smoke evidence, and production bundle. Follow TEST AS LEE as an
+      independent evaluator: start the built application the way the browser manifest
+      specifies and attempt every natural-language journey in
+      journeys/user_journeys_manifest.json, including the buyer-visible disclosure,
+      queue, guardrail, and follow-up goals. Do not fix or edit the product, tests,
+      journeys, manifests, or dependencies; only capture evidence in artifacts/user-test/
+      and scratch work in tmp/. Record every re-executable command with its real exit
+      code and stdout evidence, and include a structured finding for every failure.
+      Checkpoint: result.json reports every pinned journey and findings-log.md remains
+      append-only.
+    validation:
+      structural:
+        - type: file_exists
+          path: artifacts/user-test/result.json
+        - type: file_exists
+          path: artifacts/user-test/findings-log.md
+        - type: json_parse
+          path: artifacts/user-test/result.json
+        - type: file_hash_matches
+          path: journeys/user_journeys_manifest.json
+          sha256: 643a845523ab2c262833bc52b9db7783ad8e860a460ca1c0907b770cf153c2e1
+        - type: user_journeys_all_passed
+          path: artifacts/user-test/result.json
+          manifest_path: journeys/user_journeys_manifest.json
+          contract_path: docs/idle-warehouse-waste-contract.md
+      system:
+        - type: user_journeys_execution_verified
+          path: artifacts/user-test/result.json
+          manifest_path: journeys/user_journeys_manifest.json
+          timeout_seconds: 180
+    on_fail:
+      retry_message: >-
+        Repair the user-test evidence, not the product. Every pinned journey must be
+        attempted and reported with concrete steps, allowlisted command claims whose
+        exits/stdout reproduce, and complete findings evidence. The journey manifest is
+        hash-pinned and immutable. A failed user journey routes back to the scoped
+        frontend implementation checkpoint for repair before these gates rerun.
+      after_retries_exhausted: halt
+      repair:
+        step_id: step_04_frontend_implementation_verification
+        max_cycles: 1
+
+  - step_id: step_08_independent_review_acceptance
+    name: Independently review and accept the decomposed delivery
+    depends_on:
+      - step_07_user_visible_validation
+    role: slice_reviewer
+    inputs:
+      - AGENTS.md
+      - docs/idle-warehouse-dashboard-brief.md
+      - docs/idle-warehouse-waste-contract.md
+      - plans/idle-warehouse-waste-implementation-plan.md
+      - journeys/user_journeys_manifest.json
+      - tests/browser_smoke_manifest.json
+      - artifacts/user-smoke/result.json
+      - artifacts/user-test/result.json
+      - artifacts/user-test/findings-log.md
+      - src/dashForge/idle_warehouse_waste.py
+      - src/dashForge/package_snapshot.py
+      - tests/test_snowflake_cost_pack.py
+      - tests/test_package_snapshot.py
+      - frontend/src/features/runtime/StandaloneDashboardApp.tsx
+      - frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+      - frontend/src/features/runtime/idleWarehousePresentation.ts
+      - frontend/dist/index.html
+    allowed_paths:
+      - code-reviews
+    outputs:
+      required:
+        - path: code-reviews/review-snowflake-accelerator-revival.md
+          type: markdown
+        - path: code-reviews/review-snowflake-accelerator-revival.verdict.json
+          type: json
+    mission: >-
+      Act as an independent acceptance reviewer, not an implementer. Read the current
+      contract, plan, backend/frontend changes, separately authored tests, pinned smoke
+      and journey manifests, and all user evidence. Inspect the decomposition for
+      narrow non-overlapping implementation scopes, deterministic validations, no
+      timeout increases, no new dependencies, no preservation-branch inputs, and
+      evaluator/reviewer write isolation. Run python3 -m pytest tests/ -q and record
+      its real exit code in checks_run. Write code-reviews/review-snowflake-accelerator-revival.md
+      with headings Checks Run and Lens Notes, each containing at least 40 non-whitespace
+      characters. Write the canonical builtin:review_verdict/v1 JSON with verdict pass
+      only when no High or Medium findings remain; every finding must include id,
+      severity, file, location, problem, and proposed_fix; lenses must be an object.
+      Keep every write inside code-reviews/.
+    validation:
+      structural:
+        - type: file_exists
+          path: code-reviews/review-snowflake-accelerator-revival.md
+        - type: markdown_headings_present
+          path: code-reviews/review-snowflake-accelerator-revival.md
+          headings:
+            - Checks Run
+            - Lens Notes
+          min_chars_under_heading: 40
+        - type: json_schema
+          path: code-reviews/review-snowflake-accelerator-revival.verdict.json
+          schema_path: builtin:review_verdict/v1
+        - type: review_verdict_clean
+          path: code-reviews/review-snowflake-accelerator-revival.verdict.json
+          severity_threshold: Medium
+      system:
+        - type: checks_run_match
+          path: code-reviews/review-snowflake-accelerator-revival.verdict.json
+          timeout_seconds: 180
+    on_fail:
+      retry_message: >-
+        Repair only the review artifacts. Ensure the prose headings are substantive,
+        the canonical verdict is honest and schema-valid, the verdict records the real
+        full-suite exit code, and no High or Medium finding is hidden. Keep writes under
+        code-reviews/ and halt after retries.
+      after_retries_exhausted: halt
