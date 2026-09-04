@@ -80,8 +80,31 @@ def validate_recommendation_queue_schema(connection: sqlite3.Connection) -> None
         )
 
 
+
+def ensure_warehouse_metering_compatibility_columns(connection: sqlite3.Connection) -> None:
+    """Ensure warehouse_metering_history table supports presentation query seams (warehouseName, creditsUsed)."""
+    cursor = connection.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='warehouse_metering_history'"
+    )
+    if not cursor.fetchone():
+        return
+
+    pragma_cursor = connection.execute("PRAGMA table_info(warehouse_metering_history)")
+    cols = {row[1] for row in pragma_cursor.fetchall()}
+    if "warehouseName" not in cols:
+        connection.execute(
+            "ALTER TABLE warehouse_metering_history ADD COLUMN warehouseName TEXT GENERATED ALWAYS AS (warehouse_name) VIRTUAL"
+        )
+    if "creditsUsed" not in cols:
+        connection.execute(
+            "ALTER TABLE warehouse_metering_history ADD COLUMN creditsUsed REAL GENERATED ALWAYS AS (credits_used) VIRTUAL"
+        )
+    connection.commit()
+
+
 __all__ = [
     "enrich_snowflake_cost_provenance",
+    "ensure_warehouse_metering_compatibility_columns",
     "get_snowflake_cost_scenarios",
     "validate_recommendation_queue_schema",
     "validate_snowflake_cost_scenario",

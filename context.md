@@ -8,9 +8,9 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Phase** | Conditional commissioning behind DataForge |
+| **Phase** | Phase 4 — Advanced / first employee handoff |
 | **Mode** | 2 (Implementation with approval) |
-| **Last Updated** | 2026-09-02 |
+| **Last Updated** | 2026-09-04 |
 
 ### Sprint Status
 
@@ -29,8 +29,28 @@
 | Package DataForge Snapshot | ✅ Complete | 100% |
 | Snowflake Cost Pack | ✅ Complete | 100% |
 | Idle Warehouse Waste Slice | ✅ Complete | 100% |
+| Repair 03feb3227318 Slice | ✅ Complete | 100% |
 
-The `idle-warehouse-waste` vertical slice is complete and verified with a formal `pass` review verdict (0 findings, recommendation `ready`) and preserved system validator evidence. All 35 slice-specific tests in `tests/test_idle_warehouse_waste.py` and 109 full-suite pytest tests pass cleanly with 0 failures.
+The `repair-03feb3227318` slice is complete and verified with a formal `pass` review verdict (0 findings, recommendation `Ready for autonomous re-arm`) and preserved system validator evidence. Delta execution strategy (`DeltaExecutionEngine`, `DeltaStep`, bounded durations <120s), durable intermediate SQLite checkpointing (`CheckpointManager`, `_delta_checkpoints`), resilient PRAGMA schema handling (`ResilientConnection`, `ResilientCursor`, `PRAGMA table_xinfo`), and stream isolation eliminate 600s worker timeouts and cascading retries while preserving 100% of presentation and data invariants. All 26 slice-specific tests in `tests/test_delta_execution.py` and 162 full-suite pytest tests pass cleanly with 0 failures.
+
+---
+
+## 2026-09-04 — Repair 03feb3227318 Slice Passed Governed Review
+
+The `repair-03feb3227318` slice is complete, verified, and closed. `src/dashForge/delta_execution.py`, `src/dashForge/package_snapshot.py`, `src/dashForge/main.py`, and `src/dashForge/diagnostics.py` now provide bounded delta execution partitioning, durable intermediate SQLite checkpointing, resilient schema inspection with virtual column support, intermediate delta table filtering, clean stream separation with pure stdout, and fail-closed CLI argument handling.
+
+Key deliverables:
+- Delta execution engine & bounded increments: Implemented `DeltaExecutionEngine` and `DeltaStep` partitioning simulation workloads into bounded computation increments (`target_duration = 60s`, `max_duration = 120s`), maintaining a >480s safety margin against the 600s worker timeout ceiling (AC-1).
+- Durable intermediate checkpointing: Persists completed step checkpoints to SQLite table `_delta_checkpoints` via `CheckpointManager`, enabling checkpoint resumption and eliminating cascading retries from ground zero (AC-1).
+- Resilient SQLite schema inspection: Intercepts and rewrites `PRAGMA table_info` to `PRAGMA table_xinfo` via `ResilientConnection` and `ResilientCursor`, seamlessly handling virtual generated columns (e.g., `warehouseName`, `creditsUsed`) and non-standard types without schema mismatch exceptions (AC-2).
+- Intermediate delta table filtering: Filters internal delta computation and tracking tables (`_delta_*`) and `_delta_checkpoints` out of exported dataset catalogs, guaranteeing that downstream consumers receive only the canonical seven datasets (AC-2).
+- Presentation and visual invariance: Buyer-visible dashboard output, executive KPI cards (726 compute credits headline savings, 2 idle warehouses identified), narrative story arcs, and recommendation queue views render identically with full semantic and visual fidelity across standalone and builder modes (AC-3).
+- Data invariance and canonical snapshot conformance: Retains bit-for-bit determinism across identical seeds, preserving all seven canonical datasets, typed columns, semantic roles, complete provenance metadata, and recommendation queue governance conforming to `frontend/src/core/data/sqliteSnapshot.ts` (AC-4).
+- Clean stream separation & pure stdout: Stdout is reserved exclusively for canonical single-line completion confirmations. All diagnostic logs, delta step progress, and timing telemetry route strictly to stderr (AC-5).
+- Fail-closed error handling: Argument validation errors, missing options, unknown scenarios, or unforced destination file overwrites exit cleanly with status code 2 via `parser.error()`, eliminating raw Python tracebacks (AC-6).
+- Zero external runtime dependencies & sibling isolation: Uses Python standard library only; sibling repository `dataForge/` remains strictly read-only; all existing packs (`healthcare`, `financial`, `saas`, `snowflakeCost`) remain operational (AC-7).
+- Governed review passed: `code-reviews/review-repair-03feb3227318.verdict.json` confirmed `pass` with 0 findings, recommendation `Ready for autonomous re-arm`, and all readiness criteria verified true.
+- Preserved validator evidence: all compileall and pytest checks passed across test authoring, implementation, and verification steps (final verification: 162 passed in 29.32s, exit status 0; targeted suite: 26 passed in 2.60s, exit status 0; compileall exit status 0).
 
 ---
 
@@ -214,7 +234,9 @@ fixture digest.
 
 ### Current Work Stream
 
-The `idle-warehouse-waste` vertical slice for Snowflake Cost optimization has closed with a clean `pass` verdict (0 findings, recommendation `ready`) in `code-reviews/review-idle-warehouse-waste.verdict.json` and full preserved system validator evidence. `src/dashForge/package_snapshot.py`, `src/dashForge/snowflake_cost.py`, and `src/dashForge/main.py` now provide canonical 7-dataset snapshot packaging (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`), complete provenance metadata, fail-closed CLI generation, `DashboardSpec` contracts, `DataAdapter` query routing, runtime catalog registration, and recommendation queue governance. All 35 slice-specific tests and 109 full-suite tests passed cleanly.
+The `repair-03feb3227318` slice has closed with a clean `pass` verdict (0 findings, recommendation `Ready for autonomous re-arm`) in `code-reviews/review-repair-03feb3227318.verdict.json` and full preserved system validator evidence. `src/dashForge/delta_execution.py`, `src/dashForge/package_snapshot.py`, `src/dashForge/main.py`, and `src/dashForge/diagnostics.py` now provide bounded delta execution partitioning, durable intermediate SQLite checkpointing (`_delta_checkpoints`), resilient schema inspection (`ResilientConnection`, `ResilientCursor`, `PRAGMA table_xinfo` rewriting), intermediate calculation table filtering (`_delta_*`), pure stdout stream separation, and fail-closed CLI diagnostics. All 26 slice-specific tests in `tests/test_delta_execution.py` and 162 full-suite pytest tests pass cleanly with zero failures.
+
+The `idle-warehouse-waste` vertical slice for Snowflake Cost optimization previously closed with a clean `pass` verdict (0 findings, recommendation `ready`) in `code-reviews/review-idle-warehouse-waste.verdict.json` and full preserved system validator evidence. `src/dashForge/package_snapshot.py`, `src/dashForge/snowflake_cost.py`, and `src/dashForge/main.py` provide canonical 7-dataset snapshot packaging (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`), complete provenance metadata, fail-closed CLI generation, `DashboardSpec` contracts, `DataAdapter` query routing, runtime catalog registration, and recommendation queue governance. All 35 slice-specific tests and 109 full-suite tests passed cleanly.
 
 The `snowflake-cost-pack` slice previously closed with a clean `pass` verdict (0 findings) in `code-reviews/review-snowflake-cost-pack.verdict.json` and full preserved system validator evidence. `src/dashForge/main.py`, `src/dashForge/generate.py`, `src/dashForge/package_snapshot.py`, and `src/dashForge/snowflake_cost.py` provide dynamic scenario discovery from `dataForge` (`idle-warehouse-waste`, `bi-over-provisioning`, `runaway-query-pattern`, `department-chargeback`, `executive-cost-spike`, `finops-maturity-assessment`), fail-closed target overwrite protection requiring `--force`, complete provenance metadata, and full recommendation queue preservation for the `snowflakeCost` pack alongside existing industry packs (`healthcare`, `financial`, `saas`).
 
@@ -337,6 +359,16 @@ contract (`monthly_metrics`) and widget taxonomy.
 
 ### Recently Completed
 
+- ✅ Closed the `repair-03feb3227318` slice with formal review verdict `pass`, recommendation `Ready for autonomous re-arm`, and 0 findings in `code-reviews/review-repair-03feb3227318.verdict.json`
+- ✅ Implemented delta execution strategy in `src/dashForge/delta_execution.py` partitioning simulation workloads into bounded increments (<120s max duration) maintaining a >480s margin against 600s worker timeouts
+- ✅ Added durable intermediate checkpoint persistence via `CheckpointManager` and SQLite table `_delta_checkpoints` to prevent cascading retries from ground zero
+- ✅ Implemented resilient schema inspection (`ResilientConnection`, `ResilientCursor`, `PRAGMA table_xinfo` rewriting) supporting virtual generated columns (`warehouseName`, `creditsUsed`) and non-standard types
+- ✅ Filtered intermediate calculation and delta tracking tables (`_delta_*`) out of dataset export lists during canonical snapshot packaging
+- ✅ Enforced pure stdout stream separation reserving stdout exclusively for canonical completion confirmations while routing diagnostic logs and delta telemetry to stderr
+- ✅ Preserved 100% presentation invariance across executive dashboards, narrative story arcs, and recommendation queues across standalone and builder modes
+- ✅ Maintained underlying data definitions, canonical `SQLiteSnapshot` contract, seven canonical datasets, and bit-for-bit determinism
+- ✅ Authored targeted test suite `tests/test_delta_execution.py` with 26 passing tests; verified full test suite with 162 passing tests in 29.32s
+- ✅ Preserved system validator results confirmed compileall and full pytest suite (162 passed in 29.32s, exit status 0; targeted suite: 26 passed in 2.60s, exit status 0; compileall exit status 0)
 - ✅ Closed the `idle-warehouse-waste` vertical slice with formal review verdict `pass`, recommendation `ready`, and 0 findings in `code-reviews/review-idle-warehouse-waste.verdict.json`
 - ✅ Implemented canonical snapshot ingestion and schema validation across all 7 canonical datasets (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`) adhering to `SQLiteSnapshot` specification
 - ✅ Embedded complete provenance metadata (`packId`, `scenarioId`, `seed`, `dataForgeStoryContractPath`, generator version, ISO timestamp, `synthetic: true`, disclosure text) in generated snapshots
@@ -560,6 +592,7 @@ contract (`monthly_metrics`) and widget taxonomy.
 | `package-dataforge-snapshot` CLI enforces fail-closed overwrite protection and extracts SQLiteSnapshot JSON via SQLite PRAGMA table_info | Prevents accidental data loss during workshop rehearsal and guarantees schema alignment with DataAdapter runtime without external dependencies | 2026-09-02 |
 | `snowflake-cost-pack` CLI dynamically discovers dataForge scenarios and preserves recommendation queue | Extends DashForge CLI with snowflakeCost pack support, provenance metadata, and fail-closed overwrite guards without hardcoding scenarios or external runtime dependencies | 2026-09-02 |
 | `idle-warehouse-waste` slice formalizes 7-dataset snapshot schema and recommendation queue governance | Delivers deterministic offline presentation, provenance tracing, and safety guardrails for Snowflake idle warehouse waste consulting demonstrations | 2026-09-02 |
+| Delta execution strategy and resilient schema handling for repair-03feb3227318 | Partitions simulations into bounded increments (<120s), persists intermediate checkpoints to SQLite (_delta_checkpoints), rewrites PRAGMA to table_xinfo, and isolates telemetry to stderr to eliminate worker timeouts and cascading retries | 2026-09-04 |
 
 ---
 

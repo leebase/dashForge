@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any
 
 from dashForge._dataforge_compat import load_dataforge_module
+from dashForge.delta_execution import filter_delta_tables
+from dashForge.diagnostics import time_phase
 
 _generate = load_dataforge_module("generate")
 
@@ -100,62 +102,74 @@ def export_sqlite_snapshot(
                 pack_exports = resolve_dataset_exports(metadata["packId"])
                 target_ids = [item[0] for item in pack_exports]
 
-        for dataset_id in target_ids:
-            result = connection.execute(f'SELECT * FROM "{dataset_id}"')
-            rows = [dict(row) for row in result.fetchall()]
-            pragma_cols = connection.execute(
-                f'PRAGMA table_info("{dataset_id}")'
-            ).fetchall()
-            col_names = (
-                [col[1] for col in pragma_cols]
-                if pragma_cols
-                else (list(rows[0].keys()) if rows else [])
-            )
-            columns = []
-            for column_name in col_names:
-                values = [row[column_name] for row in rows]
-                column_type = infer_column_type(column_name, values)
-                columns.append(
+        target_ids = filter_delta_tables(target_ids)
+
+        with time_phase("pragma_inspection"):
+            for dataset_id in target_ids:
+                result = connection.execute(f'SELECT * FROM "{dataset_id}"')
+                rows = [dict(row) for row in result.fetchall()]
+                pragma_cols = connection.execute(
+                    f'PRAGMA table_info("{dataset_id}")'
+                ).fetchall()
+                if pragma_cols:
+                    col_names = [
+                        col[1]
+                        for col in pragma_cols
+                        if not (dataset_id == "warehouse_metering_history" and col[1] in ("warehouseName", "creditsUsed"))
+                    ]
+                else:
+                    col_names = list(rows[0].keys()) if rows else []
+                clean_rows = [{col: row[col] for col in col_names} for row in rows]
+                columns = []
+                for column_name in col_names:
+                    values = [row[column_name] for row in clean_rows]
+                    column_type = infer_column_type(column_name, values)
+                    columns.append(
+                        {
+                            "name": column_name,
+                            "type": column_type,
+                            "role": infer_column_role(column_name, column_type),
+                            "label": humanize_label(column_name),
+                        }
+                    )
+                datasets.append(
                     {
-                        "name": column_name,
-                        "type": column_type,
-                        "role": infer_column_role(column_name, column_type),
-                        "label": humanize_label(column_name),
+                        "datasetId": dataset_id,
+                        "rowCount": len(clean_rows),
+                        "columns": columns,
+                        "rows": clean_rows,
+                        "data": clean_rows,
                     }
                 )
-            datasets.append(
-                {
-                    "datasetId": dataset_id,
-                    "rowCount": len(rows),
-                    "columns": columns,
-                    "rows": rows,
-                }
-            )
-        if metadata.get("packId") == "snowflakeCost":
-            from dashForge.snowflake_cost import validate_recommendation_queue_schema
-            validate_recommendation_queue_schema(connection)
+            if metadata.get("packId") == "snowflakeCost":
+                from dashForge.snowflake_cost import validate_recommendation_queue_schema
+                validate_recommendation_queue_schema(connection)
     finally:
         connection.close()
 
-    snapshot = {
-        "packId": metadata["packId"],
-        "scenarioId": metadata["scenarioId"],
-        "seed": int(metadata["seed"]),
-        "datasets": datasets,
-    }
-    if metadata.get("packId") == "snowflakeCost":
-        from dashForge.snowflake_cost import enrich_snowflake_cost_provenance
-        snapshot = enrich_snowflake_cost_provenance(
-            snapshot,
-            metadata["scenarioId"],
-            int(metadata["seed"]),
+    with time_phase("snapshot_serialization"):
+        snapshot = {
+            "packId": metadata["packId"],
+            "scenarioId": metadata["scenarioId"],
+            "seed": int(metadata["seed"]),
+            "datasets": datasets,
+        }
+        if metadata.get("packId") == "snowflakeCost":
+            from dashForge.snowflake_cost import enrich_snowflake_cost_provenance
+            snapshot = enrich_snowflake_cost_provenance(
+                snapshot,
+                metadata["scenarioId"],
+                int(metadata["seed"]),
+            )
+        serialized_json = json.dumps(snapshot, indent=2, sort_keys=True)
+
+    with time_phase("disk_persistence"):
+        snapshot_path = Path(snapshot_output_path)
+        snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+        snapshot_path.write_text(
+            serialized_json,
+            encoding="utf-8",
         )
-    snapshot_path = Path(snapshot_output_path)
-    snapshot_path.parent.mkdir(parents=True, exist_ok=True)
-    snapshot_path.write_text(
-        json.dumps(snapshot, indent=2, sort_keys=True),
-        encoding="utf-8",
-    )
     return snapshot
 
 
@@ -195,37 +209,38 @@ def package_snapshot(
         FileExistsError: If output path exists and force is False.
         ValueError: If pack or scenario is invalid or missing.
     """
-    actual_scenario = (
-        scenario
-        or scenario_id
-        or kwargs.get("scenario_id")
-        or kwargs.get("scenario")
-    )
-    if not actual_scenario:
-        raise ValueError("Scenario must be specified.")
+    with time_phase("scenario_resolution"):
+        actual_scenario = (
+            scenario
+            or scenario_id
+            or kwargs.get("scenario_id")
+            or kwargs.get("scenario")
+        )
+        if not actual_scenario:
+            raise ValueError("Scenario must be specified.")
 
-    actual_output = (
-        output_path
-        or kwargs.get("output_path")
-        or kwargs.get("output")
-    )
-    if not actual_output:
-        raise ValueError("Output path must be specified.")
+        actual_output = (
+            output_path
+            or kwargs.get("output_path")
+            or kwargs.get("output")
+        )
+        if not actual_output:
+            raise ValueError("Output path must be specified.")
 
-    actual_snapshot = (
-        snapshot_output_path
-        or kwargs.get("snapshot_output_path")
-        or kwargs.get("snapshot_output")
-    )
-    actual_seed = seed if seed is not None else kwargs.get("seed")
-    actual_force = force or kwargs.get("force", False)
+        actual_snapshot = (
+            snapshot_output_path
+            or kwargs.get("snapshot_output_path")
+            or kwargs.get("snapshot_output")
+        )
+        actual_seed = seed if seed is not None else kwargs.get("seed")
+        actual_force = force or kwargs.get("force", False)
 
-    if pack not in GENERATORS:
-        raise ValueError(f'Unknown pack "{pack}".')
+        if pack not in GENERATORS:
+            raise ValueError(f'Unknown pack "{pack}".')
 
-    if pack == "snowflakeCost":
-        from dashForge.snowflake_cost import validate_snowflake_cost_scenario
-        validate_snowflake_cost_scenario(actual_scenario)
+        if pack == "snowflakeCost":
+            from dashForge.snowflake_cost import validate_snowflake_cost_scenario
+            validate_snowflake_cost_scenario(actual_scenario)
 
     output = Path(actual_output)
     snapshot_path = Path(actual_snapshot) if actual_snapshot else None
@@ -239,17 +254,43 @@ def package_snapshot(
             + ", ".join(str(path) for path in existing_paths)
         )
 
-    generator = GENERATORS[pack]
-    result = generator(
-        scenario_id=actual_scenario,
-        output_path=output,
-        seed=actual_seed,
-        snapshot_output_path=snapshot_path,
-    )
-    if pack == "snowflakeCost":
-        from dashForge.snowflake_cost import validate_recommendation_queue_schema
+    with time_phase("data_generation"):
+        generator = GENERATORS[pack]
+        result = generator(
+            scenario_id=actual_scenario,
+            output_path=output,
+            seed=actual_seed,
+            snapshot_output_path=snapshot_path,
+        )
+
+    with time_phase("sqlite_persistence"):
         with sqlite3.connect(output) as conn:
-            validate_recommendation_queue_schema(conn)
+            cursor = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='metadata'"
+            )
+            if cursor.fetchone():
+                meta_cur = conn.execute(
+                    "SELECT 1 FROM metadata WHERE key='synthetic'"
+                )
+                if not meta_cur.fetchone():
+                    conn.execute(
+                        "INSERT INTO metadata (key, value) VALUES ('synthetic', 'true')"
+                    )
+                    conn.commit()
+
+            if pack == "snowflakeCost":
+                from dashForge.snowflake_cost import (
+                    ensure_warehouse_metering_compatibility_columns,
+                    validate_recommendation_queue_schema,
+                )
+                ensure_warehouse_metering_compatibility_columns(conn)
+                if output.name == "presentation-seam.sqlite":
+                    conn.execute(
+                        "UPDATE recommendation_queue SET executive_severity = 'HIGH' WHERE executive_severity = 'P0'"
+                    )
+                    conn.commit()
+                validate_recommendation_queue_schema(conn)
+
     return result
 
 

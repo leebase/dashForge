@@ -1,0 +1,197 @@
+defaults:
+  retry_policy:
+    max_attempts: 2
+    strategy: rerun_with_validation_feedback
+  routing:
+    primary:
+      harness: antigravity_cli
+      model: gemini-3.8-flash-high
+  worker: antigravity_cli
+delivery_profile:
+  name: code
+name: Repair Timeout Cascade Governed Delivery
+playbook_id: repair_timeout_cascade_delivery
+roles:
+  slice_reviewer:
+    effort: low
+    harness: antigravity_cli
+    model: gemini-3.1-pro
+  user_tester:
+    effort: low
+    harness: antigravity_cli
+    model: gemini-3.1-pro
+run_policy:
+  on_step_failure: halt
+  require_validation_pass_to_advance: true
+steps:
+- allowed_paths:
+  - docs/
+  - journeys/
+  inputs:
+  - AGENTS.md
+  - product-definition.md
+  - architecture.md
+  - README.md
+  - context.md
+  mission: 'Define the contract for repair-timeout-cascade under docs/repair-timeout-cascade-contract.md
+    and user journeys manifest under journeys/user_journeys_manifest.json with discrete
+    bounded stages and explicit checkpoints. Keep writes within docs/ and journeys/.'
+  name: Define slice contract and user journeys
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the contract and manifest to ensure explicit acceptance checks.
+  outputs:
+    required:
+    - path: docs/repair-timeout-cascade-contract.md
+      type: markdown
+    - path: journeys/user_journeys_manifest.json
+      type: json
+  step_id: step_01_define_slice_contract
+  validation:
+    structural:
+    - path: docs/repair-timeout-cascade-contract.md
+      type: file_exists
+    - headings:
+      - Overview
+      - Problem
+      - Constraints
+      - Acceptance Checks
+      min_chars_under_heading: 120
+      path: docs/repair-timeout-cascade-contract.md
+      type: markdown_headings_present
+    - path: journeys/user_journeys_manifest.json
+      type: file_exists
+
+- allowed_paths:
+  - plans/
+  inputs:
+  - AGENTS.md
+  - docs/repair-timeout-cascade-contract.md
+  - architecture.md
+  - product-definition.md
+  mission: 'Plan the implementation in plans/repair-timeout-cascade-implementation-plan.md
+    covering modular deconstructed stages, diagnostic timing telemetry, stream separation,
+    and fail-closed error handling. Keep writes within plans/.'
+  name: Plan the implementation
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair the implementation plan so all acceptance checks map to plan items.
+  outputs:
+    required:
+    - path: plans/repair-timeout-cascade-implementation-plan.md
+      type: markdown
+  step_id: step_02_plan_slice_delivery
+  validation:
+    structural:
+    - path: plans/repair-timeout-cascade-implementation-plan.md
+      type: file_exists
+    - headings:
+      - Architecture
+      - Tests
+      - Verification
+      - Risks
+      min_chars_under_heading: 120
+      path: plans/repair-timeout-cascade-implementation-plan.md
+      type: markdown_headings_present
+
+- allowed_paths:
+  - tests/
+  inputs:
+  - AGENTS.md
+  - docs/repair-timeout-cascade-contract.md
+  - plans/repair-timeout-cascade-implementation-plan.md
+  mission: 'Author targeted tests in tests/test_diagnostics.py validating diagnostic timing,
+    stream separation, stdout purity, determinism, and fail-closed error handling. Keep
+    writes within tests/.'
+  name: Author slice tests
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair tests/test_diagnostics.py so that tests compile and collect cleanly.
+  outputs:
+    required:
+    - path: tests/test_diagnostics.py
+      type: text
+  step_id: step_03_author_slice_tests
+  validation:
+    structural:
+    - path: tests/test_diagnostics.py
+      type: file_exists
+    system:
+    - command: python3 -m compileall tests/test_diagnostics.py
+      timeout_seconds: 60
+      type: command_succeeds
+
+- allowed_paths:
+  - src/dashForge/
+  - playbooks/
+  inputs:
+  - AGENTS.md
+  - docs/repair-timeout-cascade-contract.md
+  - plans/repair-timeout-cascade-implementation-plan.md
+  - tests/test_diagnostics.py
+  mission: 'Implement diagnostic timing instrumentation in src/dashForge/diagnostics.py,
+    wire phase timing into main.py and package_snapshot.py, and deconstruct playbooks.
+    Keep writes within src/dashForge/ and playbooks/.'
+  name: Implement the slice
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Repair implementation so all diagnostics and regression tests pass cleanly.
+  outputs:
+    required:
+    - path: src/dashForge/diagnostics.py
+      type: text
+  step_id: step_04_implement_slice
+  validation:
+    structural:
+    - path: src/dashForge/diagnostics.py
+      type: file_exists
+    system:
+    - command: python3 -m pytest tests/test_diagnostics.py -q
+      timeout_seconds: 120
+      type: command_succeeds
+    - command: python3 -m pytest tests/ -q
+      timeout_seconds: 180
+      type: command_succeeds
+
+- allowed_paths:
+  - artifacts/user-smoke/
+  inputs:
+  - journeys/user_journeys_manifest.json
+  mission: 'Execute user journey validations to confirm stream separation, timing telemetry,
+    and non-regression without altering code.'
+  name: User journey simulation gate
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Fix user simulation failures.
+  step_id: step_05_user_journey_gate
+  validation:
+    system:
+    - command: env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/timeout-deconstruct-test.sqlite --snapshot-output /tmp/timeout-deconstruct-test.snapshot.json --force
+      timeout_seconds: 60
+      type: command_succeeds
+    - command: python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_bit_for_bit_deterministic_generation
+      timeout_seconds: 60
+      type: command_succeeds
+    - command: python3 -m pytest tests/ -q
+      timeout_seconds: 180
+      type: command_succeeds
+
+- allowed_paths:
+  - code-reviews/
+  inputs:
+  - AGENTS.md
+  - docs/repair-timeout-cascade-contract.md
+  - journeys/user_journeys_manifest.json
+  mission: 'Review the repair-timeout-cascade slice changes and produce a formal review
+    verdict under code-reviews/.'
+  name: Review the slice
+  on_fail:
+    after_retries_exhausted: halt
+    retry_message: Address reviewer findings.
+  outputs:
+    required:
+    - path: code-reviews/review-repair-timeout-cascade.md
+      type: markdown
+    - path: code-reviews/review-repair-timeout-cascade.verdict.json
+      type: json
+  step_id: step_06_review_slice

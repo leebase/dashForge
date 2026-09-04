@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
+import sys
 
+from dashForge.diagnostics import DiagnosticTimer, is_diagnostics_enabled
 from dashForge.package_snapshot import GENERATORS, package_snapshot
 
 
@@ -51,6 +53,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Overwrite existing output files.",
     )
+    generate_parser.add_argument(
+        "--diagnostics",
+        action="store_true",
+        default=False,
+        help="Enable diagnostic timing telemetry on stderr.",
+    )
 
     return parser
 
@@ -62,17 +70,30 @@ def main(argv: list[str] | None = None) -> int:
     if args.command != "generate":
         parser.error(f"Unknown command: {args.command}")
 
-    try:
-        result = package_snapshot(
-            pack=args.pack,
-            scenario=args.scenario,
-            output_path=args.output,
-            snapshot_output_path=args.snapshot_output,
-            seed=args.seed,
-            force=args.force,
-        )
-    except (FileExistsError, ValueError) as error:
-        parser.error(str(error))
+    diagnostics_enabled = getattr(args, "diagnostics", False) or is_diagnostics_enabled()
+    timer = DiagnosticTimer(enabled=diagnostics_enabled)
+
+    with timer:
+        with timer.phase("cli_initialization"):
+            pack = args.pack
+            scenario = args.scenario
+            output_path = args.output
+            snapshot_output_path = args.snapshot_output
+            seed = args.seed
+            force = args.force
+
+        try:
+            result = package_snapshot(
+                pack=pack,
+                scenario=scenario,
+                output_path=output_path,
+                snapshot_output_path=snapshot_output_path,
+                seed=seed,
+                force=force,
+                diagnostics=diagnostics_enabled,
+            )
+        except (FileExistsError, ValueError) as error:
+            parser.error(str(error))
 
     print(
         "Generated "
@@ -81,6 +102,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     if result.get("snapshotOutputPath"):
         print(f'Snapshot -> {result["snapshotOutputPath"]}')
+
+    if diagnostics_enabled:
+        timer.report(sys.stderr)
+
     return 0
 
 

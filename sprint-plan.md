@@ -4,6 +4,24 @@
 >
 > This file should stay concrete. If the strategy changes, update `project-plan.md`. If product direction changes, update `product-definition.md` or `architecture.md`.
 
+## Repair 03feb3227318 Slice — 2026-09-04
+
+**Status:** Complete
+
+- [x] Delta execution strategy partitioning simulation into bounded increments & intermediate checkpoints (<120s ceiling, eliminating 600s timeouts and cascading retries) (AC-1).
+- [x] Durable intermediate checkpoint persistence via `CheckpointManager` and SQLite table `_delta_checkpoints` allowing resumption from intermediate state (AC-1).
+- [x] Resilient schema handling for simulation outputs (PRAGMA table_xinfo rewriting, virtual generated columns e.g. `warehouseName` and `creditsUsed`, dynamic type/role inference) (AC-2).
+- [x] Intermediate delta table filtering (`_delta_*`) and `_delta_checkpoints` exclusion during canonical snapshot packaging (AC-2).
+- [x] Preservation of buyer-visible dashboard output, standalone presentation semantics, narrative arcs, and recommendation queue views across standalone and builder modes (AC-3).
+- [x] Preservation of data definitions and canonical `SQLiteSnapshot` contract (`frontend/src/core/data/sqliteSnapshot.ts`), seven canonical datasets, provenance metadata, and bit-for-bit determinism (AC-4).
+- [x] CLI entrypoint supports delta execution and diagnostics with pure stdout (canonical completions only) and stderr telemetry routing (AC-5).
+- [x] Fail-closed error handling with exit code 2 and informative diagnostics on invalid arguments, missing options, unknown scenarios, or unforced overwrites without tracebacks (AC-6).
+- [x] Zero external runtime dependencies (stdlib only), read-only sibling dataForge, operational continuity across all industry packs, and full test suite compatibility with NO PYTHONPATH override (AC-7).
+- [x] Passed governed review with verdict `pass`, recommendation `Ready for autonomous re-arm`, and 0 findings in `code-reviews/review-repair-03feb3227318.verdict.json`.
+- [x] Preserved validator evidence: all compileall and pytest checks passed (final full test suite: 162 passed in 29.32s, exit status 0; targeted suite: 26 passed in 2.60s, exit status 0; compileall exit status 0).
+
+This slice delivers the complete, verified delta execution strategy and resilient schema handling remediating the failure vectors of run 03feb3227318, eliminating 600s worker timeouts and cascading retries while preserving 100% of presentation and data invariants.
+
 ## Idle Warehouse Waste Slice — 2026-09-02
 
 **Status:** Complete

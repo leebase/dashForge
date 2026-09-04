@@ -1,0 +1,77 @@
+# Repair 03feb3227318 Slice Contract
+
+## Overview
+
+DashForge functions as an enterprise consulting accelerator for Anblicks, designed to rapidly build, iterate, and present credible, high-impact dashboard deliverables during executive discovery workshops and FinOps consultations. Under DashForge's decoupled workspace architecture, sibling repository `dataForge` provides deterministic scenario modeling, synthetic data generation, and relational quality verification, while DashForge owns scenario definitions, `DashboardSpec` schemas, `DataAdapter` runtime interfaces, and client-facing standalone presentation experiences. Governed delivery workflows in DashForge are coordinated and executed under Agent-Orch, enforcing sandboxed execution, auditable evidence chains, and strict per-step execution timeouts to ensure pipeline reliability.
+
+Governed run `03feb3227318` encountered critical execution failures driven by systemic worker timeouts and simulation schema incompatibilities during the processing of complex simulation workloads. Specifically, attempting to compute full simulation states and relational tables monolithically caused worker adapters to exhaust the default 600-second execution window, while rigid schema assumptions in simulation data packaging failed when processing complex delta or simulation states. When these steps timed out, automatic retries repeated the exact same monolithic workload from scratch, causing an unrecoverable timeout cascade.
+
+The `repair-03feb3227318` slice resolves these systemic timeouts and simulation schema issues by adopting a robust delta execution strategy. This slice establishes a resilient, bounded execution pattern capable of processing large, multi-table, or complex simulations without exceeding time limits, partitioning computations into delta increments and intermediate checkpoints. Crucially, the buyer-visible dashboard output, standalone presentation semantics, and underlying data definitions must not change.
+
+## Problem
+
+Investigation into the failed governed run `03feb3227318` identified several interrelated architectural and operational bottlenecks across simulation generation, schema handling, and orchestration:
+
+1. **Monolithic Simulation Workloads and Systemic Timeouts**: The prior execution architecture treated simulations as all-or-nothing monolithic computations. When executing large or complex scenarios—such as longitudinal Snowflake cost optimization simulations, multi-warehouse event streams, or complex scenario permutations—the pipeline generated the entire dataset from scratch in a single blocking pass. In run `03feb3227318`, this unbounded computation consumed excessive CPU and disk I/O, repeatedly breaching the 600-second execution budget enforced by Agent-Orch worker adapters.
+2. **Cascading Retries and Ground-Zero Repetition**: When a worker process was terminated due to a 600-second timeout, the orchestration harness initiated automated retries. Because intermediate simulation progress was uncheckpointed and lacked delta state persistence, each retry began from ground zero. The retries re-executed the identical heavy simulation workload and encountered the exact same timeout boundary, exhausting retry limits and completely halting governed delivery.
+3. **Simulation Schema Rigidity and Incompatibilities**: In addition to timing limits, run `03feb3227318` suffered from simulation schema discrepancies during snapshot extraction and table inspection. The packaging layer made rigid assumptions regarding table schemas and column types that failed when encountering simulation output variations, virtual generated columns, or intermediate delta representations. These schema mismatches triggered validation exceptions and prevented successful packaging of simulation artifacts into the canonical snapshot format.
+4. **Absence of Delta Execution Strategy**: Prior generation and packaging modules lacked state-delta awareness. Rather than computing only the incremental changes (deltas) between simulation steps or applying delta updates onto durable checkpoints, the system was forced to regenerate all historical records, recalculate aggregates, and re-serialize complete datasets. This architectural deficiency rendered the system fragile whenever simulation depth or scenario complexity increased.
+5. **Preservation of Presentation and Data Invariants**: Any architectural remediation to simulation execution must strictly safeguard existing user-facing surfaces. The buyer-visible dashboard views, executive narrative arcs, standalone presentation semantics, and underlying relational data definitions must remain 100% stable and identical to maintain credibility in client discovery workshops.
+
+## Constraints
+
+The design, implementation, and verification of the `repair-03feb3227318` slice are governed by the following strict architectural, operational, and governance constraints:
+
+1. **Buyer-Visible Dashboard Invariance**: The buyer-visible dashboard output, standalone presentation semantics, and visual presentation deliverables must not change. All executive KPI cards, charts, narrative steps, and prioritized recommendation queue views must render identically with complete semantic and visual fidelity across standalone and builder modes.
+2. **Underlying Data Definitions and Snapshot Invariance**: The underlying relational table definitions, schema roles, column types, and canonical `SQLiteSnapshot` contract (`frontend/src/core/data/sqliteSnapshot.ts`) must not change. Generation must remain bit-for-bit deterministic given identical seeds, preserving all seven canonical datasets (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`), complete provenance metadata (`packId`, `scenarioId`, `seed`, `dataForgeStoryContractPath`, generator version, ISO-8601 timestamp, `synthetic: true`, disclosure text `"Synthetic demo data"`), and recommendation queue governance.
+3. **Delta Execution Strategy**: Simulation workloads must adopt a delta execution strategy that computes bounded increments and persists intermediate checkpoints. Each incremental step must be scoped and bounded to execute well within the 600-second threshold (target duration < 60 seconds, maximum < 120 seconds), eliminating systemic worker timeouts and preventing cascading retries.
+4. **Simulation Schema Resiliency**: Simulation data processing, PRAGMA table inspection, column role inference, and snapshot serialization must be resilient to schema variations, virtual columns, and intermediate delta tables, ensuring robust validation without unhandled schema mismatch errors.
+5. **Clean Stream Separation and Stdout Purity**: Standard output (`stdout`) must remain pure, emitting only canonical single-line completion confirmations and output paths to ensure compatibility with downstream pipelines and automated JSON parsers. Diagnostic logs, delta execution traces, and timing telemetry must be routed strictly to stderr or dedicated channels.
+6. **Fail-Closed Error Handling**: Argument validation failures, missing options, unknown scenarios, or existing target files without `--force` must fail closed with exit status 2 and informative diagnostic messages via `parser.error()`, eliminating raw Python tracebacks.
+7. **Zero External Runtime Dependencies**: All delta execution logic, schema resilience mechanisms, and CLI extensions must rely exclusively on Python standard library modules (`time`, `logging`, `argparse`, `json`, `sqlite3`, `pathlib`, `sys`, `dataclasses`).
+8. **Read-Only Sibling Boundary**: Sibling repository `dataForge/` is strictly read-only. No files within `dataForge/` may be created, edited, or deleted. All delta execution adaptations and schema compatibility handlers must reside entirely within DashForge.
+9. **Governed Write Scope**: Persistent artifact writes for this step are strictly confined to `docs/` and `journeys/`.
+
+## Required Outputs
+
+This slice establishes the contract and operational baseline for the following deliverables across the governed lifecycle:
+
+- `docs/repair-03feb3227318-contract.md`: The governed slice contract defining the problem, constraints, required outputs, validation methodology, routing intent, and explicit acceptance checks (`AC-1` through `AC-7`).
+- `journeys/user_journeys_manifest.json`: The synchronized user journeys manifest linking natural-language operator goals to every acceptance check (`AC-1` through `AC-7`) with valid authorities and non-empty command allowlists.
+- Python Delta Execution & Resilient Schema Modules (`src/dashForge/`): Implementation enhancements in `main.py`, `package_snapshot.py`, `snowflake_cost.py`, and supporting modules incorporating the delta execution pattern, checkpoint durability, and resilient schema handling.
+- Automated Test Suite & Regression Coverage (`tests/`): Pytest test suites validating delta execution determinism, simulation schema resilience, fail-closed handling, stream isolation, and regression immunity across all supported packs (`healthcare`, `financial`, `saas`, `snowflakeCost`).
+
+## Validation
+
+Verification of the `repair-03feb3227318` slice follows a multi-tier automated validation strategy:
+
+1. **Full Automated Test Suite Execution**: Running the complete test suite via `python3 -m pytest tests/ -q` with NO PYTHONPATH override (the orchestrator re-executes claims in a bounded environment whose own PYTHONPATH makes pytest importable, and an override hides it). All tests across the test suite must pass with zero failures.
+2. **Delta Execution and Timing Verification**: Automated tests confirming that simulation execution executes via bounded delta increments and checkpoints, completing within predictable duration bounds and preventing worker timeouts.
+3. **Simulation Schema Resilience Verification**: Targeted tests asserting that PRAGMA table inspection, column role inference, and snapshot serialization handle simulation schema variations, virtual columns, and intermediate delta tables cleanly without schema mismatch errors.
+4. **Deterministic Snapshot and Output Reproducibility**: Automated comparison of generated SQLite databases and JSON snapshots across identical seeds, confirming identical file hashes, column definitions, record counts, provenance metadata, and recommendation queue governance.
+5. **Stream Separation and Stdout Purity**: Automated checks asserting that diagnostic logs and delta execution telemetry are emitted to stderr or isolated handlers, leaving stdout clean, uncorrupted, and parseable for downstream consumers.
+6. **Fail-Closed Argument and Overwrite Validation**: Verification that missing arguments, invalid scenario identifiers, or existing output paths without `--force` continue to exit cleanly with status code 2 and helpful diagnostics without raising unhandled Python exceptions.
+7. **User Journey Simulation Gate**: Verifying that all user journeys defined in `journeys/user_journeys_manifest.json` execute successfully from the workspace root using allowlisted command strings matching declared exit codes.
+
+## Routing Intent
+
+Execution routing across the governed lifecycle of this slice is organized as follows:
+
+- **Producer / Contract Author Route (`antigravity_cli` / `gemini-3.8-flash-high`)**: Formulates the slice contract and synchronized user journey manifest within declared write scopes (`docs/`, `journeys/`), adhering to all heading character minimums and operating guardrails.
+- **Planner Route (`antigravity_cli` / `gemini-3.8-flash-high`)**: Deconstructs implementation and verification workflows into a detailed plan under `plans/` covering architecture, delta execution strategy, resilient schema handling, test authoring, and risk mitigations with explicit traceability to all acceptance checks.
+- **Test Author Route (`antigravity_cli` / `gemini-3.8-flash-high`)**: Authors targeted unit and regression tests in `tests/` validating delta execution, simulation schema resilience, stream isolation, and non-regression before implementation begins.
+- **Implementation Route (`antigravity_cli` / `gemini-3.8-flash-high`)**: Delivers delta execution strategy and schema resilience mechanisms within declared paths, ensuring all tests pass cleanly.
+- **Evaluator / User Tester Route (`user_tester` / `gemini-3.1-pro`)**: Independently verifies user journeys against allowlisted command prefixes, validating exit codes, execution durations, and stdout/stderr behavior without making code changes.
+- **Independent Reviewer Route (`slice_reviewer` / `gemini-3.1-pro`)**: Conducts read-only inspection of implementation diffs, timing telemetry, test logs, contract adherence, and evidence chains to issue a binding review verdict.
+
+## Acceptance Checks
+
+The slice must satisfy the following explicit acceptance checks:
+
+- **AC-1**: The execution engine implements a delta execution strategy that partitions large or complex simulation workloads into bounded incremental delta calculations and intermediate state checkpoints; simulations execute without repeating full state generation from scratch, eliminating systemic worker timeouts observed in run 03feb3227318 and completing comfortably within per-step time limits.
+- **AC-2**: The data processing and snapshot packaging pipelines implement resilient schema handling for simulation outputs, ensuring that table inspection, column type inference, and snapshot serialization handle simulation schema variations, virtual columns, and intermediate delta tables without encountering schema mismatch or type inference failures.
+- **AC-3**: The buyer-visible dashboard output, standalone presentation semantics, and visual presentation deliverables remain strictly unchanged; all executive KPI cards, narrative story arcs, charts, and prioritized recommendation queue views render identically with full semantic fidelity across standalone and builder modes.
+- **AC-4**: The underlying data definitions and canonical `SQLiteSnapshot` contract (`frontend/src/core/data/sqliteSnapshot.ts`) remain unchanged; delta execution produces identical final relational tables and JSON snapshots given identical seeds, retaining all seven canonical datasets, typed columns, semantic roles, complete provenance metadata, and recommendation queue governance.
+- **AC-5**: The CLI entrypoint (`env PYTHONPATH=src python3 -m dashForge.main generate`) supports the delta execution strategy and diagnostic reporting without breaking existing invocations or polluting standard output; standard output (`stdout`) remains strictly reserved for canonical completion confirmations, with all diagnostic and delta execution telemetry routed cleanly to stderr.
+- **AC-6**: Delta execution and schema validation fail closed with clean diagnostics and exit code 2 when invalid arguments, missing required options, unknown scenarios, or unforced destination file overwrites occur, eliminating unhandled Python exceptions and raw tracebacks.
+- **AC-7**: All delta execution and schema resilience facilities rely exclusively on Python standard library modules (`time`, `logging`, `argparse`, `json`, `sqlite3`, `pathlib`, `sys`); sibling repository `dataForge/` remains strictly read-only; all existing packs (`healthcare`, `financial`, `saas`, `snowflakeCost`) remain operational; and the full automated test suite passes cleanly via `python3 -m pytest tests/ -q` with NO PYTHONPATH override.

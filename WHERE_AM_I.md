@@ -13,8 +13,8 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / first employee handoff |
-| **Overall Status** | 🟢 Idle Warehouse Waste slice complete and passed governed review; 7-dataset snapshot packaging, provenance tracking, recommendation queue governance, and standalone presentation verified across 109 passing tests; broader commercial expansion remains buyer-gated |
-| **Last Updated** | 2026-09-02 |
+| **Overall Status** | 🟢 Repair 03feb3227318 slice complete and passed governed review; delta execution strategy, durable intermediate checkpointing, and resilient schema handling verified across 162 passing tests; broader commercial expansion remains buyer-gated |
+| **Last Updated** | 2026-09-04 |
 
 ---
 
@@ -35,6 +35,7 @@
 | Package DataForge Snapshot | ✅ Done | Deterministic SQLite & JSON snapshot packaging CLI with fail-closed overwrite protection, multi-pack support, and DataAdapter schema alignment |
 | Snowflake Cost Pack | ✅ Done | Dynamic scenario discovery and snapshot packaging for snowflakeCost with provenance metadata and recommendation queue preservation |
 | Idle Warehouse Waste Slice | ✅ Done | Deterministic 7-dataset packaging, provenance metadata, recommendation queue governance, and standalone executive presentation for snowflakeCost |
+| Repair 03feb3227318 Slice | ✅ Done | Delta execution strategy, durable intermediate checkpointing, resilient schema inspection, and stream isolation eliminating worker timeouts and retries |
 
 ### Current Phase Goals
 
@@ -70,6 +71,7 @@
 | Package DataForge Snapshot | Deterministic SQLite & JSON snapshot packaging CLI with fail-closed protection, multi-pack support, and DataAdapter schema alignment | ✅ Complete |
 | Snowflake Cost Pack | Dynamic discovery, generation, and snapshot packaging for snowflakeCost with recommendation queue and provenance metadata | ✅ Complete |
 | Idle Warehouse Waste Slice | Deterministic 7-dataset packaging, provenance metadata, recommendation queue governance, and standalone presentation for snowflakeCost | ✅ Complete |
+| Repair 03feb3227318 Slice | Delta execution strategy, durable checkpoints, resilient schema handling, and stream isolation | ✅ Complete |
 
 ---
 
@@ -121,6 +123,7 @@ Decisions that affect product direction:
 | Package DataForge Snapshot CLI enforces fail-closed overwrite protection and extracts SQLiteSnapshot JSON via SQLite PRAGMA table_info | Prevents accidental data loss during workshop rehearsal and guarantees schema alignment with DataAdapter runtime without external dependencies | 2026-09-02 |
 | `snowflake-cost-pack` CLI dynamically discovers dataForge scenarios and preserves recommendation queue | Extends DashForge CLI with snowflakeCost pack support, provenance metadata, and fail-closed overwrite guards without hardcoding scenarios or external runtime dependencies | 2026-09-02 |
 | `idle-warehouse-waste` slice formalizes 7-dataset snapshot schema and recommendation queue governance | Delivers deterministic offline presentation, provenance tracing, and safety guardrails for Snowflake idle warehouse waste consulting demonstrations | 2026-09-02 |
+| Delta execution strategy and resilient schema handling for repair-03feb3227318 | Partitions simulations into bounded increments (<120s), persists intermediate checkpoints to SQLite (_delta_checkpoints), rewrites PRAGMA to table_xinfo, and isolates telemetry to stderr to eliminate worker timeouts and cascading retries | 2026-09-04 |
 
 ---
 
