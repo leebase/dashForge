@@ -1,12 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "schema_version": 1,
-  "contract": "docs/idle-warehouse-waste-contract.md",
-  "objective": "Implement the idle warehouse waste vertical slice for the Snowflake Cost Management accelerator in dashForge, consuming dataForge exports as a provenance-labeled snapshot, proving DashboardSpec/DataAdapter runtime seams, and presenting prioritized recommendations while preserving core dashForge features.",
+  "contract": "docs/idle-warehouse-waste-binding-contract.md",
+  "objective": "Implement the core foundation for the Snowflake Cost Management accelerator by binding the idle-warehouse-waste dataForge snapshot to a dashForge DashboardSpec, presenting prioritized recommendations, and proving DashboardSpec and DataAdapter runtime seams using deterministic micro-steps without modifying underlying generative contracts.",
   "command_allowlist": [
     "env PYTHONPATH=src python3 -m dashForge.main",
     "python3 -m pytest tests/ -q",
-    "python3 -m pytest"
+    "python3 -m pytest",
+    "npm --prefix frontend test -- --run"
   ],
   "journeys": [
     {
@@ -21,16 +22,16 @@
         "src/dashForge/snowflake_cost.py",
         "src/dashForge/package_snapshot.py",
         "frontend/src/mock-data/snowflakeCostIdleWarehouseWaste.ts",
-        "docs/idle-warehouse-waste-contract.md"
+        "docs/idle-warehouse-waste-binding-contract.md"
       ],
       "commands": [
         "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force",
-        "python3 -m pytest tests/test_snowflake_cost_pack.py -q -k test_snapshot_provenance_metadata"
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_snapshot_provenance_metadata"
       ],
       "steps": [
         "Execute env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force from workspace root.",
         "Verify the command exits with code 0 and creates both the normalized SQLite database and the canonical JSON snapshot.",
-        "Execute python3 -m pytest tests/test_snowflake_cost_pack.py -q -k test_snapshot_provenance_metadata to verify provenance metadata fields (packId, scenarioId, seed, dataForgeStoryContractPath, generatorVersion, generationTimestamp, synthetic, disclosure).",
+        "Execute python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_snapshot_provenance_metadata to verify provenance metadata fields (packId, scenarioId, seed, dataForgeStoryContractPath, generatorVersion, generationTimestamp, synthetic, disclosure).",
         "Confirm that snapshot exports conform strictly to the canonical SQLiteSnapshot contract with synthetic: true and disclosure text Synthetic demo data."
       ],
       "traces_to": [
@@ -49,19 +50,17 @@
         "src/dashForge/main.py",
         "src/dashForge/snowflake_cost.py",
         "src/dashForge/package_snapshot.py",
-        "docs/idle-warehouse-waste-contract.md"
+        "docs/idle-warehouse-waste-binding-contract.md"
       ],
       "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --output /tmp/idle-warehouse-waste.sqlite",
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario non-existent-cost-scenario --output /tmp/non-existent.sqlite",
-        "env PYTHONPATH=src python3 -m dashForge.main"
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_cli_idle_warehouse_fail_closed",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_unknown_snowflake_cost_scenario_fails_cleanly"
       ],
       "steps": [
-        "Attempt to run env PYTHONPATH=src python3 -m dashForge.main generate against existing output /tmp/idle-warehouse-waste.sqlite without passing --force.",
-        "Confirm the command fails closed with exit code 2 and outputs a clean diagnostic error indicating the file already exists.",
-        "Attempt to run generation with an invalid scenario name non-existent-cost-scenario under --pack snowflakeCost.",
-        "Confirm the command fails closed with exit code 2 and clean diagnostic message without raw Python tracebacks.",
-        "Run env PYTHONPATH=src python3 -m dashForge.main without arguments and verify exit code 2 with standard usage diagnostics."
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_cli_idle_warehouse_fail_closed to verify that existing output SQLite and snapshot JSON files abort with exit code 2 when --force is omitted.",
+        "Confirm the command outputs clean diagnostics indicating the target file already exists without unhandled Python stack traces.",
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_unknown_snowflake_cost_scenario_fails_cleanly to verify that unrecognized scenario names fail closed with exit code 2.",
+        "Confirm all input validation failures produce clean error diagnostics without raw tracebacks."
       ],
       "traces_to": [
         "AC-2"
@@ -79,17 +78,18 @@
         "frontend/src/core/data/createDashboardDataAdapter.ts",
         "frontend/src/core/spec/dashboardSchema.ts",
         "frontend/src/features/runtime/idleWarehousePresentation.ts",
-        "docs/idle-warehouse-waste-contract.md"
+        "docs/idle-warehouse-waste-binding-contract.md"
       ],
       "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force",
-        "python3 -m pytest tests/test_package_snapshot.py -q -k test_snapshot_schema_conforms_to_sqlite_snapshot_contract"
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_idle_warehouse_dashboardspec_meta_and_constants",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_all_seven_scenario_datasets_present_in_sqlite",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_idle_warehouse_adapter_query_routing_in_presentation"
       ],
       "steps": [
-        "Generate the idle-warehouse-waste snapshot using env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force.",
-        "Run python3 -m pytest tests/test_package_snapshot.py -q -k test_snapshot_schema_conforms_to_sqlite_snapshot_contract to verify schema conformity.",
-        "Confirm the snapshot adheres to SQLiteSnapshot TypeScript contract with typed columns, semantic roles, and dataset rows.",
-        "Verify the DataAdapter seam resolves queries across all seven required datasets (executive_summary, warehouse_metering_history, query_history, metering_history, database_storage_usage_history, show_warehouses, recommendation_queue)."
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_idle_warehouse_dashboardspec_meta_and_constants to verify DashboardSpec metadata and scenario identifiers.",
+        "Execute python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_all_seven_scenario_datasets_present_in_sqlite to confirm that all 7 required datasets exist and have rows in SQLite.",
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_idle_warehouse_adapter_query_routing_in_presentation to verify that presentation loaders query data strictly through the DataAdapter interface.",
+        "Confirm that the DataAdapter seam resolves queries across all seven required datasets (executive_summary, warehouse_metering_history, query_history, metering_history, database_storage_usage_history, show_warehouses, recommendation_queue)."
       ],
       "traces_to": [
         "AC-1",
@@ -108,16 +108,18 @@
         "frontend/src/mock-data/scenarioCatalog.ts",
         "frontend/src/mock-data/templateCatalog.ts",
         "src/dashForge/snowflake_cost.py",
-        "docs/idle-warehouse-waste-contract.md"
+        "docs/idle-warehouse-waste-binding-contract.md"
       ],
       "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force",
-        "python3 -m pytest tests/test_snowflake_cost_pack.py -q -k test_dynamic_scenario_discovery_matches_dataforge"
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_scenario_catalog_registers_idle_warehouse_waste",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_template_catalog_registers_idle_warehouse_waste",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_dynamic_scenario_discovery_matches_dataforge"
       ],
       "steps": [
-        "Run env PYTHONPATH=src python3 -m dashForge.main generate to confirm the snowflakeCost pack and idle-warehouse-waste scenario generate successfully.",
-        "Run python3 -m pytest tests/test_snowflake_cost_pack.py -q -k test_dynamic_scenario_discovery_matches_dataforge to verify dynamic discovery from dataForge without hardcoded lists.",
-        "Verify that the scenario catalog entry snowflakeCost:idle-warehouse-waste and template catalog entry tpl.snowflakeCost.idle-warehouse-waste are formally registered with full widget specifications and layouts."
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_scenario_catalog_registers_idle_warehouse_waste to confirm scenario catalog registration.",
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_template_catalog_registers_idle_warehouse_waste to confirm template catalog registration.",
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_dynamic_scenario_discovery_matches_dataforge to verify dynamic discovery from dataForge without hardcoded lists.",
+        "Verify that scenario entry snowflakeCost:idle-warehouse-waste and template entry tpl.snowflakeCost.idle-warehouse-waste are formally registered with full widget specifications and layouts."
       ],
       "traces_to": [
         "AC-2",
@@ -135,16 +137,17 @@
         "src/dashForge/snowflake_cost.py",
         "src/dashForge/package_snapshot.py",
         "frontend/src/features/runtime/StandaloneDashboardApp.tsx",
-        "docs/idle-warehouse-waste-contract.md"
+        "docs/idle-warehouse-waste-binding-contract.md"
       ],
       "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force",
-        "python3 -m pytest tests/test_snowflake_cost_pack.py -q -k test_recommendation_queue_governance_columns_snapshot"
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_recommendation_queue_governance_columns_snapshot",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_recommendation_queue_row_integrity",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_recommendation_queue_guardrail_directional_validation"
       ],
       "steps": [
-        "Generate the idle warehouse waste snapshot with seed 9101.",
-        "Run python3 -m pytest tests/test_snowflake_cost_pack.py -q -k test_recommendation_queue_governance_columns_snapshot to verify governance columns.",
-        "Verify that recommendation_queue preserves executive_severity, suggested_owner, recommended_action, evidence_detail, and guardrail columns.",
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_recommendation_queue_governance_columns_snapshot to verify governance columns.",
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_recommendation_queue_row_integrity to confirm valid severities, suggested owners, and non-empty actions.",
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_recommendation_queue_guardrail_directional_validation to confirm guardrail directional validation framing.",
         "Confirm that recommendations enforce directional validation policies requiring owner confirmation before warehouse configuration changes."
       ],
       "traces_to": [
@@ -153,26 +156,26 @@
       ]
     },
     {
-      "id": "journey-idle-warehouse-executive-presentation-and-disclosure",
-      "name": "Verify executive buyer presentation narrative, follow-up export, and synthetic disclosure integrity",
-      "goal": "An executive presenter or client delivery lead verifies that the standalone dashboard presents the idle warehouse narrative (opportunity metrics, idle counts, credit concentration, control gaps), unsuppressed Synthetic demo data disclosure, and same-day executive follow-up artifact.",
+      "id": "journey-idle-warehouse-browser-presentation-and-disclosure",
+      "name": "Verify browser-visible standalone presentation, recommendation queue interaction, follow-up export, and synthetic disclosure integrity",
+      "goal": "An executive presenter or client delivery lead verifies that the standalone browser-visible dashboard presents the idle warehouse narrative (opportunity metrics, idle counts, credit concentration, control gaps), unsuppressed Synthetic demo data disclosure, interactive recommendation queue, and same-day executive follow-up artifact.",
       "authority": "human",
       "status": "passed",
       "exploratory": false,
       "source_refs": [
         "frontend/src/features/runtime/StandaloneDashboardApp.tsx",
         "frontend/src/features/runtime/standaloneDashboard.ts",
-        "src/dashForge/snowflake_cost.py",
-        "docs/idle-warehouse-waste-contract.md"
+        "tests/browser_smoke_manifest.json",
+        "docs/idle-warehouse-waste-binding-contract.md"
       ],
       "commands": [
-        "env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force",
-        "python3 -m pytest tests/test_snowflake_cost_pack.py -q -k test_synthetic_disclosure_text"
+        "npm --prefix frontend test -- --run -t \"renders controlled artifact evidence and citations through the shared runtime\"",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_synthetic_disclosure_text"
       ],
       "steps": [
-        "Generate the idle warehouse waste demo assets using env PYTHONPATH=src python3 -m dashForge.main generate --pack snowflakeCost --scenario idle-warehouse-waste --seed 9101 --output /tmp/idle-warehouse-waste.sqlite --snapshot-output /tmp/idle-warehouse-waste.snapshot.json --force.",
-        "Execute python3 -m pytest tests/test_snowflake_cost_pack.py -q -k test_synthetic_disclosure_text to confirm the synthetic disclosure text.",
-        "Verify the executive narrative structure: headline monthly opportunity, idle warehouse count, credit usage concentration, control gaps, and actionable recommendations.",
+        "Execute targeted frontend test npm --prefix frontend test -- --run -t \"renders controlled artifact evidence and citations through the shared runtime\" to verify browser-visible dashboard presentation, headline opportunities, recommendation queue interaction, and follow-up export triggers.",
+        "Execute python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_synthetic_disclosure_text to confirm the synthetic disclosure text.",
+        "Verify the executive narrative structure: headline monthly opportunity (726 credits), idle warehouse count (2 warehouses), credit usage concentration (FINANCE_REPORTING_WH > 50%), control gaps, and prioritized recommendations.",
         "Confirm prominent, unsuppressed Synthetic demo data disclosure across UI and exported executive follow-up artifacts."
       ],
       "traces_to": [
@@ -190,20 +193,22 @@
       "exploratory": false,
       "source_refs": [
         "src/dashForge/main.py",
-        "tests/test_package_snapshot.py",
+        "tests/test_idle_warehouse_waste.py",
         "tests/test_dataforge_compat.py",
         "tests/test_generate.py",
         "tests/test_snowflake_cost_pack.py",
-        "docs/idle-warehouse-waste-contract.md"
+        "docs/idle-warehouse-waste-binding-contract.md"
       ],
       "commands": [
         "env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --seed 3101 --output /tmp/healthcare-flu.sqlite --snapshot-output /tmp/healthcare-flu.snapshot.json --force",
+        "python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_dataforge_unmodified",
         "python3 -m pytest tests/ -q"
       ],
       "steps": [
         "Generate a healthcare scenario using env PYTHONPATH=src python3 -m dashForge.main generate --pack healthcare --scenario flu-season --seed 3101 --output /tmp/healthcare-flu.sqlite --snapshot-output /tmp/healthcare-flu.snapshot.json --force to confirm existing packs remain operational.",
+        "Run python3 -m pytest tests/test_idle_warehouse_waste.py -q -k test_dataforge_unmodified to verify sibling repository dataForge remains strictly unmodified.",
         "Execute python3 -m pytest tests/ -q with NO PYTHONPATH override from workspace root.",
-        "Confirm that all 74 unit, integration, and regression tests pass cleanly without errors or regressions."
+        "Confirm that all unit, integration, and regression tests pass cleanly without errors or regressions."
       ],
       "traces_to": [
         "AC-7",

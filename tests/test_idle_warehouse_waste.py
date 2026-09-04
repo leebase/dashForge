@@ -153,8 +153,7 @@ def test_snapshot_provenance_metadata(tmp_path: Path) -> None:
     assert "dataForgeStoryContractPath" in data
     story_path = data["dataForgeStoryContractPath"]
     assert isinstance(story_path, str)
-    assert SCENARIO_ID in story_path
-    assert story_path.startswith("stories/snowflake/")
+    assert story_path == STORY_CONTRACT_PATH
 
     assert "generatorVersion" in data
     assert data["generatorVersion"] == 1 or isinstance(
@@ -429,6 +428,13 @@ def test_unknown_snowflake_cost_scenario_fails_cleanly(
     assert "traceback (most recent call last)" not in captured.err.lower()
     assert "traceback (most recent call last)" not in captured.out.lower()
 
+    # AC-2: Missing required parameters fail closed with exit status 2 without traceback
+    with pytest.raises(SystemExit) as exc_info_missing:
+        main(["generate", "--pack", PACK_ID])
+    assert exc_info_missing.value.code == 2
+    captured_missing = capsys.readouterr()
+    assert "traceback (most recent call last)" not in captured_missing.err.lower()
+
 
 def test_bit_for_bit_deterministic_generation(tmp_path: Path) -> None:
     """Verify that two successive generations with identical seed 9101 produce bit-for-bit identical outputs."""
@@ -697,6 +703,15 @@ def test_recommendation_queue_row_integrity(tmp_path: Path) -> None:
             )
         assert row["executive_severity"] in valid_severities
 
+    # Contract AC-6: FINANCE_REPORTING_WH (IWW-001, P0) presented first
+    assert rows[0]["recommendation_id"] == "IWW-001"
+    assert rows[0]["executive_severity"] == "P0"
+    assert (
+        "FINANCE_REPORTING_WH" in str(rows[0].get("scope_name", ""))
+        or "FINANCE_REPORTING_WH" in str(rows[0].get("recommended_action", ""))
+        or "FINANCE_REPORTING_WH" in str(rows[0].get("evidence_detail", ""))
+    )
+
 
 def test_recommendation_queue_guardrail_directional_validation(tmp_path: Path) -> None:
     """Verify that every recommendation row enforces protective directional validation guardrails."""
@@ -736,14 +751,40 @@ def test_recommendation_queue_presentation_directional_framing() -> None:
 
 
 def test_standalone_dashboard_presentation_narrative_flow() -> None:
-    """Verify that StandaloneDashboardApp.tsx renders the idle warehouse demo container and narrative sections."""
+    """Verify that StandaloneDashboardApp.tsx encodes the contract presentation, narrative flow, and controls."""
     app_tsx = FRONTEND / "src" / "features" / "runtime" / "StandaloneDashboardApp.tsx"
     assert app_tsx.exists(), f"Missing StandaloneDashboardApp.tsx at {app_tsx}"
 
     content = app_tsx.read_text(encoding="utf-8")
-    assert 'data-demo="idle-warehouse-waste"' in content or 'data-demo={isIdleWarehouseWaste ? "idle-warehouse-waste"' in content
-    assert 'data-testid="idle-warehouse-waste-demo"' in content or 'data-testid={isIdleWarehouseWaste ? "idle-warehouse-waste-demo"' in content
+    # Contract AC-7: container attributes data-scenario="idle-warehouse-waste" and data-readiness="controlled"
+    assert (
+        'data-scenario="idle-warehouse-waste"' in content
+        or 'data-scenario={isIdleWarehouseWaste ? "idle-warehouse-waste"' in content
+        or ('data-scenario=' in content and "idle-warehouse-waste" in content)
+    ), "StandaloneDashboardApp lacks data-scenario='idle-warehouse-waste' container attribute"
+    assert (
+        'data-readiness="controlled"' in content
+        or 'data-readiness={qualityIsBlocking ? "blocking" : "controlled"}' in content
+        or "data-readiness=" in content
+    ), "StandaloneDashboardApp lacks data-readiness attribute"
+
+    # Contract AC-7: interactive control data-action="open-recommendation-queue" revealing data-status="recommendation-queue"
+    assert 'data-action="open-recommendation-queue"' in content, (
+        "StandaloneDashboardApp lacks data-action='open-recommendation-queue' interactive control"
+    )
+    assert 'data-status="recommendation-queue"' in content, (
+        "StandaloneDashboardApp lacks data-status='recommendation-queue' target status"
+    )
+
+    # Contract AC-7: exportable follow-up artifact data-action="same-day-executive-follow-up"
+    assert 'data-action="same-day-executive-follow-up"' in content, (
+        "StandaloneDashboardApp lacks data-action='same-day-executive-follow-up' export control"
+    )
+
+    # Buyer-oriented narrative flow: headline credit savings opportunity, idle warehouse count, credit concentration, control gaps
     assert "FINANCE_REPORTING_WH" in content or "concentration" in content.lower()
+    assert "opportunityHigh" in content or "monthly-opportunity" in content
+    assert "idleWarehouseCount" in content or "idle-warehouse-count" in content
 
 
 def test_synthetic_disclosure_text(tmp_path: Path) -> None:
@@ -756,10 +797,14 @@ def test_synthetic_disclosure_text(tmp_path: Path) -> None:
 
 
 def test_synthetic_demo_data_unsuppressed_in_presentation() -> None:
-    """Verify that StandaloneDashboardApp.tsx includes prominent synthetic demo data disclosure text."""
+    """Verify that StandaloneDashboardApp.tsx includes prominent synthetic demo data disclosure text and attribute."""
     app_tsx = FRONTEND / "src" / "features" / "runtime" / "StandaloneDashboardApp.tsx"
+    assert app_tsx.exists(), f"Missing StandaloneDashboardApp.tsx at {app_tsx}"
     content = app_tsx.read_text(encoding="utf-8")
     assert SYNTHETIC_DISCLOSURE_TEXT in content
+    assert 'data-disclosure="synthetic-demo-data"' in content, (
+        "StandaloneDashboardApp lacks data-disclosure='synthetic-demo-data' attribute"
+    )
 
 
 def test_executive_follow_up_export_contract() -> None:
@@ -770,6 +815,12 @@ def test_executive_follow_up_export_contract() -> None:
     content = export_ts.read_text(encoding="utf-8")
     assert 'idle-warehouse-waste' in content
     assert "Synthetic demo data" in content or "synthetic" in content
+
+    app_tsx = FRONTEND / "src" / "features" / "runtime" / "StandaloneDashboardApp.tsx"
+    assert app_tsx.exists()
+    app_content = app_tsx.read_text(encoding="utf-8")
+    assert "buildExecutiveFollowUpHtml" in app_content
+    assert 'data-action="same-day-executive-follow-up"' in app_content
 
 
 # ============================================================================

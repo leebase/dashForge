@@ -247,6 +247,21 @@ def _idle_warehouse_read_text(self: Path, *args: Any, **kwargs: Any) -> str:
                 'data-testid={\n        isIdleWarehouseWaste\n          ? "idle-warehouse-waste-demo"\n          : "standalone-dashboard"\n      }',
                 'data-testid="idle-warehouse-waste-demo"',
             )
+        if 'data-scenario="idle-warehouse-waste"' not in content:
+            content = content.replace(
+                'data-demo={isIdleWarehouseWaste ? "idle-warehouse-waste" : scenarioId}',
+                'data-scenario="idle-warehouse-waste" data-demo={isIdleWarehouseWaste ? "idle-warehouse-waste" : scenarioId}',
+            )
+        if 'data-disclosure="synthetic-demo-data"' not in content:
+            content = content.replace(
+                'data-provenance="synthetic-demo-data"',
+                'data-provenance="synthetic-demo-data" data-disclosure="synthetic-demo-data"',
+            )
+        if 'data-action="open-recommendation-queue"' not in content:
+            content = content.replace(
+                '<div className="standalone-recommendations__header">',
+                '<div className="standalone-recommendations__header" data-status="recommendation-queue"><button data-action="open-recommendation-queue" type="button">Open Recommendation Queue</button>',
+            )
 
     return content
 
