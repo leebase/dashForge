@@ -28,67 +28,95 @@ roles:
     model: gemini-3.1-pro
     effort: low
 steps:
-  - step_id: step_01_author_slice_tests
-    name: Author disjoint backend and frontend regression tests
+  - step_id: step_01_author_backend_tests
+    name: Author the backend regression tests
     depends_on: []
     inputs:
       - AGENTS.md
       - docs/idle-warehouse-dashboard-brief.md
       - docs/idle-warehouse-waste-contract.md
       - plans/idle-warehouse-waste-implementation-plan.md
-      - journeys/user_journeys_manifest.json
-      - tests/browser_smoke_manifest.json
       - src/dashForge/idle_warehouse_waste.py
       - src/dashForge/package_snapshot.py
-      - frontend/src/features/runtime/StandaloneDashboardApp.tsx
-      - frontend/src/features/runtime/idleWarehousePresentation.ts
     allowed_paths:
       - tests/test_snowflake_cost_pack.py
       - tests/test_package_snapshot.py
-      - frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
     outputs:
       required:
         - path: tests/test_snowflake_cost_pack.py
           type: text
         - path: tests/test_package_snapshot.py
           type: text
-        - path: frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
-          type: text
     mission: >-
       Read AGENTS.md, the idle warehouse brief and contract, the implementation plan,
-      the current user-journey manifest, the pinned browser smoke manifest, and the
-      current backend/frontend sources. Author focused regression tests before
-      implementation: backend tests must cover snapshot target validation, provenance,
-      the seven datasets, and recommendation governance; the frontend test must cover
-      scenario selection, the persistent Synthetic demo data disclosure, recommendation
-      queue opening, FINANCE_REPORTING_WH ordering, and directional guardrails. Keep
-      test authorship disjoint from implementation: do not edit src/, frontend runtime
-      implementation files, journeys/, or the smoke manifest, and do not run pytest in
-      this step. Checkpoint: all three test files exist and the Python tests compile.
-      Keep writes inside the three declared test paths.
+      and the current backend sources. Author the backend regression tests before
+      implementation for snapshot target validation, provenance, the seven datasets,
+      and recommendation governance. Do not edit implementation, frontend, journeys,
+      manifests, or dependencies, and do not run pytest in this step. Checkpoint: both
+      backend test files exist and compile. Keep writes inside the two declared test
+      paths.
     validation:
       structural:
         - type: file_exists
           path: tests/test_snowflake_cost_pack.py
         - type: file_exists
           path: tests/test_package_snapshot.py
-        - type: file_exists
-          path: frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
       system:
         - type: command_succeeds
           command: python3 -m compileall tests/test_snowflake_cost_pack.py tests/test_package_snapshot.py
           timeout_seconds: 60
     on_fail:
       retry_message: >-
-        Repair only the separately authored backend/frontend tests. Keep their scopes
-        disjoint from implementation, do not edit the journey or smoke manifests, and
-        make the Python tests compile with the declared compileall command.
+        Repair only the separately authored backend tests. Keep their scope disjoint
+        from implementation and make both Python tests compile with the declared
+        compileall command.
       after_retries_exhausted: halt
 
-  - step_id: step_02_prepare_frontend_dependencies
+  - step_id: step_02_author_frontend_test
+    name: Author the frontend regression test
+    depends_on: []
+    inputs:
+      - AGENTS.md
+      - docs/idle-warehouse-dashboard-brief.md
+      - docs/idle-warehouse-waste-contract.md
+      - plans/idle-warehouse-waste-implementation-plan.md
+      - tests/browser_smoke_manifest.json
+      - frontend/src/features/runtime/StandaloneDashboardApp.tsx
+      - frontend/src/features/runtime/idleWarehousePresentation.ts
+    allowed_paths:
+      - frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+    outputs:
+      required:
+        - path: frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+          type: text
+    mission: >-
+      Read AGENTS.md, the idle warehouse brief and contract, the implementation plan,
+      the pinned browser smoke manifest, and the current frontend runtime sources.
+      Author the frontend regression test before implementation for scenario selection,
+      the persistent Synthetic demo data disclosure, recommendation queue opening,
+      FINANCE_REPORTING_WH ordering, and directional guardrails. Do not edit runtime
+      implementation, backend, journeys, manifests, catalogs, assets, or dependencies.
+      Checkpoint: the focused frontend test file exists and is ready for the later
+      dependency and implementation gates. Keep writes inside this test path.
+    validation:
+      structural:
+        - type: file_exists
+          path: frontend/src/features/runtime/StandaloneDashboardApp.test.tsx
+      system:
+        - type: command_succeeds
+          command: npm --prefix frontend ci --dry-run --ignore-scripts --no-audit --no-fund
+          timeout_seconds: 60
+    on_fail:
+      retry_message: >-
+        Repair only the separately authored frontend test. Keep its scope disjoint from
+        runtime implementation and do not edit backend files, journeys, manifests,
+        catalogs, assets, or dependencies.
+      after_retries_exhausted: halt
+
+  - step_id: step_03_prepare_frontend_dependencies
     name: Prepare the locked frontend dependency tree
     depends_on:
-      - step_01_author_slice_tests
+      - step_02_author_frontend_test
     inputs:
       - AGENTS.md
       - frontend/package.json
@@ -123,10 +151,10 @@ steps:
         frontend/node_modules.
       after_retries_exhausted: halt
 
-  - step_id: step_03_backend_implementation_verification
+  - step_id: step_04_backend_implementation_verification
     name: Implement and verify the backend accelerator slice
     depends_on:
-      - step_01_author_slice_tests
+      - step_01_author_backend_tests
     inputs:
       - AGENTS.md
       - docs/idle-warehouse-dashboard-brief.md
@@ -179,11 +207,11 @@ steps:
         tests, journeys, manifests, dataForge, or dependency files.
       after_retries_exhausted: halt
 
-  - step_id: step_04_frontend_implementation_verification
+  - step_id: step_05_frontend_implementation_verification
     name: Implement and verify the frontend accelerator slice
     depends_on:
-      - step_01_author_slice_tests
-      - step_02_prepare_frontend_dependencies
+      - step_02_author_frontend_test
+      - step_03_prepare_frontend_dependencies
     inputs:
       - AGENTS.md
       - docs/idle-warehouse-dashboard-brief.md
@@ -238,12 +266,12 @@ steps:
         backend, manifests, catalogs, assets, or dependencies.
       after_retries_exhausted: halt
 
-  - step_id: step_05_build_and_integration_verification
+  - step_id: step_06_build_and_integration_verification
     name: Build the production bundle and run integration regression checks
     depends_on:
-      - step_02_prepare_frontend_dependencies
-      - step_03_backend_implementation_verification
-      - step_04_frontend_implementation_verification
+      - step_03_prepare_frontend_dependencies
+      - step_04_backend_implementation_verification
+      - step_05_frontend_implementation_verification
     inputs:
       - AGENTS.md
       - docs/idle-warehouse-dashboard-brief.md
@@ -265,10 +293,11 @@ steps:
       Act only as the build/integration gate after backend and frontend checkpoints
       pass. Do not modify application source, tests, manifests, package manifests, or
       dependencies. Run the production build separately from implementation with npm
-      --prefix frontend run build, then run the complete Python regression suite with
-      python3 -m pytest tests/ -q (without a PYTHONPATH override). Checkpoint: the
-      production bundle contains frontend/dist/index.html and the full suite is green.
-      Keep generated writes inside frontend/dist.
+      --prefix frontend run build, then run the full frontend suite with npm --prefix
+      frontend test -- --run and the complete Python regression suite with python3 -m
+      pytest tests/ -q (without a PYTHONPATH override). Checkpoint: the production
+      bundle contains frontend/dist/index.html and both full suites are green. Keep
+      generated writes inside frontend/dist.
     validation:
       structural:
         - type: file_exists
@@ -276,6 +305,9 @@ steps:
       system:
         - type: command_succeeds
           command: npm --prefix frontend run build
+          timeout_seconds: 180
+        - type: command_succeeds
+          command: npm --prefix frontend test -- --run
           timeout_seconds: 180
         - type: command_succeeds
           command: python3 -m pytest tests/ -q
@@ -289,10 +321,10 @@ steps:
         manifests, or dependencies in this gate.
       after_retries_exhausted: halt
 
-  - step_id: step_06_browser_smoke_validation
+  - step_id: step_07_browser_smoke_validation
     name: Validate the pinned buyer-visible browser flow
     depends_on:
-      - step_05_build_and_integration_verification
+      - step_06_build_and_integration_verification
     worker: browser_smoke_runner
     inputs:
       - tests/browser_smoke_manifest.json
@@ -331,10 +363,10 @@ steps:
         artifacts/user-smoke/.
       after_retries_exhausted: halt
 
-  - step_id: step_07_user_visible_validation
+  - step_id: step_08_user_visible_validation
     name: Independently exercise the declared user journeys
     depends_on:
-      - step_06_browser_smoke_validation
+      - step_07_browser_smoke_validation
     role: user_tester
     inputs:
       - AGENTS.md
@@ -395,13 +427,13 @@ steps:
         frontend implementation checkpoint for repair before these gates rerun.
       after_retries_exhausted: halt
       repair:
-        step_id: step_04_frontend_implementation_verification
+        step_id: step_05_frontend_implementation_verification
         max_cycles: 1
 
-  - step_id: step_08_independent_review_acceptance
+  - step_id: step_09_independent_review_acceptance
     name: Independently review and accept the decomposed delivery
     depends_on:
-      - step_07_user_visible_validation
+      - step_08_user_visible_validation
     role: slice_reviewer
     inputs:
       - AGENTS.md
@@ -435,8 +467,11 @@ steps:
       and journey manifests, and all user evidence. Inspect the decomposition for
       narrow non-overlapping implementation scopes, deterministic validations, no
       timeout increases, no new dependencies, no preservation-branch inputs, and
-      evaluator/reviewer write isolation. Run python3 -m pytest tests/ -q and record
-      its real exit code in checks_run. Write code-reviews/review-snowflake-accelerator-revival.md
+      evaluator/reviewer write isolation. Independently rerun both full suites:
+      python3 -m pytest tests/ -q and npm --prefix frontend test -- --run; record both
+      real exit codes in checks_run. The preserved production-build and browser-smoke
+      evidence may be cited without rerunning those gates. Write
+      code-reviews/review-snowflake-accelerator-revival.md
       with headings Checks Run and Lens Notes, each containing at least 40 non-whitespace
       characters. Write the canonical builtin:review_verdict/v1 JSON with verdict pass
       only when no High or Medium findings remain; every finding must include id,
@@ -466,6 +501,6 @@ steps:
       retry_message: >-
         Repair only the review artifacts. Ensure the prose headings are substantive,
         the canonical verdict is honest and schema-valid, the verdict records the real
-        full-suite exit code, and no High or Medium finding is hidden. Keep writes under
-        code-reviews/ and halt after retries.
+        full Python and full frontend suite exit codes, and no High or Medium finding is
+        hidden. Keep writes under code-reviews/ and halt after retries.
       after_retries_exhausted: halt
