@@ -7,6 +7,7 @@ SQLite databases and schema-compliant JSON snapshots (SQLiteSnapshot).
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -52,6 +53,47 @@ def resolve_dataset_exports(pack_id: str) -> tuple[tuple[str, str], ...]:
         raise ValueError(f'Unknown pack "{pack_id}".') from error
 
 
+def _paths_alias(first: Path, second: Path) -> bool:
+    """Return whether two artifact paths resolve to the same filesystem object."""
+    try:
+        if first.resolve(strict=False) == second.resolve(strict=False):
+            return True
+    except OSError:
+        # The later filesystem operation will provide the useful diagnostic when
+        # a path cannot be resolved (for example, because a symlink is broken).
+        pass
+
+    if first.exists() and second.exists():
+        try:
+            return os.path.samefile(first, second)
+        except OSError:
+            pass
+    return False
+
+
+def _validate_artifact_paths(
+    output_path: Path,
+    snapshot_output_path: Path | None,
+) -> None:
+    """Reject artifact targets that cannot represent distinct output files."""
+    paths = (("Output", output_path), ("Snapshot output", snapshot_output_path))
+    for label, path in paths:
+        if path is None:
+            continue
+        if path.exists() and path.is_dir():
+            raise ValueError(f"{label} path must be a file, not a directory: {path}")
+        parent = path.parent
+        if parent.exists() and not parent.is_dir():
+            raise ValueError(
+                f"Parent of {label.lower()} path is not a directory: {parent}"
+            )
+
+    if snapshot_output_path is not None and _paths_alias(
+        output_path, snapshot_output_path
+    ):
+        raise ValueError("Output and snapshot output paths must be different.")
+
+
 def export_sqlite_snapshot(
     database_path: str | Path,
     snapshot_output_path: str | Path,
@@ -69,7 +111,10 @@ def export_sqlite_snapshot(
     Returns:
         The snapshot data dictionary.
     """
-    connection = sqlite3.connect(database_path)
+    database = Path(database_path)
+    snapshot_path = Path(snapshot_output_path)
+    _validate_artifact_paths(database, snapshot_path)
+    connection = sqlite3.connect(database)
     connection.row_factory = sqlite3.Row
     try:
         metadata = dict(
@@ -150,7 +195,6 @@ def export_sqlite_snapshot(
             metadata["scenarioId"],
             int(metadata["seed"]),
         )
-    snapshot_path = Path(snapshot_output_path)
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
     snapshot_path.write_text(
         json.dumps(snapshot, indent=2, sort_keys=True),
@@ -229,6 +273,7 @@ def package_snapshot(
 
     output = Path(actual_output)
     snapshot_path = Path(actual_snapshot) if actual_snapshot else None
+    _validate_artifact_paths(output, snapshot_path)
 
     existing_paths = [
         path for path in [output, snapshot_path] if path and path.exists()

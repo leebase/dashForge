@@ -486,6 +486,49 @@ def test_force_flag_allows_overwriting(tmp_path: Path) -> None:
     assert data["scenarioId"] == "idle-warehouse-waste"
 
 
+@pytest.mark.parametrize(
+    "invalid_target", ["same", "output-directory", "snapshot-directory"]
+)
+def test_invalid_artifact_targets_fail_cleanly(
+    invalid_target: str,
+    capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
+) -> None:
+    """Reject invalid targets before generation can corrupt an artifact."""
+    output = tmp_path / "output.sqlite"
+    snapshot = tmp_path / "output.snapshot.json"
+    if invalid_target == "same":
+        output = snapshot = tmp_path / "same.artifact"
+        expected = "must be different"
+    elif invalid_target == "output-directory":
+        output.mkdir()
+        expected = "must be a file"
+    else:
+        snapshot.mkdir()
+        expected = "must be a file"
+
+    with pytest.raises(SystemExit) as exit_info:
+        main(
+            [
+                "generate",
+                "--pack",
+                "snowflakeCost",
+                "--scenario",
+                "idle-warehouse-waste",
+                "--output",
+                str(output),
+                "--snapshot-output",
+                str(snapshot),
+                "--force",
+            ]
+        )
+
+    assert exit_info.value.code == 2
+    captured = capsys.readouterr()
+    assert expected in captured.err.lower()
+    assert "traceback (most recent call last)" not in captured.err.lower()
+
+
 def test_requires_force_to_overwrite_existing_outputs(
     capsys: pytest.CaptureFixture[str], tmp_path: Path
 ) -> None:
@@ -1205,4 +1248,3 @@ def test_no_external_runtime_dependencies() -> None:
     }
     external = imported_modules - allowed_modules
     assert not external, f"Disallowed external runtime dependencies found: {external}"
-
