@@ -132,8 +132,11 @@ steps:
       frontend dependency tree is absent or does not match package-lock.json, recreate
       it reproducibly with npm --prefix frontend ci; never use npm install, add a
       dependency, or edit package manifests. If it is already valid, preserve the
-      lockfile-defined tree. Checkpoint: the npm-generated node_modules lock metadata
-      exists and parses as JSON. Keep writes inside frontend/node_modules only.
+      lockfile-defined tree. Fail closed when the complete dependency tree has any
+      Critical, High, or Moderate advisory; do not run an automatic or forced audit
+      fix in this gate. Checkpoint: the npm-generated node_modules lock metadata exists,
+      parses as JSON, and the full dependency audit passes at the Moderate threshold.
+      Keep writes inside frontend/node_modules only.
     validation:
       structural:
         - type: file_exists
@@ -144,11 +147,15 @@ steps:
         - type: command_succeeds
           command: npm --prefix frontend ci
           timeout_seconds: 180
+        - type: command_succeeds
+          command: npm --prefix frontend audit --audit-level=moderate
+          timeout_seconds: 60
     on_fail:
       retry_message: >-
         Restore only the lockfile-defined frontend dependency tree with npm ci. Do not
         use npm install, change package manifests, add dependencies, or write outside
-        frontend/node_modules.
+        frontend/node_modules. Critical, High, or Moderate audit findings must halt;
+        do not run npm audit fix or use --force in this gate.
       after_retries_exhausted: halt
 
   - step_id: step_04_backend_implementation_verification
