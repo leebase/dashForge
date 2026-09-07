@@ -13,7 +13,7 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / first employee handoff |
-| **Overall Status** | 🟢 Synthetic RBAC audit foundation passed governed review; relational schemas across 6 datasets, DashboardSpec wiring, and directional guardrails verified with 229 tests passing |
+| **Overall Status** | 🟢 Cost Management Storage Waste slice passed governed review; relational schemas across 6 datasets, DashboardSpec wiring, prioritized recommendations, and directional guardrails verified with 311 tests passing |
 | **Last Updated** | 2026-09-06 |
 
 ---
@@ -39,6 +39,7 @@
 | Fix User Simulation Schema | ✅ Done | Canonical schemas and omission protocol for user journeys manifest and results, verbatim execution, and complete AC-1..AC-5 traceability |
 | Idle Warehouse Remediation Artifacts | ✅ Done | Prioritized low-risk recommendations (P0 first), directional owner validation guardrails, same-day executive deliverable generator, unsuppressed synthetic disclosures, and browser smoke markers |
 | Synthetic RBAC Audit Foundation | ✅ Done | Foundational relational schemas across 6 datasets, canonical DashboardSpec wiring, persistent synthetic disclosures, directional security guardrails, browser smoke gate conformance |
+| Cost Management Storage Waste Slice | ✅ Done | Relational storage waste schemas across 6 datasets, DashboardSpec wiring, prioritized recommendations (P0 first), directional owner validation guardrails, same-day executive deliverables, persistent synthetic disclosures, and browser smoke gate conformance |
 
 ### Current Phase Goals
 
@@ -78,6 +79,7 @@
 | Fix User Simulation Schema | Playbook schema formalization, non-empty stdout_contains omission protocol, verbatim execution, manifest traceability | ✅ Complete |
 | Idle Warehouse Remediation Artifacts | Prioritized low-risk recommendations, directional guardrails, same-day follow-up artifact generation, synthetic disclosures, browser smoke gate | ✅ Complete |
 | Synthetic RBAC Audit Foundation | Foundational relational schemas across 6 datasets, DashboardSpec wiring, role hierarchy tree, access matrix, governance findings queue, browser smoke gate | ✅ Complete |
+| Cost Management Storage Waste Slice | Relational schemas across 6 datasets, DashboardSpec wiring, prioritized recommendations (orphaned tables, unused time-travel, uncompressed data), directional guardrails, same-day follow-up, browser smoke gate | ✅ Complete |
 
 ---
 
@@ -133,6 +135,7 @@ Decisions that affect product direction:
 | User simulation schema omission protocol & verbatim execution | Enforces minLength: 1 and omission protocol for stdout_contains, verbatim root argv execution, and AC traceability in journeys/manifest to prevent simulation gate schema validation failures | 2026-09-06 |
 | Idle warehouse remediation artifacts & same-day executive deliverables | Bridges analytical discovery and operational action with prioritized low-risk recommendations (FINANCE_REPORTING_WH P0 first), directional owner validation guardrails, and same-day follow-up artifact generation | 2026-09-06 |
 | Synthetic RBAC Audit Foundation relational schemas and governance architecture | Formalizes 6 canonical datasets, DashboardSpec wiring, role hierarchy tree, user access matrix, governance findings queue, persistent synthetic disclosures, directional security guardrails, and verbatim execution for Snowflake RBAC | 2026-09-06 |
+| Cost Management Storage Waste relational schemas and presentation architecture | Formalizes 6 canonical datasets, DashboardSpec wiring, prioritized recommendations (orphaned tables, unused time-travel, uncompressed storage), directional owner validation guardrails, same-day executive deliverables, persistent synthetic disclosures, and verbatim execution for Snowflake Cost | 2026-09-06 |
 
 ---
 

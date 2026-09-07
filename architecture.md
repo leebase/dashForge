@@ -2,10 +2,15 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.15  
+**Version:** 1.16  
 **Date:** September 6, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.15 documents the RBAC Audit Foundation architecture, relational schema
+**Revision notes:** v1.16 documents the Storage Waste Dashboard Scenario architecture, relational schema
+contracts across six canonical datasets, canonical DashboardSpec wiring via DataAdapter runtime
+seams, unsuppressed synthetic data disclosures, prioritized recommendations surfacing orphaned tables,
+unused time-travel storage, and uncompressed data recommendations, directional owner validation
+guardrails, same-day executive follow-up deliverables, browser smoke gate conformance, and verbatim
+direct argv CLI execution for the Snowflake Cost accelerator (`snowflakeCost:storage-waste`). v1.15 documents the RBAC Audit Foundation architecture, relational schema
 contracts across six canonical datasets, canonical DashboardSpec wiring via DataAdapter runtime
 seams, unsuppressed synthetic data disclosures, directional security validation guardrails,
 browser smoke gate conformance, and verbatim direct argv CLI execution for the Snowflake RBAC
@@ -193,6 +198,159 @@ All operational commands, verification checks, and automated regression suites d
 - **Browser Testing Prefix**: Frontend tests execute via `npm --prefix frontend test -- --run`.
 - **Prohibition of Shell Operators**: Journey commands strictly avoid shell operators (`|`, `&&`, `||`, `;`, `<`, `>`) and standalone shell utilities (`jq`, `grep`, `cat`) as sole verification evidence.
 - **Preservation of Existing Packs & Sibling Isolation**: Sibling repository `dataForge` remains strictly read-only and unmodified. Existing industry packs (`healthcare:flu-season`, `financial:market-downturn`, `saas:churn-crisis`, and `snowflakeCost:idle-warehouse-waste`) remain fully intact with bit-for-bit reproducible generation, and fail-closed overwrite guards (`--force`) abort collisions with exit code 2.
+
+---
+## Storage Waste Dashboard Scenario
+
+**Storage Waste Telemetry, FinOps Prioritization & Presentation Architecture (2026-09-06):**
+The `cost-management-storage-waste` vertical slice establishes the buyer-facing Storage Waste dashboard presentation layer for the Snowflake Cost Management accelerator (`snowflakeCost:storage-waste`) in DashForge. Designed to power executive discovery workshops for Anblicks FinOps practice directors, cloud architects, client delivery leads, and data engineering consultants, this slice addresses a critical blind spot in cloud data warehouse cost management. While compute warehouse optimization frequently commands immediate attention due to volatile monthly query spend spikes, storage costs represent a persistent, compounding, and routinely unscrutinized budget drain. Enterprise Snowflake accounts regularly accumulate terabytes to petabytes of stale, unqueried tables, orphaned intermediate staging objects, abandoned test clones, excessive time-travel storage allocations, and uncompressed storage tiers that quietly inflate monthly invoices without delivering business value.
+
+During pre-sales and architectural discovery workshops, prospective enterprise buyers—specifically Chief Financial Officers (CFOs), Chief Information Officers (CIOs), VPs of Enterprise Data, and FinOps practice leaders—cannot provide live production cloud credentials to consulting teams due to strict information security policies, corporate procurement barriers, and regulatory compliance constraints (such as SOC 2, HIPAA, and GDPR). Generic slide decks, static mockups, or flat spreadsheets fail to demonstrate the analytical depth and FinOps rigor required to earn executive confidence. The Storage Waste Dashboard Scenario breaks this pre-sales impasse by providing a fully functional, standalone client-side dashboard experience that ingests deterministic relational storage telemetry, surfaces headline recoverable savings, categorizes storage waste into actionable dimensions (orphaned tables, unused time-travel storage, and uncompressed data recommendations), and allows decision-makers to prioritize storage spend reductions completely offline with zero live credentials, zero backend servers, and zero cloud network dependencies. Existing DashForge packs, templates, and accelerator slices (`healthcare`, `financial`, `saas`, `snowflakeCost:idle-warehouse-waste`, existing RBAC accelerators `snowflakeRbac:rbac-audit-foundation`, and existing ELT accelerators including `CORE_ELT_WH` compute optimization and data transformation pipelines) remain completely unchanged and unmodified.
+
+### Relational Storage Waste Schema Contracts Across Six Canonical Datasets
+The slice formalizes typed schema contracts across six canonical datasets mirroring Snowflake Account Usage storage telemetry (`SNOWFLAKE.ACCOUNT_USAGE.TABLE_STORAGE_METRICS`, `TABLES`, `STAGES`, `STORAGE_USAGE`):
+1. **`storage_summary`**: Headline storage volume and financial waste posture metrics:
+   - `summary_id` (string, id, primary key): Unique summary record identifier (e.g., `SS-001`).
+   - `total_storage_bytes` (number, measure): Total physical byte volume across all tables and stages.
+   - `total_monthly_spend_usd` (number, measure): Total monthly billable cloud storage expenditure in USD.
+   - `recoverable_waste_bytes` (number, measure): Quantified recoverable storage volume across stale and uncompressed tiers.
+   - `recoverable_waste_opportunity_usd` (number, measure): Estimated monthly cost reduction opportunity in USD.
+   - `stale_table_count` (number, measure): Total count of tables without read/write activity exceeding threshold days.
+   - `uncompressed_table_count` (number, measure): Total count of tables lacking optimal columnar compression.
+   - `synthetic_seed` (number, dimension): Deterministic seed used for repeatable generation.
+   - `evaluation_timestamp` (date, date): ISO-8601 evaluation snapshot timestamp.
+2. **`table_storage_metrics`**: Granular table-level storage footprint and overhead metrics:
+   - `table_id` (string, id, primary key): Fully qualified table identifier (e.g., `PROD_DB.RAW_INGESTION.CLICKSTREAM_RAW_2025`).
+   - `database_name` (string, dimension): Parent database name.
+   - `schema_name` (string, dimension): Parent schema name.
+   - `table_name` (string, dimension): Object table name.
+   - `table_owner` (string, dimension): Designated administrative role or data owner.
+   - `row_count` (number, measure): Active row count.
+   - `active_bytes` (number, measure): Billable active storage bytes.
+   - `time_travel_bytes` (number, measure): Storage bytes consumed by time-travel history retention.
+   - `failsafe_bytes` (number, measure): Storage bytes consumed by Snowflake 7-day fail-safe protection.
+   - `retained_for_clone_bytes` (number, measure): Storage bytes retained across zero-copy clones.
+   - `total_storage_bytes` (number, measure): Sum of active, time-travel, and fail-safe bytes.
+   - `last_altered` (date, date): Timestamp of last metadata or DDL modification.
+3. **`stale_tables`**: Categorized inventory of orphaned tables and stale tables without read/write activity exceeding threshold days:
+   - `stale_id` (string, id, primary key): Unique stale object tracking identifier (e.g., `ST-001`).
+   - `table_id` (string, dimension): Foreign key referencing `table_storage_metrics.table_id`.
+   - `table_name` (string, dimension): Object table name.
+   - `schema_name` (string, dimension): Schema name.
+   - `days_since_last_read` (number, measure): Elapsed days since last executed SELECT or read scan.
+   - `days_since_last_write` (number, measure): Elapsed days since last INSERT, UPDATE, DELETE, or MERGE.
+   - `staleness_category` (string, dimension): Staleness tier (`DORMANT_DEV_CLONE`, `ORPHANED_ETL_STAGE`, `DEPRECATED_REPORTING_MART`).
+   - `monthly_storage_cost_usd` (number, measure): Monthly billable storage cost incurred by retaining the object.
+   - `suggested_action` (string, dimension): Recommended remediation (`ARCHIVE_TO_COLD_STORAGE`, `DROP_ORPHANED_TABLE`, `REDUCE_TIME_TRAVEL`).
+4. **`uncompressed_storage`**: Inventory of suboptimal storage structures and uncompressed data recommendations:
+   - `uncompressed_id` (string, id, primary key): Unique uncompressed record identifier (e.g., `UC-001`).
+   - `object_name` (string, dimension): Table or external stage object identifier.
+   - `object_type` (string, dimension): Object category (`TABLE`, `INTERNAL_STAGE`, `EXTERNAL_STAGE`).
+   - `current_format` (string, dimension): Current storage format (`UNCOMPRESSED_CSV`, `RAW_JSON`, `UNOPTIMIZED_PARQUET`).
+   - `target_format` (string, dimension): Optimal compression format (`SNAPPY_PARQUET`, `SNOWFLAKE_HYBRID_COLUMNAR`, `ZSTD_CSV`).
+   - `current_size_bytes` (number, measure): Current storage footprint in bytes.
+   - `estimated_compressed_bytes` (number, measure): Projected storage footprint post-compression.
+   - `projected_byte_savings` (number, measure): Absolute byte reduction.
+   - `projected_monthly_savings_usd` (number, measure): Projected monthly dollar savings from compression.
+5. **`storage_usage_history`**: Longitudinal daily storage consumption trends:
+   - `history_id` (string, id, primary key): Unique history record identifier (e.g., `HIST-001`).
+   - `usage_date` (date, date): Calendar date of storage snapshot.
+   - `active_bytes` (number, measure): Daily aggregated active table storage bytes.
+   - `time_travel_bytes` (number, measure): Daily aggregated time-travel bytes.
+   - `failsafe_bytes` (number, measure): Daily aggregated fail-safe bytes.
+   - `stage_bytes` (number, measure): Daily aggregated internal/external stage storage bytes.
+   - `daily_cost_usd` (number, measure): Daily storage expenditure in USD.
+6. **`recommendation_queue`**: Prioritized remediation queue surfacing orphaned tables, unused time-travel storage, and uncompressed data recommendations, preserving all six canonical governance fields:
+   - `recommendation_id` (string, id, primary key): Unique recommendation tracking identifier (e.g., `STW-001`, `STW-002`).
+   - `executive_severity` (string, dimension): Urgency classification (`P0`, `P1`, `P2`).
+   - `suggested_owner` (string, dimension): Designated administrative or domain owner (e.g., `Data Platform & Pipeline Engineering`, `Analytics Operations & Data Governance`).
+   - `recommended_action` (string, dimension): Concrete remediation instruction (e.g., `Archive dormant raw clickstream staging tables in RAW_INGESTION schema to Iceberg/S3 Glacier cold tier`, `Convert uncompressed landing CSV stage files to Snappy Parquet format and enforce stage auto-purge`).
+   - `evidence_detail` (string, dimension): Quantified justification citing scope, unqueried duration, and estimated monthly dollar savings.
+   - `guardrail` (string, dimension): Protective operational boundary and confirmation requirement.
+
+The generator and verification interfaces are implemented in `src/dashForge/cost_storage_waste.py` and re-exported via `src/dashForge/cost_storage_waste_scenario.py`, providing `get_storage_waste_scenarios()`, `get_storage_waste_scenario_definition()`, `generate_storage_waste_database()`, `generate_storage_waste_assets()`, and `validate_storage_waste_database()`. The packaging pipeline exports deterministic SQLite databases and canonical `SQLiteSnapshot` JSON representations strictly conforming to `frontend/src/core/data/sqliteSnapshot.ts`. Sibling project `dataForge` remains strictly read-only and isolated.
+
+### Canonical DashboardSpec & Runtime DataAdapter Seams
+In strict accordance with DashForge Principle 3 (**Components never know where data comes from**), the presentation layer queries data exclusively through canonical `DataAdapter` interfaces without secondary renderers, backend daemons, or ad-hoc charting engines:
+- **Scenario Registration & Routing**: Registered under template `tpl.snowflakeCost.storage-waste` and scenario `snowflakeCost:storage-waste`, mounting in `StandaloneDashboardApp.tsx` at `/?scenario=storage-waste` with DOM scenario marker `data-scenario="storage-waste"`.
+- **Decoupled Data Routing**: Standalone presentation views resolve scenario data through `createDashboardDataAdapter` via `StaticDataAdapter` or `SyntheticDataArtifactAdapter`, executing `query()`, `aggregate()`, and `getSchema()` calls directly against the six in-memory datasets.
+- **Buyer-Visible Outcome & Spend Reduction Prioritization**: The dashboard allows decision-makers to prioritize storage spend reductions through interactive filtering, severity sorting, and immediate visualization of financial impact across orphaned tables, unused time-travel storage, and uncompressed data recommendations.
+- **Presentation Widgets & Contract Markers**:
+  - **KPI Scorecards**: Headline storage metrics for Total Storage Spend, Recoverable Waste Opportunity, Stale Table Storage, and Uncompressed Storage Overhead.
+  - **Storage Volume Distribution Visualizers**: Visual breakdown of storage bytes by database, schema, and storage tier (active, time-travel, fail-safe).
+  - **Table Access Aging Analysis**: Stratified distribution of tables by elapsed days since last read/write activity.
+  - **Prioritized Recommendation Queue**: Expandable action queue container carrying DOM markers `data-status="recommendation-queue"` and `data-action="open-recommendation-queue"`.
+
+### Prioritized Recommendation Queue & Directional Governance Guardrails
+The recommendation engine processes telemetry from the canonical `recommendation_queue` dataset, sorting opportunities so that critical, high-impact opportunities (`P0` items, such as large orphaned staging tables, excessive time travel on transient tables, or uncompressed raw ingestion sinks) are surfaced first. Every recommendation displays all six canonical governance fields (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, `guardrail`).
+
+Crucially, the presentation layer explicitly frames all projected savings and configuration changes as directional pending validation by designated table owners and data stewards:
+`"All storage savings and remediation recommendations are directional pending validation by designated data owners and table stewards. Destructive table drops or automated data purging without human stakeholder authorization are strictly disabled."`
+This directional framing prevents destructive modifications while preserving executive confidence during workshops. The recommendation queue is exposed interactively via `[data-action="open-recommendation-queue"]` expanding container `[data-status="recommendation-queue"]` (`id="recommendation-queue"`, `role="region"`).
+
+### Same-Day Executive Follow-Up Deliverables & Landscape PDF Export Pipeline
+To eliminate post-workshop administrative delay where consultants traditionally spend hours or days compiling findings into slide decks:
+- **Interactive Follow-Up Generator (`data-action="same-day-executive-follow-up"`)**: Accessible directly from the dashboard header, assembling a decision-ready follow-up document in-browser and updating state to `data-status="executive-follow-up"` with label `"Follow-up artifact is ready"`.
+- **Structured Deliverable Payload**: Captures headline financial metrics (Total Storage Spend, Recoverable Waste Opportunity), prioritized low-risk stale table, unused time-travel, and compression actions, designated owners, protective guardrails, and cryptographic claim citations anchored to the upstream work-package digest.
+- **Landscape Print-to-PDF Export (`data-testid="dashboard-save-pdf"`)**: Invokes `exportDashboardArtifact` preserving executive dark styling, responsive grid formatting, and unsuppressed synthetic data disclosures.
+
+### Persistent Synthetic Disclosures & Browser Smoke Gate Conformance
+To ensure synthetic demonstration figures are never misrepresented as audited client production telemetry:
+- **Unsuppressed Disclosure Badges**: A persistent DOM element `data-disclosure="synthetic-demo-data"` displaying the exact text `"Synthetic demo data"` is prominently rendered across all presentation surfaces, header badges (`data-provenance="synthetic-demo-data"`), quality cards, generated follow-up deliverables, and print-to-PDF views.
+- **Upstream Provenance Metadata**: Scenario snapshots and presentation headers record full provenance metadata (`packId: "snowflakeCost"`, `scenarioId: "storage-waste"`, seed, `synthetic: true`, `dataForgeStoryContractPath: "stories/snowflake/storage-waste.md"`, and ISO-8601 timestamps).
+- **Browser Smoke Gate Conformance**: Production static assets compiled into `frontend/dist/` via `npm --prefix frontend run build` conform strictly to `tests/browser_smoke_manifest.json`, preserving all required contract markers:
+  1. `"storage-waste"`
+  2. `"synthetic-demo-data"`
+  3. `"open-recommendation-queue"`
+  4. `"recommendation-queue"`
+- **Zero Live Credentials**: The application interface strictly avoids credential input fields (`password`, `account_identifier`, `private_key`) and external network endpoints (`requests.post`, `urllib.request.urlopen`, `snowflake.connector`), setting `data-mode="real-client-disabled"`.
+
+### Verbatim Direct Argv Execution & Multi-Pack Architecture Preservation
+All operational commands, verification checks, and automated regression suites declared in `journeys/user_journeys_manifest.json` execute verbatim from the workspace root using direct subprocess invocation (`shell=False`):
+- **Standardized Application CLI Prefix**: Direct argv invocations enforce `env PYTHONPATH=src python3 -m dashForge.main generate ...` to inject `PYTHONPATH=src` without relying on shell variable expansion.
+- **Standardized Pytest Invocation**: Python tests execute via `python3 -m pytest tests/ -q` or targeted module paths with NO `PYTHONPATH` override, preserving virtual environment packaging.
+- **Browser Testing Prefix**: Frontend tests execute via `npm --prefix frontend test -- --run`.
+- **Prohibition of Shell Operators**: Journey commands strictly avoid shell operators (`|`, `&&`, `||`, `;`, `<`, `>`) and standalone shell utilities (`jq`, `grep`, `cat`) as sole verification evidence.
+- **Fail-Closed Overwrite Guard**: Target paths are inspected prior to generation; existing destinations abort with exit code 2 and clean diagnostics via `parser.error()` unless `--force` is explicitly supplied.
+- **Preservation of Existing Packs & Sibling Isolation**: Sibling repository `dataForge` remains strictly read-only and unmodified. Existing industry packs (`healthcare:flu-season`, `financial:market-downturn`, `saas:churn-crisis`), existing RBAC accelerators (`snowflakeRbac:rbac-audit-foundation`), and existing ELT accelerators (`CORE_ELT_WH` transformation pipelines) remain fully functional with bit-for-bit reproducible generation.
+
+---
+## 2026-09-06 — Cost Management Storage Waste relational schemas and presentation architecture
+
+**Decision:** DashForge formalizes the relational storage waste data models, schema contracts across six canonical datasets, and standalone presentation architecture for the Snowflake Cost Management storage waste accelerator (`snowflakeCost:storage-waste`), enabling consulting teams to demonstrate actionable storage spend reduction opportunities completely offline without live credentials.
+
+**Contract:**
+- **Six Canonical Datasets**: The slice defines and enforces typed relational schemas across
+  `storage_summary`, `table_storage_metrics`, `stale_tables`, `uncompressed_storage`,
+  `storage_usage_history`, and `recommendation_queue`, matching `frontend/src/core/data/sqliteSnapshot.ts`
+  without live Snowflake dependencies.
+- **Prioritized Recommendations & Governance Guardrails**: Remediation recommendations surface
+  orphaned tables, unused time-travel storage, and uncompressed data recommendations, ordering
+  critical high-impact opportunities (`P0`) first, displaying all six canonical governance fields
+  (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`,
+  `guardrail`), and enforcing directional owner validation notices.
+- **Canonical DashboardSpec & DataAdapter Wiring**: Standardized JSON dashboard specification declaring
+  responsive grid layout, KPI scorecards (Total Storage Spend, Recoverable Waste Opportunity, Stale Table Storage,
+  Uncompressed Storage Overhead), storage volume distribution visualizers, table access aging charts,
+  and prioritized recommendation queue, binding cleanly through canonical `DataAdapter` runtime interfaces.
+- **Same-Day Executive Follow-Up & Landscape PDF**: Embedded in-browser follow-up generator
+  (`data-action="same-day-executive-follow-up"`) and landscape PDF export (`data-testid="dashboard-save-pdf"`)
+  preserving dark executive styling and unsuppressed synthetic data disclosures.
+- **Persistent Synthetic Disclosures & Smoke Gate Conformance**: Unsuppressed `data-disclosure="synthetic-demo-data"`
+  badges with exact text `"Synthetic demo data"`, complete upstream provenance metadata, and production bundles
+  conforming to `tests/browser_smoke_manifest.json` preserving all contract markers (`"storage-waste"`,
+  `"synthetic-demo-data"`, `"open-recommendation-queue"`, `"recommendation-queue"`) with `data-mode="real-client-disabled"`.
+- **Verbatim Workspace-Root Direct Argv Execution**: All operational and verification commands execute verbatim
+  from workspace root via direct subprocess invocation (`shell=False`) using allowlisted prefixes without shell operators.
+- **Zero Regressions & Sibling Isolation**: Existing packs (`healthcare`, `financial`, `saas`,
+  `snowflakeCost:idle-warehouse-waste`), existing RBAC accelerators (`snowflakeRbac:rbac-audit-foundation`),
+  and existing ELT accelerators (`CORE_ELT_WH` transformation pipelines) remain intact, fail-closed
+  overwrite protection is preserved, and sibling project `dataForge` remains strictly read-only.
+
+**Consequences:** Enterprise consulting teams can conduct high-impact storage waste discovery workshops for
+prospective enterprise buyers (CFOs, CIOs, VPs of Data, FinOps leaders) without requiring live cloud credentials
+or external network connectivity, demonstrating immediate recoverable savings and governed remediation while
+maintaining synthetic transparency and operational safety.
 
 ---
 ## 2026-09-06 — Synthetic RBAC Audit Foundation relational schemas and access governance architecture
