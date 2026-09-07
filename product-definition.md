@@ -2,8 +2,8 @@
 ## Anblicks Value Accelerator for Enterprise Dashboard Delivery
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.2  
-**Date:** April 2, 2026  
+**Version:** 1.3  
+**Date:** September 6, 2026  
 **Status:** Draft for review with Kumar Raman
 
 ---
@@ -283,6 +283,29 @@ env PYTHONPATH=src python3 -m dashForge.main generate \
 - **Dynamic Scenario Enumeration**: Scenarios are discovered dynamically from sibling project `dataForge` via `dashForge.snowflake_cost.get_snowflake_cost_scenarios()` without hardcoding in DashForge source code.
 - **Bit-for-Bit Determinism**: Generations with identical seed (default `9101`) produce identical SHA-256 digests across both SQLite databases and JSON snapshots.
 - **Programmatic Python API**: `src/dashForge/idle_warehouse_waste.py` provides high-level bindings including `generate_idle_warehouse_assets()`, `validate_idle_warehouse_database()`, `get_headline_opportunity()`, `get_warehouse_concentration()`, and `build_executive_follow_up()`.
+
+---
+
+## Idle Warehouse Dashboard
+
+The **Idle Warehouse Dashboard** is the buyer-visible frontend presentation experience for DashForge's Snowflake Cost Optimization suite, specifically engineered for executive pre-sales discovery workshops and FinOps practice assessments. Operating completely offline with zero live Snowflake credentials, backend servers, or external network dependencies, it empowers Anblicks consultants, client delivery leads, and practice directors to demonstrate immediate cloud cost optimization value to enterprise CIOs, CTOs, and FinOps leaders.
+
+### Executive Buyer Value & TVIQ Framework
+The dashboard structures executive insights according to the TVIQ (Time-to-Value, Impact, Quality) value framework:
+- **Time-to-Value (T)**: Bypasses the 3-4 week security and governance review required to obtain live Snowflake credentials. Consultants mount the standalone experience at `/?scenario=idle-warehouse-waste` instantly from minute one of a workshop. Remediation actions are prioritized with P0 items surfaced first for immediate decision-making.
+- **Impact (I)**: Highlights **726 monthly compute credits** in recoverable waste across unmonitored infrastructure, flags **2 idle warehouses** running 24/7 without query workloads, isolates `FINANCE_REPORTING_WH` as consuming >50% of compute credits, and surfaces warehouse control vulnerabilities such as disabled auto-suspend (`auto_suspend = 0`) and missing resource monitors.
+- **Quality (Q)**: Grounds all metrics and narrative claims in a verified work-package digest (`sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390`). The runtime enforces controlled readiness (`data-readiness="controlled"`), refusing unverified digests with fail-closed blocking status. Prominent synthetic disclosures and owner-validation guardrails guarantee transparency and operational safety.
+
+### User Experience & Interactive Presentation Features
+- **URL Scenario Resolution**: The standalone application automatically resolves `?scenario=idle-warehouse-waste`, rendering the scenario container with `data-scenario="idle-warehouse-waste"`.
+- **Persistent Synthetic Data Disclosure**: Prominently displays the unsuppressed disclosure element `data-disclosure="synthetic-demo-data"` with the exact text `"Synthetic demo data"`, ensuring full compliance in pre-sales environments.
+- **Prioritized Recommendation Queue**: An accessible toggle (`data-action="open-recommendation-queue"`) expands a governed remediation queue (`data-status="recommendation-queue"`). `FINANCE_REPORTING_WH` (`IWW-001`, Priority `P0`) is displayed first with complete governance attributes (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, and `guardrail`). Savings are explicitly framed as directional until validated by designated warehouse owners.
+- **Executive Follow-Up & Landscape PDF Export**: Direct integration with `data-action="same-day-executive-follow-up"` and `data-testid="dashboard-save-pdf"` allows consultants to generate polished follow-up deliverables and landscape print views immediately after the workshop, retaining headline metrics, digest citations, and synthetic disclosures.
+
+### Production Conformance & Architectural Boundaries
+- **Zero Live Dependencies**: All datasets resolve in-browser through canonical `StaticDataAdapter` and `DashboardSpec` contracts without external database connections or secondary renderers.
+- **Browser Smoke Gate Compliance**: Compiled production bundles conform strictly to `tests/browser_smoke_manifest.json` and `tests/browser_smoke_check.py`, preserving required contract markers (`"idle-warehouse-waste"`, `"synthetic-demo-data"`, `"open-recommendation-queue"`, and `"recommendation-queue"`).
+- **Zero Regressions**: Preserves underlying Python data generation, CLI commands, sibling project `dataForge` isolation, and all existing industry packs (`healthcare`, `financial`, `saas`).
 
 ---
 

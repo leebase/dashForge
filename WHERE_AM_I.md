@@ -13,8 +13,8 @@
 | **Project** | dashForge |
 | **Profile** | Dashboard accelerator |
 | **Current Phase** | Phase 4 — Advanced / first employee handoff |
-| **Overall Status** | 🟢 Snowflake idle-warehouse accelerator accepted after supervised backend/frontend/build/browser validation; broader commercial expansion remains buyer-gated |
-| **Last Updated** | 2026-09-04 |
+| **Overall Status** | 🟢 Synthetic RBAC audit foundation passed governed review; relational schemas across 6 datasets, DashboardSpec wiring, and directional guardrails verified with 229 tests passing |
+| **Last Updated** | 2026-09-06 |
 
 ---
 
@@ -35,6 +35,10 @@
 | Package DataForge Snapshot | ✅ Done | Deterministic SQLite & JSON snapshot packaging CLI with fail-closed overwrite protection, multi-pack support, and DataAdapter schema alignment |
 | Snowflake Cost Pack | ✅ Done | Dynamic scenario discovery and snapshot packaging for snowflakeCost with provenance metadata and recommendation queue preservation |
 | Idle Warehouse Waste Slice | ✅ Done | Deterministic 7-dataset packaging, provenance metadata, recommendation queue governance, and standalone executive presentation for snowflakeCost |
+| Idle Warehouse Dashboard | ✅ Done | Buyer-visible presentation layer with standalone routing, controlled readiness, unsuppressed synthetic disclosures, interactive recommendation queue, and browser smoke gate conformance |
+| Fix User Simulation Schema | ✅ Done | Canonical schemas and omission protocol for user journeys manifest and results, verbatim execution, and complete AC-1..AC-5 traceability |
+| Idle Warehouse Remediation Artifacts | ✅ Done | Prioritized low-risk recommendations (P0 first), directional owner validation guardrails, same-day executive deliverable generator, unsuppressed synthetic disclosures, and browser smoke markers |
+| Synthetic RBAC Audit Foundation | ✅ Done | Foundational relational schemas across 6 datasets, canonical DashboardSpec wiring, persistent synthetic disclosures, directional security guardrails, browser smoke gate conformance |
 
 ### Current Phase Goals
 
@@ -70,6 +74,10 @@
 | Package DataForge Snapshot | Deterministic SQLite & JSON snapshot packaging CLI with fail-closed protection, multi-pack support, and DataAdapter schema alignment | ✅ Complete |
 | Snowflake Cost Pack | Dynamic discovery, generation, and snapshot packaging for snowflakeCost with recommendation queue and provenance metadata | ✅ Complete |
 | Idle Warehouse Waste Slice | Deterministic 7-dataset packaging, provenance metadata, recommendation queue governance, and standalone presentation for snowflakeCost | ✅ Complete |
+| Idle Warehouse Dashboard | Presentation layer, TVIQ metrics, controlled readiness, recommendation queue, PDF export, browser smoke gate | ✅ Complete |
+| Fix User Simulation Schema | Playbook schema formalization, non-empty stdout_contains omission protocol, verbatim execution, manifest traceability | ✅ Complete |
+| Idle Warehouse Remediation Artifacts | Prioritized low-risk recommendations, directional guardrails, same-day follow-up artifact generation, synthetic disclosures, browser smoke gate | ✅ Complete |
+| Synthetic RBAC Audit Foundation | Foundational relational schemas across 6 datasets, DashboardSpec wiring, role hierarchy tree, access matrix, governance findings queue, browser smoke gate | ✅ Complete |
 
 ---
 
@@ -121,6 +129,10 @@ Decisions that affect product direction:
 | Package DataForge Snapshot CLI enforces fail-closed overwrite protection and extracts SQLiteSnapshot JSON via SQLite PRAGMA table_info | Prevents accidental data loss during workshop rehearsal and guarantees schema alignment with DataAdapter runtime without external dependencies | 2026-09-02 |
 | `snowflake-cost-pack` CLI dynamically discovers dataForge scenarios and preserves recommendation queue | Extends DashForge CLI with snowflakeCost pack support, provenance metadata, and fail-closed overwrite guards without hardcoding scenarios or external runtime dependencies | 2026-09-02 |
 | `idle-warehouse-waste` slice formalizes 7-dataset snapshot schema and recommendation queue governance | Delivers deterministic offline presentation, provenance tracing, and safety guardrails for Snowflake idle warehouse waste consulting demonstrations | 2026-09-02 |
+| `idle-warehouse-dashboard` slice establishes presentation tier, controlled readiness, and recommendation queue | Implements standalone presentation at /?scenario=idle-warehouse-waste with TVIQ metrics, persistent synthetic disclosure, and interactive recommendation queue with directional guardrails | 2026-09-06 |
+| User simulation schema omission protocol & verbatim execution | Enforces minLength: 1 and omission protocol for stdout_contains, verbatim root argv execution, and AC traceability in journeys/manifest to prevent simulation gate schema validation failures | 2026-09-06 |
+| Idle warehouse remediation artifacts & same-day executive deliverables | Bridges analytical discovery and operational action with prioritized low-risk recommendations (FINANCE_REPORTING_WH P0 first), directional owner validation guardrails, and same-day follow-up artifact generation | 2026-09-06 |
+| Synthetic RBAC Audit Foundation relational schemas and governance architecture | Formalizes 6 canonical datasets, DashboardSpec wiring, role hierarchy tree, user access matrix, governance findings queue, persistent synthetic disclosures, directional security guardrails, and verbatim execution for Snowflake RBAC | 2026-09-06 |
 
 ---
 

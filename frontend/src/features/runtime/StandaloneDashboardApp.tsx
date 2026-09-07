@@ -38,6 +38,8 @@ import {
   DEFAULT_STANDALONE_PACK_ID,
   DEFAULT_STANDALONE_SCENARIO_ID,
   DEFAULT_STANDALONE_TEMPLATE_ID,
+  STORAGE_WASTE_SCENARIO_ID,
+  STORAGE_WASTE_TEMPLATE_ID,
   createDefaultStandaloneDashboardSpec,
 } from "./standaloneDashboard";
 
@@ -189,12 +191,17 @@ export function StandaloneDashboardApp({
   const isIdleWarehouseWaste =
     packId === DEFAULT_STANDALONE_PACK_ID &&
     scenarioId === DEFAULT_STANDALONE_SCENARIO_ID;
+  const isStorageWaste =
+    packId === DEFAULT_STANDALONE_PACK_ID &&
+    scenarioId === STORAGE_WASTE_SCENARIO_ID;
   const isFieldServiceShowcase =
     packId === FIELD_SERVICE_SHOWCASE_PACK_ID &&
     scenarioId === FIELD_SERVICE_SHOWCASE_SCENARIO_ID;
   const templateId = isFieldServiceShowcase
     ? FIELD_SERVICE_SHOWCASE_TEMPLATE_ID
-    : DEFAULT_STANDALONE_TEMPLATE_ID;
+    : isStorageWaste
+      ? STORAGE_WASTE_TEMPLATE_ID
+      : DEFAULT_STANDALONE_TEMPLATE_ID;
   const [presentationState, setPresentationState] =
     useState<IdleWarehousePresentationState>({ status: "loading" });
   const narrativeSections = spec.narrative
@@ -382,12 +389,8 @@ export function StandaloneDashboardApp({
     <main
       className="app-shell standalone-shell"
       style={theme.cssVariables}
-      data-testid={
-        isIdleWarehouseWaste
-          ? "idle-warehouse-waste-demo"
-          : "standalone-dashboard"
-      }
-      data-demo={isIdleWarehouseWaste ? "idle-warehouse-waste" : scenarioId}
+      data-testid={isIdleWarehouseWaste ? "idle-warehouse-waste-demo" : isStorageWaste ? "storage-waste-demo" : "standalone-dashboard"}
+      data-demo={isIdleWarehouseWaste ? "idle-warehouse-waste" : isStorageWaste ? "storage-waste" : scenarioId}
       data-scenario={scenarioId}
       data-readiness={qualityIsBlocking ? "blocking" : "controlled"}
     >

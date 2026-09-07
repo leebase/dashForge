@@ -16,6 +16,7 @@ frontend/vite.config.d.ts
 .agent-orch-scratch/
 .agent-orch-inputs/
 artifacts/
+tmp/
 ._*
 *.sync-conflict-*
 

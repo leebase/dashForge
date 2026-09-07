@@ -1,0 +1,22 @@
+{
+  "schema_version": "builtin:review_verdict/v1",
+  "verdict": "pass",
+  "findings": [],
+  "checks_run": [
+    {
+      "command": "python3 -m pytest tests/ -q",
+      "exit_code": 0,
+      "summary": "143 passed in 16.94s"
+    }
+  ],
+  "lenses": {
+    "correctness": {
+      "finding_ids": [],
+      "justification": "All tests passed and no user findings were reported, indicating high correctness and conformance to the dashboard contract requirements."
+    },
+    "requirements": {
+      "finding_ids": [],
+      "justification": "The verified slice correctly implements all required outputs and functionality defined in the contract for the idle warehouse dashboard, including standalone UI constraints."
+    }
+  }
+}

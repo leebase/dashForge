@@ -21,7 +21,7 @@ default_seed_for = _generate.default_seed_for
 generate_financial_database = _generate.generate_financial_database
 generate_healthcare_database = _generate.generate_healthcare_database
 generate_saas_database = _generate.generate_saas_database
-generate_snowflake_cost_database = _generate.generate_snowflake_cost_database
+_raw_generate_snowflake_cost_database = _generate.generate_snowflake_cost_database
 get_pack_scenario = _generate.get_pack_scenario
 humanize_label = _generate.humanize_label
 infer_column_role = _generate.infer_column_role
@@ -30,11 +30,53 @@ load_pack = _generate.load_pack
 stable_factor = _generate.stable_factor
 stable_fraction = _generate.stable_fraction
 
+from dashForge.snowflake_rbac import (
+    EXPECTED_DATASET_SCHEMAS as RBAC_SCHEMAS,
+    EXPECTED_SIX_DATASETS as RBAC_DATASETS,
+    enrich_snowflake_rbac_provenance,
+    generate_snowflake_rbac_database,
+    validate_governance_findings_schema,
+    validate_snowflake_rbac_scenario,
+)
+from dashForge.cost_storage_waste import (
+    EXPECTED_DATASET_SCHEMAS as STORAGE_WASTE_SCHEMAS,
+    EXPECTED_SIX_DATASETS as STORAGE_WASTE_DATASETS,
+    SCENARIO_ID as STORAGE_WASTE_SCENARIO_ID,
+    generate_storage_waste_database,
+)
+
+
+def generate_snowflake_cost_database(
+    scenario_id: str | None = None,
+    output_path: str | Path | None = None,
+    *,
+    seed: int | None = None,
+    snapshot_output_path: str | Path | None = None,
+    **kwargs: Any,
+) -> Any:
+    if scenario_id == STORAGE_WASTE_SCENARIO_ID:
+        return generate_storage_waste_database(
+            output_path=output_path,
+            snapshot_output_path=snapshot_output_path,
+            seed=seed,
+            scenario_id=scenario_id,
+            **kwargs,
+        )
+    return _raw_generate_snowflake_cost_database(
+        scenario_id=scenario_id,
+        output_path=output_path,
+        seed=seed,
+        snapshot_output_path=snapshot_output_path,
+        **kwargs,
+    )
+
+
 GENERATORS = {
     "healthcare": generate_healthcare_database,
     "financial": generate_financial_database,
     "saas": generate_saas_database,
     "snowflakeCost": generate_snowflake_cost_database,
+    "snowflakeRbac": generate_snowflake_rbac_database,
 }
 
 DATASET_EXPORTS_BY_PACK: dict[str, tuple[tuple[str, str], ...]] = {
@@ -44,6 +86,10 @@ DATASET_EXPORTS_BY_PACK: dict[str, tuple[tuple[str, str], ...]] = {
     )
     for pack, exports in _generate.DATASET_EXPORTS_BY_PACK.items()
 }
+DATASET_EXPORTS_BY_PACK["snowflakeRbac"] = tuple(
+    (dataset_id, f'SELECT * FROM "{dataset_id}"')
+    for dataset_id in RBAC_DATASETS
+)
 
 
 def resolve_dataset_exports(pack_id: str) -> tuple[tuple[str, str], ...]:
@@ -130,6 +176,8 @@ def export_sqlite_snapshot(
                 item[0] if isinstance(item, (tuple, list)) else str(item)
                 for item in dataset_exports
             ]
+        elif metadata.get("scenarioId") == STORAGE_WASTE_SCENARIO_ID:
+            target_ids = list(STORAGE_WASTE_DATASETS)
         else:
             catalog_row = connection.execute(
                 "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dataset_catalog'"
@@ -158,13 +206,28 @@ def export_sqlite_snapshot(
             )
             columns = []
             for column_name in col_names:
-                values = [row[column_name] for row in rows]
-                column_type = infer_column_type(column_name, values)
+                if dataset_id in RBAC_SCHEMAS and column_name in RBAC_SCHEMAS[dataset_id]:
+                    column_type, column_role = RBAC_SCHEMAS[dataset_id][column_name]
+                    if column_type == "boolean":
+                        for r in rows:
+                            r[column_name] = bool(r[column_name])
+                elif (
+                    dataset_id in STORAGE_WASTE_SCHEMAS
+                    and column_name in STORAGE_WASTE_SCHEMAS[dataset_id]
+                ):
+                    column_type, column_role = STORAGE_WASTE_SCHEMAS[dataset_id][column_name]
+                    if column_type == "boolean":
+                        for r in rows:
+                            r[column_name] = bool(r[column_name])
+                else:
+                    values = [row[column_name] for row in rows]
+                    column_type = infer_column_type(column_name, values)
+                    column_role = infer_column_role(column_name, column_type)
                 columns.append(
                     {
                         "name": column_name,
                         "type": column_type,
-                        "role": infer_column_role(column_name, column_type),
+                        "role": column_role,
                         "label": humanize_label(column_name),
                     }
                 )
@@ -179,6 +242,8 @@ def export_sqlite_snapshot(
         if metadata.get("packId") == "snowflakeCost":
             from dashForge.snowflake_cost import validate_recommendation_queue_schema
             validate_recommendation_queue_schema(connection)
+        elif metadata.get("packId") == "snowflakeRbac":
+            validate_governance_findings_schema(connection)
     finally:
         connection.close()
 
@@ -191,6 +256,12 @@ def export_sqlite_snapshot(
     if metadata.get("packId") == "snowflakeCost":
         from dashForge.snowflake_cost import enrich_snowflake_cost_provenance
         snapshot = enrich_snowflake_cost_provenance(
+            snapshot,
+            metadata["scenarioId"],
+            int(metadata["seed"]),
+        )
+    elif metadata.get("packId") == "snowflakeRbac":
+        snapshot = enrich_snowflake_rbac_provenance(
             snapshot,
             metadata["scenarioId"],
             int(metadata["seed"]),
@@ -270,6 +341,8 @@ def package_snapshot(
     if pack == "snowflakeCost":
         from dashForge.snowflake_cost import validate_snowflake_cost_scenario
         validate_snowflake_cost_scenario(actual_scenario)
+    elif pack == "snowflakeRbac":
+        validate_snowflake_rbac_scenario(actual_scenario)
 
     output = Path(actual_output)
     snapshot_path = Path(actual_snapshot) if actual_snapshot else None
@@ -294,7 +367,36 @@ def package_snapshot(
     if pack == "snowflakeCost":
         from dashForge.snowflake_cost import validate_recommendation_queue_schema
         with sqlite3.connect(output) as conn:
+            cursor = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='recommendation_queue'"
+            )
+            if cursor.fetchone():
+                pragma_cursor = conn.execute("PRAGMA table_info(recommendation_queue)")
+                cols = {row[1] for row in pragma_cursor.fetchall()}
+                if "performance_risk" in cols:
+                    conn.execute(
+                        "UPDATE recommendation_queue SET performance_risk = LOWER(performance_risk) "
+                        "WHERE performance_risk IS NOT NULL"
+                    )
+                    conn.commit()
             validate_recommendation_queue_schema(conn)
+
+        if snapshot_path and snapshot_path.exists():
+            with open(snapshot_path, "r", encoding="utf-8") as f:
+                snap_dict = json.load(f)
+            modified = False
+            for ds in snap_dict.get("datasets", []):
+                if ds.get("datasetId") == "recommendation_queue":
+                    for row in ds.get("rows", []):
+                        if "performance_risk" in row and isinstance(row["performance_risk"], str):
+                            row["performance_risk"] = row["performance_risk"].lower()
+                            modified = True
+            if modified:
+                with open(snapshot_path, "w", encoding="utf-8") as f:
+                    json.dump(snap_dict, f, indent=2)
+    elif pack == "snowflakeRbac":
+        with sqlite3.connect(output) as conn:
+            validate_governance_findings_schema(conn)
     return result
 
 
@@ -308,6 +410,7 @@ __all__ = [
     "generate_healthcare_database",
     "generate_saas_database",
     "generate_snowflake_cost_database",
+    "generate_snowflake_rbac_database",
     "get_pack_scenario",
     "humanize_label",
     "infer_column_role",

@@ -10,6 +10,8 @@ import { syncPresenterDraft } from "../presenter/narrativeStore";
 export const DEFAULT_STANDALONE_PACK_ID = "snowflakeCost";
 export const DEFAULT_STANDALONE_SCENARIO_ID = "idle-warehouse-waste";
 export const DEFAULT_STANDALONE_TEMPLATE_ID = "tpl.snowflakeCost.idle-warehouse-waste";
+export const STORAGE_WASTE_SCENARIO_ID = "storage-waste";
+export const STORAGE_WASTE_TEMPLATE_ID = "tpl.snowflakeCost.storage-waste";
 
 export const IDLE_WAREHOUSE_ADDITIONAL_MATERIAL_SURFACE_IDS = [
   "metric:monthly-opportunity-high",

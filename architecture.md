@@ -2,12 +2,286 @@
 ## Technical Architecture for the Anblicks Dashboard Accelerator
 
 **Owner:** Lee (Director, Anblicks)  
-**Version:** 1.11  
-**Date:** September 2, 2026  
+**Version:** 1.15  
+**Date:** September 6, 2026  
 **Companion to:** product-definition.md  
-**Revision notes:** v1.11 records the canonical 7-dataset snapshot schema formalization,
-provenance metadata, and recommendation queue governance for the idle-warehouse-waste
-vertical slice under the snowflakeCost pack.
+**Revision notes:** v1.15 documents the RBAC Audit Foundation architecture, relational schema
+contracts across six canonical datasets, canonical DashboardSpec wiring via DataAdapter runtime
+seams, unsuppressed synthetic data disclosures, directional security validation guardrails,
+browser smoke gate conformance, and verbatim direct argv CLI execution for the Snowflake RBAC
+accelerator (`snowflakeRbac:rbac-audit-foundation`). v1.14 documents the Remediation Artifacts architecture and decision-ready
+deliverable pipeline for the Idle Warehouse Waste cost accelerator, detailing prioritized
+low-risk recommendation ordering, six-field governance metadata, directional owner validation
+guardrails, in-browser same-day follow-up artifact generation, and verified work-package digest
+citations. v1.13 documents the Playbook Validation architecture and schema contract formalization
+for governed Agent-Orch runs.
+
+---
+## Playbook Validation
+
+**Governed Simulation Architecture & Schema Contract Formalization (2026-09-06):**
+The `fix-user-simulation-schema` vertical slice formalizes the operational and schema contract governing Agent-Orch playbook quality gates and user journey simulation verification within DashForge. It specifically resolves structural schema validation failures at the `step_08b_user_simulation_gate` stage by establishing strict non-empty `stdout_contains` constraints, key omission protocols when unasserted, verbatim workspace-root execution standards, and complete acceptance check traceability.
+
+### Schema Contracts & Omission Protocol
+DashForge defines and enforces canonical JSON schemas (Draft 2020-12) via `src/dashForge/playbook_schema.py`:
+- **User Journeys Manifest Schema (`USER_JOURNEYS_MANIFEST_SCHEMA`)**: Governs `journeys/user_journeys_manifest.json`, requiring `journeys` and `command_allowlist`. Each journey enforces valid authorities (`human`, `mission`, `author`, `exploratory`), status (`passed`), sequential natural-language steps, executable commands, and `traces_to` arrays mapping non-exploratory journeys to contract acceptance checks (`AC-1` through `AC-5`).
+- **User Journeys Result Schema (`USER_JOURNEYS_RESULT_SCHEMA`)**: Governs `artifacts/user-test/result.json`, requiring `journeys` and `findings`. Each executed command entry in `commands_run` requires `command` and `exit_code`. The `stdout_contains` property enforces `minLength: 1`.
+
+Under the omission protocol, command claims that do not assert standard output substring verification must omit the `stdout_contains` property entirely. Emitting empty strings (`""`), `null`, or whitespace is strictly prohibited and fails schema validation. Helper functions `build_command_claim`, `sanitize_command_claim`, `validate_command_claim`, `build_journey_entry`, and `build_user_journeys_result` in `src/dashForge/playbook_schema.py` enforce this protocol programmatically during simulation reporting.
+
+### Verbatim Workspace-Root Execution & Shell Prohibition
+The Agent-Orch orchestrator verifies command claims by re-executing allowlisted argv lists directly from the workspace root using direct subprocess invocation (`shell=False`). Consequently, all journey commands and manifest allowlists must conform to direct argv invocation rules:
+- **Application CLI Invocations**: Standardized to `env PYTHONPATH=src python3 -m dashForge.main`. The `env` prefix passes `PYTHONPATH=src` directly into the subprocess environment without requiring shell variable expansion or package installation. Bare variable assignments (`PYTHONPATH=src python3 ...`) fail under direct argv execution and are strictly prohibited.
+- **Pytest Test Suite Invocations**: Standardized to `python3 -m pytest tests/ -q` or targeted checks (`python3 -m pytest <test-file> -q -k <test-name>`) with NO `PYTHONPATH` override. The orchestrator re-executes claims within a bounded virtual environment whose own `PYTHONPATH` already provides pytest access; injecting an override masks system packages and causes execution failures.
+- **Elimination of Shell Syntax**: Shell pipelines (`|`), boolean chaining (`&&`, `||`, `;`), file redirection (`<`, `>`), and reliance on standalone shell utilities (`jq`, `grep`, `cat`) as sole verification evidence are strictly prohibited. Deep verification of internal data structures, schemas, and file contents is performed via targeted pytest invocations.
+
+### Dual-Tier Quality Gate & Traceability
+During governed playbook execution, `step_08b_user_simulation_gate` validates user journey execution across two distinct tiers:
+1. **Tier 1 (Structural Conformance)**: Verifies that `artifacts/user-test/result.json` adheres strictly to `USER_JOURNEYS_RESULT_SCHEMA`. Any empty string or whitespace `stdout_contains` triggers immediate validation failure.
+2. **Tier 2 (Mechanical Reproduction)**: Subprocess re-execution of allowlisted command claims confirms that reported exit codes match actual return codes and that specified `stdout_contains` substrings reproduce faithfully in actual standard output.
+
+Every non-exploratory user journey maps via `traces_to` to contract acceptance checks (`AC-1` through `AC-5`), ensuring complete requirement coverage with zero unreferenced or dangling check IDs.
+
+---
+## Idle Warehouse Dashboard
+
+**Presentation Architecture & Runtime Formalization (2026-09-06):**
+The `idle-warehouse-dashboard` vertical slice establishes the buyer-visible frontend presentation layer for the Idle Warehouse Waste cost accelerator in DashForge. It presents actionable cloud data warehouse cost metrics, resource waste patterns, and prioritized, owner-validated recommendations using TVIQ-shaped (Time-to-Value, Impact, Quality) data structures consuming the canonical 7-dataset schema (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, and `recommendation_queue`).
+
+### Runtime Seams & DataAdapter Abstraction
+The standalone presentation mounts at `/?scenario=idle-warehouse-waste` through `StandaloneDashboardApp.tsx` and resolves verified scenario assets locally via `StaticDataAdapter` and `SyntheticDataArtifactAdapter`, maintaining zero live Snowflake credentials, zero backend servers, and zero external cloud network dependencies. Presentation components consume data strictly through the canonical `DashboardSpec` and `DataAdapter` interfaces without secondary renderers or ad-hoc charting engines.
+
+### Controlled Readiness & Unsuppressed Disclosures
+The scenario root container carries `data-scenario="idle-warehouse-waste"` and asserts controlled readiness state (`data-readiness="controlled"`) upon verifying the claim ledger against the verified work-package digest (`sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390`). Unverified or corrupted digests fail closed to `data-readiness="blocking"` and halt presentation rendering. A persistent disclosure element (`data-disclosure="synthetic-demo-data"`) displaying `"Synthetic demo data"` remains prominent across all dashboard views, print-to-PDF views (`data-testid="dashboard-save-pdf"`), and executive follow-up exports (`data-action="same-day-executive-follow-up"`).
+
+### Prioritized Recommendation Queue & Governance Guardrails
+The interactive recommendation queue toggle (`data-action="open-recommendation-queue"`) expands a container with `data-status="recommendation-queue"` rendering prioritized actions. `FINANCE_REPORTING_WH` (`IWW-001`, `P0`) is ordered first, presenting all six governance attributes (`recommendation_id`, `executive_severity`, `suggested_owner`, `recommended_action`, `evidence_detail`, and `guardrail`). Savings are explicitly framed as directional until validated by designated warehouse owners, preventing unauthorized or ungrounded automated changes.
+
+### Browser Smoke Gate & Production Build Integrity
+The production build compiled via `npm --prefix frontend run build` generates static assets in `frontend/dist/` conforming to `tests/browser_smoke_manifest.json` and `tests/browser_smoke_check.py`. Compiled production bundles preserve the contract marker strings: `"idle-warehouse-waste"`, `"synthetic-demo-data"`, `"open-recommendation-queue"`, and `"recommendation-queue"`. Backend Python packaging, CLI generation commands, and the full regression test suite (`python3 -m pytest tests/ -q` with no `PYTHONPATH` override) pass cleanly with zero regressions.
+
+---
+## Remediation Artifacts
+
+**Operational Remediation Architecture & Same-Day Executive Deliverable Pipeline (2026-09-06):**
+The `idle-warehouse-remediation-artifacts` vertical slice advances DashForge's Snowflake Cost Management solution (`snowflakeCost:idle-warehouse-waste`) by bridging analytical discovery and concrete operational action. Built upon the foundational relational data layer and the browser-visible presentation tier, this slice delivers prioritized low-risk recommendations and same-day follow-up artifacts for the idle warehouse dashboard. This enables prospective buyers—typically Chief Financial Officers (CFOs), Chief Information Officers (CIOs), VPs of Data and Analytics, or enterprise FinOps leaders—to immediately act on identified compute waste without leaving the application, resolving executive change inertia and eliminating post-workshop communication lag.
+
+### Prioritized Low-Risk Recommendations & Directional Governance
+The recommendation engine processes telemetry from the canonical `recommendation_queue` dataset, filtering and sorting recommendations to prioritize minimal-risk operational optimizations. `FINANCE_REPORTING_WH` (`IWW-001`, Priority `P0`, minimal performance risk) is ordered first, followed by secondary warehouse hygiene actions. Every recommendation item enforces and displays all six canonical governance fields:
+1. `recommendation_id`: Unique identifier referencing the underlying finding (e.g., `IWW-001`).
+2. `executive_severity`: Priority level reflecting operational urgency (`P0`, `P1`, etc.).
+3. `suggested_owner`: Designated infrastructure or domain owner responsible for validation.
+4. `recommended_action`: Clear, actionable configuration change (e.g., configure auto-suspend to 300 seconds and attach resource monitor).
+5. `evidence_detail`: Quantified justification citing scope name, recommendation type, and estimated monthly credit savings.
+6. `guardrail`: Explicit operational constraint defining safety bounds and execution prerequisites.
+
+Crucially, the presentation layer explicitly frames all projected credit savings and configuration changes as directional pending validation by designated warehouse owners (`"Recommendations are directional until validated. Require owner validation before changing warehouse availability or suspension policy."`). This directional framing prevents ungrounded or destructive modifications while preserving executive confidence during workshops. The recommendation queue is exposed interactively via `[data-action="open-recommendation-queue"]` (`[data-testid="open-recommendation-queue"]`) with `aria-controls="recommendation-queue"` and `aria-expanded`, expanding container `[data-status="recommendation-queue"]` (`id="recommendation-queue"`, `role="region"`).
+
+### Same-Day Executive Follow-Up Deliverable Pipeline
+To eliminate post-meeting friction where consultants traditionally spend hours or days compiling notes and drafting follow-up deliverables outside the presentation tool, the application embeds an interactive same-day artifact generator directly into the dashboard interface:
+- **Interactive Action Seam**: Triggered via `data-action="same-day-executive-follow-up"` (`data-testid="same-day-executive-follow-up"`), updating DOM status to `data-status="executive-follow-up"` with the label `"Follow-up artifact is ready"`.
+- **Decision-Ready Payload Structure**: Formulated client-side via `buildExecutiveFollowUpHtml` in `StandaloneDashboardApp.tsx` and mirrored in backend Python utilities via `build_same_day_follow_up_artifact` and `render_executive_follow_up_html` in `src/dashForge/remediation_artifacts.py`.
+- **Headline Financial Metrics**: Encapsulates the verified headline opportunity (**726 compute credits/month**), idle warehouse count requiring review (**2 unmonitored warehouses**), and dominant credit concentration (**FINANCE_REPORTING_WH accounts for >50% of warehouse compute credits**).
+- **Prioritized Actions & Owner Assignments**: Lists low-risk recommendations ordered with `P0` first, pairing each action with its suggested owner, protective guardrail, and dataset observation claim citation.
+- **Verifiable Claim Citations**: Every finding and recommendation cites the upstream cryptographic work-package digest (`sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390`) and specific dataset observation coordinates (e.g., `dataset observation recommendation_queue/IWW-001`).
+- **Real-Client Mode Disabled Guard**: Explicitly includes the protective declaration: `"Real/client mode remains disabled until approved metadata or exports exist."`
+
+### Persistent Synthetic Disclosures & Controlled Quality Gating
+To prevent synthetic workshop demonstration figures from ever being misrepresented as audited customer production telemetry:
+- **Unsuppressed Disclosure Badges**: A persistent DOM element `data-disclosure="synthetic-demo-data"` displaying the exact text `"Synthetic demo data"` is prominently rendered across all presentation surfaces, header badges (`data-provenance="synthetic-demo-data"`), quality cards (`data-testid="synthetic-quality-disclosure"`), generated follow-up HTML deliverables, and landscape print-to-PDF views (`data-testid="dashboard-save-pdf"` via `exportDashboardArtifact`).
+- **Controlled Quality State Verification**: The presentation container mounts with `data-scenario="idle-warehouse-waste"` and establishes `data-readiness="controlled"` only after validating the claim ledger against the verified work-package digest (`sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390`). Any unverified, missing, or mismatched digest triggers immediate fail-closed blocking status (`data-readiness="blocking"`), withholding the dashboard view.
+
+### Browser Smoke Gate Conformance & Production Assets
+The frontend production build compiled via `npm --prefix frontend run build` outputs optimized static assets in `frontend/dist/` with zero TypeScript compilation errors, strictly adhering to the automated browser smoke gate (`tests/browser_smoke_manifest.json` and `tests/browser_smoke_check.py`):
+- **Contract Marker Preservation**: Compiled JavaScript bundles under `frontend/dist/assets/*.js` preserve all four immutable contract markers: `"idle-warehouse-waste"`, `"synthetic-demo-data"`, `"open-recommendation-queue"`, and `"recommendation-queue"`.
+- **Smoke Check Conformance**: The served bundle at `http://127.0.0.1:4173/?scenario=idle-warehouse-waste` matches the ready selector `[data-scenario='idle-warehouse-waste'][data-readiness='controlled'] [data-disclosure='synthetic-demo-data']`, verifies `#root` mounting, executes the click action on `[data-action='open-recommendation-queue']`, and confirms the success container `[data-status='recommendation-queue']` containing `"FINANCE_REPORTING_WH"`.
+- **Zero Live Credentials**: The application interface strictly avoids credential input fields (`password`, `account_identifier`, `private_key`) and sets `data-mode="real-client-disabled"`.
+
+### Verbatim Direct Argv Execution & Deterministic Backend Packaging
+All verification commands, test assertions, and CLI workflows declared in `journeys/user_journeys_manifest.json` execute verbatim from the workspace root using direct subprocess invocation (`shell=False`):
+- **Standardized Application CLI Prefix**: Commands use the exact direct argv form `env PYTHONPATH=src python3 -m dashForge.main generate ...` to pass environment variables without shell variable expansion.
+- **Standardized Pytest Invocation**: Python tests execute via `python3 -m pytest tests/ -q` or targeted module paths with NO `PYTHONPATH` override, preserving virtual environment packaging.
+- **Shell Construct Prohibition**: All shell pipelines (`|`), boolean operators (`&&`, `||`, `;`), file redirection (`<`, `>`), and standalone shell tools (`jq`, `grep`, `cat`) are eliminated from verification journeys.
+- **Deterministic Multi-Table Generation**: CLI generation deterministically materializes all seven relational tables (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`) in SQLite and JSON snapshots.
+- **Fail-Closed Overwrite Protection**: Target paths are inspected prior to generation; existing destinations abort with exit code 2 and actionable diagnostics unless `--force` is explicitly supplied.
+- **Sibling Isolation & Multi-Pack Compatibility**: Sibling repository `dataForge` remains strictly read-only and unmodified, and existing industry packs (`healthcare:flu-season`, `financial:market-downturn`, `saas:churn-crisis`) continue generating with zero regressions.
+
+---
+## RBAC Audit Foundation
+
+**Foundational Synthetic RBAC Telemetry & Access Governance Architecture (2026-09-06):**
+The `synthetic-rbac-audit-foundation` vertical slice establishes the foundational synthetic data models and dashboard specification for the RBAC (Role-Based Access Control) management accelerator in DashForge (`snowflakeRbac:rbac-audit-foundation`). Designed to power high-impact executive discovery workshops for Anblicks cybersecurity architects, client delivery leads, and data governance consultants, this slice breaks the traditional pre-sales deadlock where prospective enterprise buyers—such as CISOs, Cloud Security Architects, and Snowflake Administrators—struggle with opaque role hierarchies, unmonitored privilege escalation, and dormant administrative accounts, but cannot furnish live production cloud credentials due to infosec, SOC 2, HIPAA, or GDPR compliance constraints. By delivering realistic, relational synthetic access control telemetry and an interactive dashboard specification that operates completely offline and client-side, DashForge enables consulting teams to present authoritative governance insights with zero external network connectivity, zero live credentials, and zero runtime dependencies.
+
+### Foundational Relational Schemas Across Six Canonical Datasets
+The slice defines and enforces canonical relational schema contracts across six core datasets mirroring Snowflake security audit telemetry (`SNOWFLAKE.ACCOUNT_USAGE`):
+1. **`rbac_summary`**: Headline access control posture metrics:
+   - `summary_id` (string, id, primary key): Unique summary record identifier.
+   - `total_roles` (number, measure): Total count of distinct roles defined across the tenant.
+   - `active_users` (number, measure): Total active human and service account identities.
+   - `elevated_admin_accounts` (number, measure): Count of accounts possessing `ACCOUNTADMIN` or `SECURITYADMIN` entitlements.
+   - `critical_risk_findings` (number, measure): Quantified count of critical access control and privilege risks (`P0`/`P1`).
+   - `synthetic_seed` (number, dimension): Deterministic seed used for repeatable generation.
+   - `evaluation_timestamp` (date, date): ISO-8601 evaluation snapshot timestamp.
+2. **`roles`**: Detailed role metadata and ownership:
+   - `role_name` (string, id, primary key): Unique role identifier (e.g., `ACCOUNTADMIN`, `SECURITYADMIN`, `SYSADMIN`, `DATA_ENGINEER`).
+   - `role_type` (string, dimension): Role classification (`SYSTEM`, `FUNCTIONAL`, `ACCESS`).
+   - `role_owner` (string, dimension): Controlling role responsible for administering the role.
+   - `comment` (string, dimension): Administrative commentary detailing role purpose.
+   - `created_on` (date, date): Role creation timestamp.
+3. **`role_hierarchy`**: Directed role inheritance relationships:
+   - `link_id` (string, id, primary key): Unique relationship identifier.
+   - `parent_role` (string, dimension): Granted/inherited parent role.
+   - `child_role` (string, dimension): Grantee child role receiving inherited permissions.
+   - `tree_depth` (number, measure): Topological nesting depth from root.
+   - `granted_by` (string, dimension): Authorizing role granting inheritance.
+   - `grant_date` (date, date): ISO-8601 timestamp of role grant.
+4. **`user_role_assignments`**: User identity entitlement mappings:
+   - `assignment_id` (string, id, primary key): Unique assignment record identifier.
+   - `user_name` (string, dimension): User principal identity.
+   - `role_name` (string, dimension): Assigned Snowflake role.
+   - `grant_type` (string, dimension): Entitlement assignment mechanism (`DIRECT` vs. `INHERITED`).
+   - `mfa_enabled` (boolean, dimension): Multi-factor authentication compliance indicator.
+   - `account_status` (string, dimension): Account activity state (`ACTIVE`, `DORMANT`, `SUSPENDED`).
+   - `last_login` (date, date): Last recorded authentication timestamp.
+5. **`object_grants`**: Securable object access permissions:
+   - `grant_id` (string, id, primary key): Unique grant identifier.
+   - `grantee_role` (string, dimension): Role holding the privilege grant.
+   - `securable_type` (string, dimension): Object class (`WAREHOUSE`, `DATABASE`, `SCHEMA`, `TABLE`).
+   - `securable_name` (string, dimension): Fully qualified securable object name.
+   - `privilege` (string, dimension): Specific entitlement (`USAGE`, `SELECT`, `MODIFY`, `OPERATE`).
+   - `is_grantable` (boolean, dimension): Indicates whether the privilege can be delegated.
+6. **`governance_findings`**: Audited security findings preserving all six canonical governance fields:
+   - `finding_id` (string, id, primary key): Unique tracking identifier (e.g., `RBAC-001`).
+   - `executive_severity` (string, dimension): Urgency classification (`P0`, `P1`, `P2`).
+   - `suggested_owner` (string, dimension): Designated administrative owner responsible for remediation.
+   - `recommended_action` (string, dimension): Concrete remediation instruction.
+   - `risk_detail` (string, dimension): Technical and organizational risk explanation.
+   - `guardrail` (string, dimension): Protective operational boundary and confirmation requirement.
+
+The generator and verification interfaces are implemented in `src/dashForge/rbac_audit.py`, providing `get_snowflake_rbac_scenarios()`, `validate_snowflake_rbac_scenario()`, `enrich_snowflake_rbac_provenance()`, `validate_governance_findings_schema()`, and `generate_snowflake_rbac_database()`. The pipeline produces deterministic SQLite databases and canonical `SQLiteSnapshot` JSON representations matching `frontend/src/core/data/sqliteSnapshot.ts`.
+
+### Canonical DashboardSpec & Runtime DataAdapter Seams
+In strict accordance with DashForge Principle 3 (**Components never know where data comes from**), the presentation layer queries data exclusively through canonical `DataAdapter` interfaces without secondary renderers, backend daemons, or ad-hoc charting engines:
+- **Scenario Registration & Routing**: Registered under template `tpl.snowflakeRbac.rbac-audit-foundation` and scenario `snowflakeRbac:rbac-audit-foundation`, mounting at `/?scenario=rbac-audit-foundation` with DOM scenario marker `data-scenario="rbac-audit-foundation"`.
+- **Decoupled Data Routing**: Standalone presentation views resolve scenario data through `createDashboardDataAdapter` via `StaticDataAdapter` or `SyntheticDataArtifactAdapter`, executing `query()`, `aggregate()`, and `getSchema()` calls directly against the six in-memory datasets.
+- **Presentation Widgets & Contract Markers**:
+  - **KPI Scorecards**: Headline access metrics for Total Roles, Active Users, Elevated Admins, and Critical Findings.
+  - **Role Hierarchy Tree Visualization**: Interactive node-link role graph carrying DOM marker `data-testid="role-hierarchy-tree"`.
+  - **User Access Audit Matrix**: Entitlement matrix mapping direct and inherited roles carrying DOM marker `data-testid="user-access-matrix"`.
+  - **Prioritized Governance Findings Queue**: Prioritized audit findings queue carrying DOM markers `data-status="governance-findings"` and `data-testid="governance-findings"`.
+
+### Persistent Synthetic Disclosures & Directional Security Guardrails
+To guarantee that prospective buyers and executive workshop participants never mistake synthetic demonstration data for audited live client production telemetry:
+- **Unsuppressed Disclosure Badges**: A persistent DOM element `data-disclosure="synthetic-demo-data"` displaying the exact text `"Synthetic demo data"` is prominently rendered across all presentation surfaces, header badges, and export views.
+- **Upstream Provenance Metadata**: Scenario snapshots and presentation headers record full provenance metadata (`packId: "snowflakeRbac"`, `scenarioId: "rbac-audit-foundation"`, `seed: 42`, `synthetic: true`, `dataForgeStoryContractPath: "stories/snowflake/rbac-audit-foundation.md"`, and ISO-8601 timestamps).
+- **Directional Security Validation Guardrails**: All role revocations, inheritance pruning, and privilege modifications are explicitly framed as directional pending validation and confirmation by designated security administrators. The interface enforces clear warning notices (e.g., `"Require security administrator confirmation before revoking direct administrative entitlements"`), and automated or destructive mutation APIs are strictly prohibited.
+
+### Browser Smoke Gate Conformance & Production Assets
+The frontend production build compiled via `npm --prefix frontend run build` outputs optimized static assets in `frontend/dist/` with zero TypeScript compilation errors, strictly adhering to automated browser smoke gate criteria:
+- **Contract Marker Preservation**: Compiled JavaScript bundles under `frontend/dist/assets/*.js` preserve all four immutable contract markers:
+  1. `"rbac-audit-foundation"`
+  2. `"synthetic-demo-data"`
+  3. `"role-hierarchy-tree"`
+  4. `"governance-findings"`
+- **Root DOM Mount Verification**: `frontend/dist/index.html` preserves `<div id="root"></div>`.
+- **Zero Live Credentials & Cloud Isolation**: The application interface strictly avoids credential input fields (`password`, `account_identifier`, `private_key`) and external network endpoints (`requests.post`, `urllib.request.urlopen`, `snowflake.connector`), setting `data-mode="real-client-disabled"`.
+
+### Verbatim Direct Argv Execution & Multi-Pack Architecture Preservation
+All operational commands, verification checks, and automated regression suites declared in `journeys/user_journeys_manifest.json` execute verbatim from the workspace root using direct subprocess invocation (`shell=False`):
+- **Standardized Application CLI Prefix**: Direct argv invocations enforce `env PYTHONPATH=src python3 -m dashForge.main generate ...` to inject `PYTHONPATH=src` without relying on shell variable expansion.
+- **Standardized Pytest Invocation**: Python tests execute via `python3 -m pytest tests/ -q` or targeted module paths with NO `PYTHONPATH` override, preserving virtual environment packaging.
+- **Browser Testing Prefix**: Frontend tests execute via `npm --prefix frontend test -- --run`.
+- **Prohibition of Shell Operators**: Journey commands strictly avoid shell operators (`|`, `&&`, `||`, `;`, `<`, `>`) and standalone shell utilities (`jq`, `grep`, `cat`) as sole verification evidence.
+- **Preservation of Existing Packs & Sibling Isolation**: Sibling repository `dataForge` remains strictly read-only and unmodified. Existing industry packs (`healthcare:flu-season`, `financial:market-downturn`, `saas:churn-crisis`, and `snowflakeCost:idle-warehouse-waste`) remain fully intact with bit-for-bit reproducible generation, and fail-closed overwrite guards (`--force`) abort collisions with exit code 2.
+
+---
+## 2026-09-06 — Synthetic RBAC Audit Foundation relational schemas and access governance architecture
+
+**Decision:** DashForge formalizes the foundational synthetic data models, relational schema contracts, and dashboard specification for the RBAC management accelerator (`snowflakeRbac:rbac-audit-foundation`), enabling consulting teams to demonstrate authoritative cloud access governance insights completely offline without live credentials.
+
+**Contract:**
+- **Six Canonical Datasets**: The slice defines and enforces typed relational schemas across
+  `rbac_summary`, `roles`, `role_hierarchy`, `user_role_assignments`, `object_grants`, and
+  `governance_findings`, matching `frontend/src/core/data/sqliteSnapshot.ts` without live Snowflake dependencies.
+- **Canonical DashboardSpec & DataAdapter Wiring**: Standardized JSON dashboard specification declaring
+  KPI scorecards, interactive role hierarchy tree (`role-hierarchy-tree`), user access audit matrix
+  (`user-access-matrix`), and prioritized governance findings queue (`governance-findings`), binding
+  cleanly through canonical `DataAdapter` runtime interfaces (`StaticDataAdapter`, `SyntheticDataArtifactAdapter`,
+  `SQLiteDataAdapter`).
+- **Persistent Disclosures & Directional Security Guardrails**: Unsuppressed `data-disclosure="synthetic-demo-data"`
+  badges with exact text `"Synthetic demo data"`, complete upstream provenance metadata, and explicit
+  directional security validation guardrails requiring designated administrator confirmation before revoking entitlements.
+- **Browser Smoke Gate Conformance**: Production bundles compiled via `npm --prefix frontend run build` preserve
+  all four contract markers (`"rbac-audit-foundation"`, `"synthetic-demo-data"`, `"role-hierarchy-tree"`,
+  `"governance-findings"`) with zero live credentials (`data-mode="real-client-disabled"`).
+- **Verbatim Workspace-Root Direct Argv Execution**: All operational and verification commands execute verbatim
+  from workspace root via direct subprocess invocation (`shell=False`) using allowlisted prefixes without shell operators.
+- **Zero Regressions & Sibling Isolation**: Existing packs (`healthcare`, `financial`, `saas`, `snowflakeCost`)
+  remain intact, fail-closed overwrite protection is preserved, and sibling project `dataForge` remains strictly read-only.
+
+**Consequences:** Enterprise consulting teams can conduct high-impact RBAC governance workshops for prospective
+buyers without requiring live cloud credentials or external network connectivity, demonstrating concrete access risk
+remediation while maintaining synthetic transparency and operational safety.
+
+---
+## 2026-09-06 — Idle warehouse remediation artifacts and decision-ready executive deliverables
+
+**Decision:** DashForge formalizes the remediation artifacts architecture and decision-ready
+deliverable pipeline for the Idle Warehouse Waste cost accelerator (`snowflakeCost:idle-warehouse-waste`),
+bridging analytical discovery and concrete operational action.
+
+**Contract:**
+- **Prioritized Low-Risk Recommendations**: Recommendations process the canonical
+  `recommendation_queue` dataset, ordering `FINANCE_REPORTING_WH` (`IWW-001`, `P0`) first.
+  All six governance columns (`recommendation_id`, `executive_severity`, `suggested_owner`,
+  `recommended_action`, `evidence_detail`, `guardrail`) are rendered.
+- **Directional Owner-Validation Guardrails**: Projected savings and configuration actions
+  are explicitly framed as directional pending validation by designated warehouse owners,
+  preventing unauthorized changes.
+- **Same-Day Executive Follow-Up Deliverables**: Embedded in-browser follow-up generator
+  (`data-action="same-day-executive-follow-up"`) captures headline metrics (726 monthly compute credits,
+  2 idle warehouses, dominant credit concentration), upstream digest citation
+  (`sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390`), observation citations,
+  and explicit notice that real/client mode remains disabled.
+- **Persistent Synthetic Disclosures & Controlled Quality**: Persistent `data-disclosure="synthetic-demo-data"`
+  elements remain prominent across all views, and the container mounts with `data-readiness="controlled"`
+  anchored to the verified work package digest.
+- **Verbatim Workspace-Root Execution & Sibling Isolation**: Direct argv execution from workspace
+  root without shell operators; sibling repository `dataForge` remains strictly read-only and unmodified.
+
+**Consequences:** Prospective buyers and consultants can immediately generate decision-ready
+executive follow-up deliverables during discovery workshops with zero cloud credentials, zero external
+dependencies, and zero post-meeting delay.
+
+---
+## 2026-09-06 — User journey simulation schema formalization and omission protocol
+
+**Decision:** DashForge formalizes canonical JSON schemas (`USER_JOURNEYS_MANIFEST_SCHEMA`
+and `USER_JOURNEYS_RESULT_SCHEMA`) and verification utilities in `src/dashForge/playbook_schema.py`
+to govern Agent-Orch playbook quality gates and user journey simulation verification,
+preventing schema validation failures caused by empty `stdout_contains` fields.
+
+**Contract:**
+- **Non-Empty `stdout_contains` & Key Omission Protocol**: Command claims in simulation results
+  must omit the `stdout_contains` property entirely when no standard output substring assertion
+  is required. When present, `stdout_contains` enforces `minLength: 1`. Empty string (`""`), `null`,
+  or whitespace values violate the schema and are rejected.
+- **Manifest Governance & Acceptance Check Traceability**: `journeys/user_journeys_manifest.json`
+  strictly adheres to `USER_JOURNEYS_MANIFEST_SCHEMA`, enforcing valid authorities
+  (`human`, `mission`, `author`, `exploratory`), status (`passed`), and `traces_to` arrays
+  covering contract checks `AC-1` through `AC-5` without unreferenced or dangling IDs.
+- **Verbatim Workspace-Root Argv Execution**: All journey commands and manifest allowlists must
+  execute verbatim from the workspace root (`shell=False`). Application CLI commands use
+  `env PYTHONPATH=src python3 -m dashForge.main`, while pytest commands use `python3 -m pytest`
+  with no `PYTHONPATH` override. Shell pipelines (`|`), boolean chaining (`&&`, `||`, `;`),
+  redirection (`<`, `>`), and standalone shell utilities (`jq`, `grep`, `cat`) are prohibited.
+- **Zero Regressions & Pipeline Preservation**: Sibling project `dataForge` remains strictly
+  unmodified, and existing packs (`healthcare`, `financial`, `saas`, `snowflakeCost`) remain
+  fully functional with bit-for-bit reproducible generation.
+
+**Consequences:** Governed Agent-Orch runs at `step_08b_user_simulation_gate` validate cleanly
+without false negatives caused by empty stdout assertions, ensuring reliable, reproducible
+user journey verification across all future playbook steps.
 
 ---
 ## 2026-09-02 — Idle Warehouse Waste vertical slice formalization and governance

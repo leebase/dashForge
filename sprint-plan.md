@@ -4,6 +4,67 @@
 >
 > This file should stay concrete. If the strategy changes, update `project-plan.md`. If product direction changes, update `product-definition.md` or `architecture.md`.
 
+## Synthetic RBAC Audit Foundation Slice — 2026-09-06
+
+**Status:** Complete — Passed Governed Review
+
+- [x] Foundational relational schemas across six canonical datasets: typed schema definitions in `src/dashForge/rbac_audit.py` and `src/dashForge/snowflake_rbac.py` for `rbac_summary`, `roles`, `role_hierarchy`, `user_role_assignments`, `object_grants`, and `governance_findings`, with deterministic SQLite generation and `SQLiteSnapshot` JSON representations conforming to `frontend/src/core/data/sqliteSnapshot.ts` (AC-1).
+- [x] Canonical `DashboardSpec` specification & runtime DataAdapter wiring: defined `DashboardSpec` in `frontend/src/features/rbac-audit/rbacAuditSpec.ts` and template `tpl.snowflakeRbac.rbac-audit-foundation` for scenario `snowflakeRbac:rbac-audit-foundation`, declaring KPI scorecards, interactive role hierarchy tree visualization (`role-hierarchy-tree`), user access audit matrix (`user-access-matrix`), and prioritized governance findings queue (`governance-findings`), binding exclusively through `DataAdapter` runtime interfaces (`StaticDataAdapter`, `SyntheticDataArtifactAdapter`, `SQLiteDataAdapter`) without bespoke renderers (AC-2).
+- [x] Persistent & unsuppressed synthetic demo data disclosures & directional security guardrails: persistent `data-disclosure="synthetic-demo-data"` badge displaying `"Synthetic demo data"`, upstream provenance metadata, and explicit directional validation notices stating all role remediation recommendations are directional pending confirmation with designated security administrators (AC-3).
+- [x] Frontend production build conformance & browser smoke gate markers: `npm --prefix frontend run build` compiles cleanly with zero TypeScript errors, preserving contract markers `"rbac-audit-foundation"`, `"synthetic-demo-data"`, `"role-hierarchy-tree"`, and `"governance-findings"` under `frontend/dist/assets/*.js` with `data-mode="real-client-disabled"` (AC-4).
+- [x] Verbatim workspace-root command execution & user journey traceability: `journeys/user_journeys_manifest.json` conforms to schema with valid authorities (`human`, `mission`, `author`), `status: "passed"`, full AC-1..AC-6 traceability, allowlist prefix compliance (`env PYTHONPATH=src python3 -m dashForge.main`, `python3 -m pytest`, `npm --prefix frontend test -- --run`), and zero shell operators (AC-5).
+- [x] Preservation of existing dashboard functionality & regression safety: deterministic CLI generation across all existing industry packs (`healthcare`, `financial`, `saas`, and `snowflakeCost:idle-warehouse-waste`), fail-closed overwrite protection requiring `--force`, sibling repository `dataForge` unmodified and read-only, and all 229 tests passing (AC-6).
+- [x] Passed governed review with verdict `pass` and 0 findings across correctness and compliance lenses in `code-reviews/review-synthetic-rbac-audit-foundation.verdict.json` and `code-reviews/review-synthetic-rbac-audit-foundation.md`.
+- [x] Preserved validator evidence: compileall (`compileall tests/test_rbac_audit.py`, exit status 0, duration 0.157367s), targeted pytest (30 passed in 1.72s, exit status 0, duration 2.394492s), full pytest (229 passed in 19.77s, exit status 0, duration 20.496692s), full compileall (`compileall src tests`, exit status 0, duration 0.071066s), and frontend vitest (`npm --prefix frontend test -- --run`, exit status 0, duration 5.351294s, 35 files / 108 tests passed in 4.68s) passed.
+
+This slice delivers the foundational synthetic access control telemetry, relational schemas, and dashboard specification for the RBAC management accelerator in DashForge, enabling consulting teams to demonstrate authoritative governance insights for enterprise cloud data platforms completely offline with zero live credentials and zero network dependencies.
+
+## Idle Warehouse Remediation Artifacts Slice — 2026-09-06
+
+**Status:** Complete — Passed Governed Review
+
+- [x] Prioritized low-risk recommendations & directional framing: generated `recommendation_queue` table and snapshot dataset include all six governance fields, `performance_risk`, and `scope_name` with `FINANCE_REPORTING_WH` (`IWW-001`, `P0`, minimal risk) ordered first; presentation tier provides accessible toggle `data-action="open-recommendation-queue"` and container `data-status="recommendation-queue"` with directional validation guardrails (AC-1).
+- [x] Interactive same-day executive follow-up artifact generation: standalone presentation embeds an interactive artifact generator (`data-action="same-day-executive-follow-up"`, `data-status="executive-follow-up"`) capturing headline metrics (726 compute credits/month opportunity, 2 unmonitored warehouses, FINANCE_REPORTING_WH dominant concentration), upstream work-package digest citation (`sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390`), observation claim citations, and real-client mode disabled guard (AC-2).
+- [x] Persistent & unsuppressed synthetic demo data disclosures: persistent `data-disclosure="synthetic-demo-data"` badge displaying `"Synthetic demo data"`, preserved across presentation header, quality card, follow-up HTML deliverable, and landscape print-to-PDF export (AC-3).
+- [x] Frontend production build conformance & browser smoke gate markers: verified against `tests/browser_smoke_manifest.json` and `tests/browser_smoke_check.py`, preserving contract markers `"idle-warehouse-waste"`, `"synthetic-demo-data"`, `"open-recommendation-queue"`, and `"recommendation-queue"` in compiled JavaScript bundles under `frontend/dist/assets/*.js` with zero live credentials and `data-mode="real-client-disabled"` (AC-4).
+- [x] Verbatim workspace-root command execution & user journey traceability: `journeys/user_journeys_manifest.json` conforms to schema with valid authorities (`human`, `mission`, `author`), `status: "passed"`, full AC-1..AC-6 traceability, allowlist prefix compliance, and zero shell operators (AC-5).
+- [x] Preservation of existing dashboard functionality & regression safety: deterministic CLI generation across all seven datasets (`executive_summary`, `warehouse_metering_history`, `query_history`, `metering_history`, `database_storage_usage_history`, `show_warehouses`, `recommendation_queue`) with fail-closed overwrite protection, backwards compatibility across existing packs (`healthcare`, `financial`, `saas`), sibling repository `dataForge` unmodified, and all 199 tests passing (AC-6).
+- [x] Passed governed review with verdict `pass` and 0 findings across implementation, contract, and user simulation lenses in `code-reviews/review-idle-warehouse-remediation-artifacts.verdict.json` and `code-reviews/review-idle-warehouse-remediation-artifacts.md`.
+- [x] Preserved validator evidence: compileall (`compileall tests/test_remediation_artifacts.py`, exit status 0, duration 0.183588s), targeted pytest (32 passed in 0.85s, exit status 0, duration 1.536486s), full pytest (199 passed in 18.44s, exit status 0, duration 19.169097s), full compileall (`compileall src tests`, exit status 0, duration 0.059179s), and frontend vitest (`npm --prefix frontend test -- --run`, exit status 0, duration 6.378009s, 35 files / 108 tests passed) passed.
+
+This slice delivers prioritized low-risk recommendations and same-day executive deliverables for the Idle Warehouse Waste cost accelerator in DashForge, enabling executive buyers to act immediately on identified compute waste with directional owner-validation guardrails, persistent synthetic data disclosures, and zero live credential dependencies.
+
+## Fix User Simulation Schema Slice — 2026-09-06
+
+**Status:** Complete — Passed Governed Review
+
+- [x] Schema formalization and omission protocol enforcement in `src/dashForge/playbook_schema.py`: canonical `USER_JOURNEYS_RESULT_SCHEMA` enforces `minLength: 1` on `stdout_contains`, and helper functions `build_command_claim` and `sanitize_command_claim` omit `stdout_contains` when empty or unasserted (AC-1).
+- [x] User journeys manifest schema conformance and authority governance: `journeys/user_journeys_manifest.json` conforms to `USER_JOURNEYS_MANIFEST_SCHEMA`, with valid authorities (`human`, `mission`, `author`, `exploratory`), status `passed`, sequential steps, executable commands, and `traces_to` covering AC-1 through AC-5 without dangling IDs (AC-2).
+- [x] Verbatim workspace-root command execution: application CLI commands standardized to `env PYTHONPATH=src python3 -m dashForge.main` and pytest commands to `python3 -m pytest` with no `PYTHONPATH` override, matching `command_allowlist` prefixes (AC-3).
+- [x] Elimination of shell syntax: eliminated shell pipelines (`|`), chaining (`&&`, `||`, `;`), redirection (`<`, `>`), and standalone shell utilities (`jq`, `grep`, `cat`), ensuring direct argv execution compatibility (AC-4).
+- [x] Preservation of existing pipeline validations and regression suite integrity: CLI generation for `snowflakeCost` intact, fail-closed overwrite protection intact, existing packs (`healthcare`, `financial`, `saas`) operational, sibling repository `dataForge` unmodified, and all 167 tests passing (AC-5).
+- [x] Passed governed review with verdict `pass` and 0 findings in `code-reviews/review-fix-user-simulation-schema.verdict.json` and `code-reviews/review-fix-user-simulation-schema.md`.
+- [x] Preserved validator evidence: compileall (`compileall tests/test_playbook_schema.py`, exit status 0, duration 0.168819s), targeted pytest (24 passed in 0.63s, exit status 0, duration 1.339025s), full pytest (167 passed in 16.98s, exit status 0, duration 17.712756s), and full compileall (`compileall src tests`, exit status 0, duration 0.06114s) passed.
+
+This slice formalizes the operational and schema contract governing Agent-Orch playbook quality gates and user journey simulation verification, resolving structural schema validation failures at the `step_08b_user_simulation_gate` stage via strict non-empty `stdout_contains` constraints, omission protocols, verbatim root execution, and acceptance check traceability.
+
+## Idle Warehouse Dashboard Slice — 2026-09-06
+
+**Status:** Complete — Passed Governed Review
+
+- [x] Standalone frontend scenario mounting & runtime seam resolution: resolves `/?scenario=idle-warehouse-waste` through `StandaloneDashboardApp.tsx`, consuming `StaticDataAdapter` and `SyntheticDataArtifactAdapter` with zero live Snowflake credentials, zero backend servers, and zero cloud network dependencies (AC-1).
+- [x] Scenario container attributes & controlled readiness signaling: root container carries `data-scenario="idle-warehouse-waste"`, `data-readiness="controlled"`, and claim ledger anchored to verified digest `sha256:57ed296635806a15deb7286879bae8b009fc551a86fce4b1f3cb564bcf775390` (AC-2).
+- [x] Persistent & unsuppressed synthetic demo data disclosure rendering: unsuppressed `data-disclosure="synthetic-demo-data"` badge displaying `"Synthetic demo data"`, preserved across quality card, PDF export, and executive follow-up HTML (AC-3).
+- [x] Interactive prioritized recommendation queue with governance guardrails: toggle `data-action="open-recommendation-queue"` opens `data-status="recommendation-queue"` with `FINANCE_REPORTING_WH` (`IWW-001`, `P0`) ordered first, displaying all 6 governance columns and framing savings as directional until validated by designated warehouse owners (AC-4).
+- [x] Same-day executive follow-up & landscape PDF export: provides `data-action="same-day-executive-follow-up"` and `data-testid="dashboard-save-pdf"` with evidence citations and story narrative (AC-5).
+- [x] Browser smoke gate conformance & bundle verification: verified against `tests/browser_smoke_manifest.json` and `tests/browser_smoke_check.py`, preserving markers `"idle-warehouse-waste"`, `"synthetic-demo-data"`, `"open-recommendation-queue"`, and `"recommendation-queue"` in production bundles (AC-6).
+- [x] Production build integrity & automated frontend test suite: `npm --prefix frontend test -- --run` passed with 35 test files and 108 tests; Vitest covers routing, readiness, disclosures, recommendation queue, and export (AC-7).
+- [x] Backend slice preservation, zero regressions & sibling repository isolation: zero external dependencies in `src/dashForge`, no hardcoded scenarios, sibling project `dataForge` unmodified, backwards compatibility maintained across existing packs (`healthcare`, `financial`, `saas`), and full test suite passed with 143 tests (AC-8).
+- [x] Passed governed review with verdict `pass`, 0 findings across correctness and requirements lenses in `code-reviews/review-idle-warehouse-dashboard.verdict.json`.
+- [x] Preserved validator evidence: all compileall, targeted pytest (31 passed in 0.86s, exit status 0), full pytest (143 passed in 17.19s, exit status 0), compileall src tests (exit status 0), and frontend vitest (35 files / 108 tests passed in 8.02s, exit status 0) passed.
+
+This slice delivers the buyer-visible presentation layer for the Idle Warehouse Waste cost accelerator in DashForge, establishing standalone runtime seams, TVIQ metric structures, controlled readiness, unsuppressed synthetic disclosures, interactive recommendation queues with directional guardrails, and browser smoke gate conformance.
+
 ## Snowflake Accelerator Revival — 2026-09-04
 
 **Status:** Complete — independently accepted

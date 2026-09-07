@@ -1,0 +1,17 @@
+{
+  "verdict": "pass",
+  "findings": [],
+  "checks_run": [
+    {
+      "command": "python3 -m pytest tests/ -q",
+      "exit_code": 0,
+      "summary": "167 passed in 16.74s"
+    }
+  ],
+  "lenses": {
+    "contract_conformance": {
+      "finding_ids": [],
+      "justification": "The implementation correctly enforces the omission protocol for stdout_contains, ensuring it is never empty. All acceptance checks (AC-1 to AC-5) are satisfied, and all tests pass cleanly."
+    }
+  }
+}
