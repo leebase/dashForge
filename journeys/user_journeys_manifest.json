@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "schema_version": 1,
   "contract": "docs/cost-management-storage-waste-contract.md",
-  "objective": "Deliver a buyer-facing Storage Waste dashboard slice for the Cost Management accelerator, presenting prioritized recommendations for stale tables and uncompressed storage from provenance-labeled dataForge snapshot exports while preserving existing dashForge behavior and sibling dataForge isolation.",
+  "objective": "Deliver a buyer-facing Storage Waste dashboard slice for the Cost Management accelerator, surfacing orphaned tables, unused time-travel storage, and uncompressed data recommendations to enable decision-makers to prioritize storage spend reductions while ensuring existing RBAC and ELT accelerators remain unchanged and preserving sibling dataForge isolation.",
   "command_allowlist": [
     "env PYTHONPATH=src python3 -m dashForge.main",
     "python3 -m pytest tests/ -q",
@@ -23,13 +23,13 @@
         "src/dashForge/main.py"
       ],
       "commands": [
-        "python3 -m pytest tests/test_remediation_artifacts.py -q -k test_ac5_user_journeys_manifest_full_ac_traceability"
+        "python3 -m pytest tests/test_cost_storage_waste.py -q -k test_ac1_storage_summary_schema_and_columns"
       ],
       "steps": [
         "Inspect foundational Storage Waste schema definitions in docs/cost-management-storage-waste-contract.md.",
-        "Verify that all canonical relational datasets (storage_summary, table_storage_metrics, stale_tables, uncompressed_storage, storage_usage_history, recommendation_queue) define typed column structures and relationships.",
+        "Verify that all canonical relational datasets (storage_summary, table_storage_metrics, stale_tables, uncompressed_storage, storage_usage_history, recommendation_queue) define typed column structures and relationships surfacing orphaned tables, unused time-travel storage, and uncompressed data recommendations.",
         "Confirm that recommendation_queue preserves recommendation_id, executive_severity, suggested_owner, recommended_action, evidence_detail, and guardrail fields.",
-        "Execute targeted pytest check python3 -m pytest tests/test_remediation_artifacts.py -q -k test_ac5_user_journeys_manifest_full_ac_traceability from workspace root to verify schema and traceability conformance."
+        "Execute targeted pytest check python3 -m pytest tests/test_cost_storage_waste.py -q -k test_ac1_storage_summary_schema_and_columns from workspace root to verify schema and traceability conformance."
       ],
       "traces_to": [
         "AC-1"
@@ -50,8 +50,8 @@
         "npm --prefix frontend test -- --run -t \"StandaloneDashboardApp\""
       ],
       "steps": [
-        "Review the Storage Waste DashboardSpec contract declaring KPI summary cards, storage distribution breakdown, table aging, and recommendation queue.",
-        "Verify that presentation widgets bind exclusively to canonical DataAdapter interfaces (StaticDataAdapter, SyntheticDataArtifactAdapter, SQLiteDataAdapter).",
+        "Review the Storage Waste DashboardSpec contract declaring responsive layout, KPI summary cards, storage distribution breakdown, table aging visualizers, and recommendation queue enabling decision-makers to prioritize storage spend reductions.",
+        "Verify that presentation widgets bind exclusively to canonical DataAdapter interfaces (StaticDataAdapter, SyntheticDataArtifactAdapter, SQLiteDataAdapter) without bespoke renderers.",
         "Execute npm --prefix frontend test -- --run -t \"StandaloneDashboardApp\" from workspace root to confirm component rendering.",
         "Confirm all tests pass cleanly with exit code 0."
       ],
@@ -71,13 +71,13 @@
         "docs/cost-management-storage-waste-contract.md"
       ],
       "commands": [
-        "python3 -m pytest tests/test_idle_warehouse_dashboard.py -q -k test_ac3_synthetic_disclosure_preserved_in_follow_up_and_pdf"
+        "python3 -m pytest tests/test_cost_storage_waste.py -q -k test_ac3_recommendation_queue_governance_fields"
       ],
       "steps": [
-        "Inspect the recommendation queue for prioritized stale table archival and uncompressed storage remediation actions.",
-        "Verify all six governance fields (recommendation_id, executive_severity, suggested_owner, recommended_action, evidence_detail, guardrail) are populated.",
-        "Confirm all recommendations and projected savings are framed as directional pending validation by designated table owners.",
-        "Execute python3 -m pytest tests/test_idle_warehouse_dashboard.py -q -k test_ac3_synthetic_disclosure_preserved_in_follow_up_and_pdf to verify disclosure and governance artifact integrity."
+        "Inspect the recommendation queue for prioritized storage waste actions spanning orphaned tables, unused time-travel storage, and uncompressed data recommendations.",
+        "Verify all six governance fields (recommendation_id, executive_severity, suggested_owner, recommended_action, evidence_detail, guardrail) are populated with P0 high-impact items ordered first.",
+        "Confirm all recommendations and projected savings are framed as directional pending validation by designated table owners and stewards.",
+        "Execute python3 -m pytest tests/test_cost_storage_waste.py -q -k test_ac3_recommendation_queue_governance_fields from workspace root to verify recommendation queue governance."
       ],
       "traces_to": [
         "AC-3"
@@ -96,13 +96,13 @@
         "docs/cost-management-storage-waste-contract.md"
       ],
       "commands": [
-        "python3 -m pytest tests/test_idle_warehouse_dashboard.py -q -k test_ac6_production_bundle_contract_markers_conformance"
+        "python3 -m pytest tests/test_cost_storage_waste.py -q -k test_ac4_persistent_unsuppressed_synthetic_disclosure"
       ],
       "steps": [
-        "Execute targeted check python3 -m pytest tests/test_idle_warehouse_dashboard.py -q -k test_ac6_production_bundle_contract_markers_conformance from workspace root.",
-        "Confirm production bundle static assets under frontend/dist/ exist.",
-        "Verify contract markers ('synthetic-demo-data') and clean compilation without TypeScript errors.",
-        "Confirm process exit code 0."
+        "Inspect standalone dashboard presentation components for same-day executive follow-up deliverable actions and landscape PDF export capabilities.",
+        "Verify persistent unsuppressed synthetic data disclosure with exact text 'Synthetic demo data' and data-mode='real-client-disabled' with zero live credentials.",
+        "Verify browser smoke gate conformance and contract marker preservation ('storage-waste', 'synthetic-demo-data', 'open-recommendation-queue', 'recommendation-queue').",
+        "Execute python3 -m pytest tests/test_cost_storage_waste.py -q -k test_ac4_persistent_unsuppressed_synthetic_disclosure from workspace root to verify disclosure integrity."
       ],
       "traces_to": [
         "AC-4"
@@ -124,8 +124,8 @@
       ],
       "steps": [
         "Execute env PYTHONPATH=src python3 -m dashForge.main --help from workspace root.",
-        "Verify command exits with code 0.",
-        "Confirm help text displays dashForge CLI options and generate subcommands without shell pipelines or redirection."
+        "Verify command exits with code 0 under direct argv invocation without shell variable expansion.",
+        "Confirm help text displays dashForge CLI options and generate subcommands with complete acceptance check traceability across all AC-1 through AC-6 checks and zero shell operators."
       ],
       "traces_to": [
         "AC-5"
@@ -144,12 +144,12 @@
         "docs/cost-management-storage-waste-contract.md"
       ],
       "commands": [
-        "python3 -m pytest tests/test_idle_warehouse_waste.py -q"
+        "python3 -m pytest tests/test_cost_storage_waste.py -q -k test_ac6_backwards_compatibility_existing_packs"
       ],
       "steps": [
-        "Execute python3 -m pytest tests/test_idle_warehouse_waste.py -q with NO PYTHONPATH override.",
-        "Confirm all tests pass cleanly with exit code 0.",
-        "Verify zero modifications to sibling repository dataForge and complete preservation of existing packs."
+        "Execute python3 -m pytest tests/test_cost_storage_waste.py -q -k test_ac6_backwards_compatibility_existing_packs with NO PYTHONPATH override.",
+        "Confirm that existing industry packs (healthcare, financial, saas, snowflakeCost:idle-warehouse-waste), RBAC accelerators, and ELT accelerators remain completely unchanged and operational with zero regressions.",
+        "Verify fail-closed overwrite protection requiring --force and strict read-only isolation of sibling repository dataForge."
       ],
       "traces_to": [
         "AC-6"
